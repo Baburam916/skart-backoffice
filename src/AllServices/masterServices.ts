@@ -3,7 +3,7 @@ import axios from "axios";
 const hostname = window.location.hostname;
 const baseURL =
   hostname == "localhost"
-    ? "http://localhost/api/v1"
+    ? "https://devapiv2.skart-express.com/api/v1"
     : hostname == "devbackoffice.skart-express.com"
     ? "https://devapiv2.skart-express.com/api/v1"
     : "https://apiv2.skart-express.com/api/v1";

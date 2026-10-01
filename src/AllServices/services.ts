@@ -15,13 +15,13 @@ const masterURL = "/master";
 const salesurl = "/sales"
 const baseURL1 =
   hostname == "localhost"
-    ? "http://localhost/api/v1/auth"
+    ? "https://devapiv2.skart-express.com/api/v1/auth"
     : hostname == "devbackoffice.skart-express.com"
     ? "https://devapiv2.skart-express.com/api/v1/auth"
     : "https://apiv2.skart-express.com/api/v1/auth";
 const baseURL =
   hostname == "localhost"
-    ? "http://localhost/api/v1"
+    ? "https://devapiv2.skart-express.com/api/v1"
     : hostname == "devbackoffice.skart-express.com"
     ? "https://devapiv2.skart-express.com/api/v1"
     : "https://apiv2.skart-express.com/api/v1";

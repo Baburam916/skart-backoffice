@@ -4,7 +4,7 @@ import { io, Socket } from "socket.io-client";
 const hostname = window.location.hostname;
 const SOCKET_URL =
   hostname === "localhost"
-    ? "http://localhost:8014"
+    ? "https://devapiv2.skart-express.com"
     : hostname === "devbackoffice.skart-express.com"
     ? "https://devapiv2.skart-express.com"
     : "https://apiv2.skart-express.com";
