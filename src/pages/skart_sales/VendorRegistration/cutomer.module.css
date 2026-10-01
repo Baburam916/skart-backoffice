@@ -1,0 +1,15 @@
+.customerslider ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+ .customerslider ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+  }
+
+  .customerslider ::-webkit-scrollbar-thumb {
+    background: #777779;
+  }
+
+  .customerslider ::-webkit-scrollbar-thumb:hover {
+    background: #777779;
+  }

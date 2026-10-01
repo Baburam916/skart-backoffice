@@ -1,0 +1,286 @@
+
+      <div className="mt-3  w-full p-2 md:py-5  md:px-5 bg-white rounded-lg shadow-lg">
+        <div>
+          {/* TAB BUTTONS */}
+
+          <div className="w-full mb-2">
+            <h2 className="font-bold text-lg">Filter Ageing Dashboard </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2  lg:flex gap-2 mb-4 md:w-full w-[240px] m-auto">
+            <button
+              onClick={() => setActive(1)}
+              className={
+                active === 1
+                  ? "p-[1px]  rounded w-full lg:w-[208px] xl:w-[230px] 2xl:w-[250px]  rounded-[9px]   bg-gradient-to-r from-[#FBD06B] via-[#FBD06B] to-[#FBD06B] p-[1px]  hover:bg-gradient-to-r hover:from-[#FFD470] hover:via-[#FFD470] hover:to-[#FFD470]"
+                  : " p-[1px]  rounded w-full  lg:w-[208px] xl:w-[230px] 2xl:w-[250px]  rounded-[9px]   bg-gradient-to-r from-[#cbd4dd] via-[#cbd4dd] to-[#FFECC0] p-[1px]  hover:bg-gradient-to-r hover:from-[#FFD470] hover:via-[#FFD470] hover:to-[#FFD470]"
+              }
+            >
+              <div
+                onClick={() => setActive(1)}
+                className={
+                  active === 1
+                    ? "relative  overflow-hidden rounded-[9px] pl-3 pr-4 py-2 bg-[linear-gradient(90deg,rgb(255,250,228)_0%,rgb(255,255,255)_100%)]    "
+                    : "relative overflow-hidden rounded-[9px] pl-3 pr-4 py-2 bg-gradient-to-r from-[#FDFDFD] via-[#FDFDFD] to-[#FFF9EB]    hover:bg-gradient-to-r hover:from-[#fffaef] hover:via-[#fffaef] hover:to-[#fffaef]"
+                }
+              >
+                <div className="flex items-center">
+                  <figure className="">
+                    <img
+                      alt="Avatar"
+                      className="w-[44px] h-[44px] "
+                      src="/images/pickup.png"
+                    />
+                  </figure>
+                  <aside className=" relative text-left ml-[15px] pl-2 after:absolute after:content-[''] after:w-[1px] after:h-full after:bg-gray-300 after:left-[-7px] after:bottom-0 after:mt-2        after:bg-gradient-to-t  after:from-[#F7F8F8]  after:via-[#E3D7BA] after:to-[#F7F8F8] ">
+                    <p className="uppercase text-sm text-[#565656]">Pick up</p>
+                    <h6 className="font-bold text-lg leading-[18px]">
+                      {" "}
+                      <Counter value={487} duration={3000} />{" "}
+                    </h6>
+                  </aside>
+                </div>
+                <i
+                  onClick={() => setActive(1)}
+                  className={
+                    active === 1
+                      ? " absolute  left-[90px] rotate-[-9deg] opacity-60 bottom-[-11px] md:bottom-[-20px]  lg:bottom-[-9px] xl:bottom-[-10px] 2xl:bottom-[-12px] right-[-8px] xl:right-[-8px]"
+                      : "hidden absolute  left-[90px] rotate-[-9deg] opacity-60 bottom-[-11px] md:bottom-[-20px]  lg:bottom-[-9px] xl:bottom-[-10px] 2xl:bottom-[-12px] right-[-8px] xl:right-[-8px]"
+                  }
+                >
+                  <img
+                    alt="Avatar"
+                    className="
+    w-[330px]
+    h-[30px]
+    filter
+    hue-rotate-[225deg]
+    brightness-[2]
+    saturate-[6]
+    contrast-[12]
+  "
+                    src="/images/bg.gif"
+                  />
+                </i>
+
+                <span
+                  onClick={() => setActive(1)}
+                  className={
+                    active === 1
+                      ? " absolute top-[6px] right-[5px] bg-[#ffcb3f] rounded-full p-[2px] w-[20px] h-[20px]"
+                      : "hidden absolute top-[6px] right-[5px] bg-[#ffcb3f] rounded-full p-[2px] w-[20px] h-[20px]"
+                  }
+                >
+                  <Check className="w-[15px] h-[15px] stroke-2.5 text-[#715710]" />
+                </span>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setActive(2)}
+              className={
+                active === 2
+                  ? "p-[1px]  rounded w-full lg:w-[208px] xl:w-[230px] 2xl:w-[250px]  rounded-[9px]   bg-gradient-to-r from-[#FBD06B] via-[#FBD06B] to-[#FBD06B] p-[1px]  hover:bg-gradient-to-r hover:from-[#FFD470] hover:via-[#FFD470] hover:to-[#FFD470]"
+                  : " p-[1px]  rounded w-full  lg:w-[208px] xl:w-[230px] 2xl:w-[250px]  rounded-[9px]   bg-gradient-to-r from-[#cbd4dd] via-[#cbd4dd] to-[#FFECC0] p-[1px]  hover:bg-gradient-to-r hover:from-[#FFD470] hover:via-[#FFD470] hover:to-[#FFD470]"
+              }
+            >
+              <div
+                onClick={() => setActive(2)}
+                className={
+                  active === 2
+                    ? "relative overflow-hidden h-full rounded-[9px] pl-3 pr-4 py-2 bg-[linear-gradient(90deg,rgb(255,250,228)_0%,rgb(255,255,255)_100%)]    "
+                    : " relative overflow-hidden h-full  rounded-[9px] pl-3 pr-4 py-2 bg-gradient-to-r from-[#FDFDFD] via-[#FDFDFD] to-[#FFF9EB]    hover:bg-gradient-to-r hover:from-[#fffaef] hover:via-[#fffaef] hover:to-[#fffaef]"
+                }
+              >
+                <div className="flex items-center">
+                  <figure className="">
+                    <img
+                      alt="Avatar"
+                      className="w-[39px] h-[39px] "
+                      src="/images/intransit.png"
+                    />
+                  </figure>
+                  <aside className=" relative text-left ml-[15px] pl-2 after:absolute after:content-[''] after:w-[1px] after:h-full after:bg-gray-300 after:left-[-7px] after:bottom-0 after:mt-2        after:bg-gradient-to-t  after:from-[#F7F8F8]  after:via-[#E3D7BA] after:to-[#F7F8F8] ">
+                    <p className="uppercase text-sm text-[#565656]">
+                      in Transit
+                    </p>
+                    <h6 className="font-bold text-lg leading-[18px]">
+                      <Counter value={460} duration={3000} />
+                    </h6>
+                  </aside>
+                </div>
+                <i
+                  onClick={() => setActive(2)}
+                  className={
+                    active === 2
+                      ? " absolute  left-[90px] rotate-[-9deg] opacity-60 bottom-[-11px] md:bottom-[-20px]  lg:bottom-[-9px] xl:bottom-[-10px] 2xl:bottom-[-12px] right-[-8px] xl:right-[-8px]"
+                      : "hidden absolute left-[90px] rotate-[-9deg] opacity-60 bottom-[-11px] md:bottom-[-20px]  lg:bottom-[-9px] xl:bottom-[-10px] 2xl:bottom-[-12px] right-[-8px] xl:right-[-8px]"
+                  }
+                >
+                  <img
+                    alt="Avatar"
+                    className="
+    w-[330px]
+    h-[30px]
+    filter
+    hue-rotate-[225deg]
+    brightness-[2]
+    saturate-[6]
+    contrast-[12]
+  "
+                    src="/images/bg.gif"
+                  />
+                </i>
+
+                <span
+                  onClick={() => setActive(2)}
+                  className={
+                    active === 2
+                      ? " absolute top-[6px] right-[5px] bg-[#ffcb3f] rounded-full p-[2px] w-[20px] h-[20px]"
+                      : "hidden absolute top-[6px] right-[5px] bg-[#ffcb3f] rounded-full p-[2px] w-[20px] h-[20px]"
+                  }
+                >
+                  <Check className="w-[15px] h-[15px] stroke-2.5 text-[#715710]" />
+                </span>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setActive(3)}
+              className={
+                active === 3
+                  ? "p-[1px]  rounded w-full lg:w-[208px] xl:w-[230px] 2xl:w-[250px]  rounded-[9px]   bg-gradient-to-r from-[#FBD06B] via-[#FBD06B] to-[#FBD06B] p-[1px]  hover:bg-gradient-to-r hover:from-[#FFD470] hover:via-[#FFD470] hover:to-[#FFD470]"
+                  : " p-[1px]  rounded w-full  lg:w-[208px] xl:w-[230px] 2xl:w-[250px]   rounded-[9px]   bg-gradient-to-r from-[#cbd4dd] via-[#cbd4dd] to-[#FFECC0] p-[1px]  hover:bg-gradient-to-r hover:from-[#FFD470] hover:via-[#FFD470] hover:to-[#FFD470]"
+              }
+            >
+              <div
+                onClick={() => setActive(3)}
+                className={
+                  active === 3
+                    ? "relative overflow-hidden h-full  rounded-[9px] pl-3 pr-4 py-2 bg-[linear-gradient(90deg,rgb(255,250,228)_0%,rgb(255,255,255)_100%)]   "
+                    : " relative overflow-hidden h-full rounded-[9px] pl-3 pr-4 py-2 bg-gradient-to-r from-[#FDFDFD] via-[#FDFDFD] to-[#FFF9EB]    hover:bg-gradient-to-r hover:from-[#fffaef] hover:via-[#fffaef] hover:to-[#fffaef]"
+                }
+              >
+                <div className="flex items-center">
+                  <figure className="">
+                    <img
+                      alt="Avatar"
+                      className="w-[39px] h-[39px] "
+                      src="/images/delivered.png"
+                    />
+                  </figure>
+                  <aside className=" relative text-left ml-[15px] pl-2 after:absolute after:content-[''] after:w-[1px] after:h-full after:bg-gray-300 after:left-[-7px] after:bottom-0 after:mt-2        after:bg-gradient-to-t  after:from-[#F7F8F8]  after:via-[#E3D7BA] after:to-[#F7F8F8] ">
+                    <p className="uppercase text-sm text-[#565656]">
+                      Delivered
+                    </p>
+                    <h6 className="font-bold text-lg leading-[18px]">
+                      <Counter value={712} duration={3000} />
+                    </h6>
+                  </aside>
+                </div>
+                <i
+                  onClick={() => setActive(3)}
+                  className={
+                    active === 3
+                      ? " absolute  left-[90px] rotate-[-9deg] opacity-60 bottom-[-11px] md:bottom-[-20px]  lg:bottom-[-9px] xl:bottom-[-10px] 2xl:bottom-[-12px] right-[-8px] xl:right-[-8px]"
+                      : "hidden absolute  left-[90px] rotate-[-9deg] opacity-60 bottom-[-11px] md:bottom-[-20px]  lg:bottom-[-9px] xl:bottom-[-10px] 2xl:bottom-[-12px] right-[-8px] xl:right-[-8px]"
+                  }
+                >
+                  <img
+                    alt="Avatar"
+                    className="
+    w-[330px]
+    h-[30px]
+    filter
+    hue-rotate-[225deg]
+    brightness-[2]
+    saturate-[6]
+    contrast-[12]
+  "
+                    src="/images/bg.gif"
+                  />
+                </i>
+
+                <span
+                  onClick={() => setActive(3)}
+                  className={
+                    active === 3
+                      ? " absolute top-[6px] right-[5px] bg-[#ffcb3f] rounded-full p-[2px] w-[20px] h-[20px]"
+                      : "hidden absolute top-[6px] right-[5px] bg-[#ffcb3f] rounded-full p-[2px] w-[20px] h-[20px]"
+                  }
+                >
+                  <Check className="w-[15px] h-[15px] stroke-2.5 text-[#715710]" />
+                </span>
+              </div>
+            </button>
+
+            <button
+              onClick={() => setActive(4)}
+              className={
+                active === 4
+                  ? "p-[1px]  rounded w-full lg:w-[208px] xl:w-[230px] 2xl:w-[250px]   rounded-[9px]   bg-gradient-to-r from-[#FBD06B] via-[#FBD06B] to-[#FBD06B] p-[1px]  hover:bg-gradient-to-r hover:from-[#FFD470] hover:via-[#FFD470] hover:to-[#FFD470]"
+                  : " p-[1px]  rounded w-full  lg:w-[208px] xl:w-[230px] 2xl:w-[250px]   rounded-[9px]   bg-gradient-to-r from-[#cbd4dd] via-[#cbd4dd] to-[#FFECC0] p-[1px]  hover:bg-gradient-to-r hover:from-[#FFD470] hover:via-[#FFD470] hover:to-[#FFD470]"
+              }
+            >
+              <div
+                onClick={() => setActive(4)}
+                className={
+                  active === 4
+                    ? "relative overflow-hidden h-full  rounded-[9px] pl-3 pr-4 py-2 bg-[linear-gradient(90deg,rgb(255,250,228)_0%,rgb(255,255,255)_100%)]"
+                    : " relative overflow-hidden  h-full rounded-[9px] pl-3 pr-4 py-2 bg-gradient-to-r from-[#FDFDFD] via-[#FDFDFD] to-[#FFF9EB]    hover:bg-gradient-to-r hover:from-[#fffaef] hover:via-[#fffaef] hover:to-[#fffaef]"
+                }
+              >
+                <div className="flex items-center">
+                  <figure className="">
+                    <img
+                      alt="Avatar"
+                      className="w-[37px] h-[37px] "
+                      src="/images/reset.png"
+                    />
+                  </figure>
+                  <aside className=" relative text-left ml-[15px] pl-2 after:absolute after:content-[''] after:w-[1px] after:h-full after:bg-gray-300 after:left-[-7px] after:bottom-0 after:mt-2        after:bg-gradient-to-t  after:from-[#F7F8F8]  after:via-[#E3D7BA] after:to-[#F7F8F8] ">
+                    <p className="uppercase text-sm text-[#565656] font-bold">
+                      Reset{" "}
+                    </p>
+                    <p className="uppercase text-sm text-[#565656] font-bold">
+                      All{" "}
+                    </p>
+                  </aside>
+                </div>
+
+                <i
+                  onClick={() => setActive(4)}
+                  className={
+                    active === 4
+                      ? " absolute ] left-[90px] rotate-[-9deg] opacity-60 bottom-[-11px] md:bottom-[-20px]  lg:bottom-[-9px] xl:bottom-[-10px] 2xl:bottom-[-12px] right-[-8px] xl:right-[-8px]"
+                      : "hidden absolute  left-[90px] rotate-[-9deg] opacity-60 bottom-[-11px] md:bottom-[-20px]  lg:bottom-[-9px] xl:bottom-[-10px] 2xl:bottom-[-12px] right-[-8px] xl:right-[-8px]"
+                  }
+                >
+                  <img
+                    alt="Avatar"
+                    className="
+    w-[330px]
+    h-[30px]
+    filter
+    hue-rotate-[225deg]
+    brightness-[2]
+    saturate-[6]
+    contrast-[12]
+  "
+                    src="/images/bg.gif"
+                  />
+                </i>
+
+                <span
+                  onClick={() => setActive(4)}
+                  className={
+                    active === 4
+                      ? " absolute top-[6px] right-[5px] bg-[#ffcb3f] rounded-full p-[2px] w-[20px] h-[20px]"
+                      : "hidden absolute top-[6px] right-[5px] bg-[#ffcb3f] rounded-full p-[2px] w-[20px] h-[20px]"
+                  }
+                >
+                  <Check className="w-[15px] h-[15px] stroke-2.5 text-[#715710]" />
+                </span>
+              </div>
+            </button>
+          </div>

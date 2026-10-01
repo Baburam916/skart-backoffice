@@ -1,0 +1,91 @@
+.boxSpotLeft {
+  padding: 5px;
+  text-align: center;
+  border-right: 3px double #fff;
+
+  border-left: 1px solid #fff;
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+  border-radius: 5px 0px 0 5px;
+  background: radial-gradient(
+    circle,
+    rgb(255, 255, 255) 2%,
+    rgb(247, 247, 247) 49%,
+    rgb(240, 240, 240) 100%
+  );
+  line-height: 16px;
+}
+
+.boxSpotLeft h5 {
+  line-height: 17px;
+}
+
+.boxSpotLeft p {
+  line-height: 17px;
+}
+.isBox {
+  min-height: 92px;
+}
+
+.redColor svg {
+  background: #fff0f0;
+  color: #f67b5c;
+}
+
+.greenColor svg {
+  color: #14ca7d !important;
+  background: #defbe7 !important;
+}
+
+.yellowColor svg {
+  background: #fff9ea;
+  color: #f9bf38;
+  padding: 0 1px;
+}
+
+.w-200 {
+  width: 220px;
+}
+
+button[data-headlessui-state="open"] {
+  border-color: #f0b646; /* Blue */
+  color: #f0b646;
+}
+.firstTable.hideTable .tablelist {
+  display: none;
+}
+
+.hideTable {
+  display: none;
+}
+.Ndropdown div.absolute.z-30 {
+  left: initial !important;
+  right: 48px !important;
+  top: 0 !important;
+}
+
+.tablelist tbody tr:last-child td:last-child .Ndropdown div.absolute {
+  bottom: 0 !important;
+  top: initial !important;
+}
+
+@media (max-width: 639px) {
+  .isBoxMain {
+    display: flex;
+    flex-flow: wrap;
+    justify-content: space-between;
+  }
+  .isBox2 {
+    width: 48%;
+    display: flex;
+    margin-bottom: 4px;
+  }
+
+  .isBoxlast {
+    width: 100%;
+  }
+
+  .boxSpotLeft i {
+    display: none;
+  }
+}

@@ -1,0 +1,414 @@
+nav::-webkit-scrollbar {
+  visibility: hidden;
+  width: 0px;
+  display: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+
+
+
+/************* new css ************/
+
+
+
+.boxSpotLeft {
+
+
+  padding: 5px;
+  text-align: center;
+  border-right: 3px double #fff;
+
+  border-left: 1px solid #fff;
+  border-top: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+  border-radius: 5px 0px 0 5px;
+  background: radial-gradient(circle, rgb(255, 255, 255) 2%, rgb(247, 247, 247) 49%, rgb(240, 240, 240) 100%);
+  line-height: 16px;
+}
+
+
+.boxSpotLeft h5 {
+  line-height: 17px;
+}
+
+.boxSpotLeft p {
+
+  line-height: 17px;
+}
+
+.isBox {
+  min-height: 92px;
+}
+
+
+.redColor svg {
+  background: #FFF0F0;
+  color: #F67B5C;
+
+}
+
+.greenColor svg {
+  color: #14ca7d !important;
+  background: #defbe7 !important;
+}
+
+.yellowColor svg {
+  background: #FFF9EA;
+  color: #F9BF38;
+
+}
+
+
+
+
+.w-200 {
+  width: 220px;
+}
+
+button[data-headlessui-state="open"] {
+  border-color: #f0b646;
+  /* Blue */
+  color: #f0b646;
+}
+
+.firstTable.hideTable .tablelist {
+  display: none;
+}
+
+
+.hideTable {
+  display: none;
+}
+
+.Ndropdown div.absolute.z-30 {
+  left: initial !important;
+  right: 48px !important;
+  top: 0 !important;
+}
+
+
+
+.tablelist tbody tr:last-child td:last-child .Ndropdown div.absolute {
+  bottom: 0 !important;
+  top: initial !important;
+}
+
+
+
+.btnTheme {
+  background: #f4b900;
+  border: none;
+}
+
+
+
+/************* Start button  ***************/
+.gradientBtn {
+  background: rgb(251, 185, 39);
+  background: linear-gradient(90deg, #EFB847 2%, #F7C55E 100%);
+  box-shadow: 0 0 7px #d0ab39;
+  border: 1px solid #fb8d1e;
+}
+
+.gradientBtn:hover {
+  background: linear-gradient(90deg, rgb(107, 107, 108) 2%, rgb(118, 118, 123) 100%);
+  color: #fff;
+  border-color: #282828 !important;
+  box-shadow: 0 0 7px #afb5bb;
+}
+
+.gradientBtn:hover i {
+  background: #ffc244 !important;
+  color: #fff !important;
+}
+
+.gradientBtn:hover i svg {
+  color: #fff;
+}
+
+
+
+/************* END button  ***************/
+
+
+/************* START credit Limit Approval ***************/
+
+
+.creditbox label {
+  margin-bottom: 2px !important;
+}
+
+
+.creditbox input[type="file"]::file-selector-button {
+
+  background: #FDBE44 !important;
+
+}
+
+.creditbox textarea {
+  border-radius: 5px;
+  border-color: #dfe4ea !important;
+  box-shadow: 0 1px 2px #f1f5f9;
+}
+
+.btnTheme:hover {
+  background: #343435 !important;
+}
+
+.btnplus svg:hover {
+  background: #303030 !important;
+}
+
+/************* END credit Limit Approval ***************/
+
+
+.yellowBtn {
+  background: #EFB847 !important;
+}
+
+.yellowBtn:hover {
+  background: #777779 !important;
+  border-color: #777779 !important;
+}
+
+
+
+/*************START  buy selling form   ***************/
+
+
+
+
+
+.customeTab [data-headlessui-state="selected"] button {
+  background-color: #ffc74c !important;
+  color: white;
+  border-color: #ce9211 !important;
+
+}
+
+.customeTab button:hover {
+  background-color: #ffc74c !important;
+  color: white;
+  border-color: #ce9211 !important;
+
+}
+
+.customeTab li {
+  display: inline-block !important;
+  flex: initial !important;
+  margin: 0 9px 0 0;
+}
+
+
+
+.buyTable select {
+  padding-right: 19px !important;
+  background-position: right 0.5rem center !important;
+  background-size: 8px !important;
+  font-size: 12px !important;
+}
+
+
+.buyTable select {
+
+  font-size: 12px !important;
+}
+
+.buyTable td {
+  font-size: 13px !important;
+  padding: 5px !important;
+}
+
+.buyTable th {
+  font-size: 13px !important;
+  padding: 5px !important;
+}
+
+
+.deletee {
+  animation: blinker 1.5s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    color: brown;
+  }
+
+  100% {
+    color: #ffb108;
+  }
+}
+
+.buyTable .overflow-x-auto {
+  padding-bottom: 11px !important;
+}
+
+
+
+.weightCalutor {
+  border: 1px solid #CBD7EC;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.weightCalutor th {
+  background: #F1F6FF;
+  color: #000;
+  font-weight: normal;
+  border-bottom: 1px solid #cdddfb;
+  border-right: 1px solid #cdddfb;
+}
+
+.weightCalutor th:last-child {
+  border-right: none;
+}
+
+
+
+
+
+
+
+
+.bluncecalculator {
+
+  animation-duration: 4s;
+  animation-iteration-count: infinite;
+
+}
+
+.bluncecalculator {
+  animation-name: bounce-1;
+  animation-timing-function: linear;
+}
+
+@keyframes bounce-1 {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.isSearch input:focus {
+  box-shadow: none !important;
+  border: 1px solid #dbdbdb;
+
+}
+
+
+/*
+ 
+ .isSearch label {
+     margin-bottom: 0px !important;
+ }
+ 
+ 
+ 
+ 
+ 
+ .fullWidth {
+     width: 100% !important;
+     background: #fff !important;
+ }
+ .fullWidth .hidden {
+     display: initial !important;
+ }
+ 
+ .isSearch {
+     width: 161px;
+     background: #ffc954;
+ }*/
+
+
+
+
+.btnEdit {
+  display: inline-block;
+  padding: 1px 7px 2px 5px;
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: bold;
+  border-radius: 5px;
+  width: auto;
+  color: #fff;
+}
+
+.btnEdit img {
+  width: 15px;
+  margin: -3px 3px 0 0;
+  display: inline-block;
+  filter: invert(2);
+  -webkit-filter: invert(2);
+  -moz-filter: invert(2);
+}
+
+.customerTable th,
+.customerTable td {
+  padding: 5px 7px;
+}
+
+
+
+/************* END  buy selling form ***************/
+
+@media (max-width:991px) {
+
+  .fullWidth .responiveTittle b {
+    font-size: 14px !important;
+  }
+
+  .fullWidth .responiveTittle small {
+    font-size: 12px !important;
+    white-space: normal !important;
+
+  }
+
+}
+
+
+@media (max-width:639px) {
+
+
+
+
+
+
+  .isBoxMain {
+    display: flex;
+    flex-flow: wrap;
+    justify-content: space-between;
+  }
+
+  .isBox2 {
+    width: 48%;
+    display: flex;
+    margin-bottom: 4px;
+  }
+
+  .isBoxlast {
+    width: 100%;
+  }
+
+  .boxSpotLeft i {
+    display: none;
+  }
+
+
+
+}

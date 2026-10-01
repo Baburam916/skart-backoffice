@@ -1,0 +1,203 @@
+
+
+/*******************START  chat *********/
+
+
+
+
+
+
+.tabmessage {
+  background:#f0f0f0;
+  display:inline-flex;
+  padding:9px 22px;
+  font-size:15px;
+  width:100%;
+  font-family:Roboto,serif;
+  justify-content:center;
+  border:1px solid #e1e1e1;
+  font-weight:700;
+  text-transform:uppercase;
+  cursor:pointer
+}
+.tabheader {
+  display:flex
+}
+.chatMain .ant-drawer-body {
+  margin:0;
+  padding:0!important
+}
+.tabmessage.active {
+  background:#ffaf00!important;
+  border-color:#ffaf00!important
+}
+.chatMain .ant-drawer-header {
+  border:none!important
+}
+/**
+.Messageunread .messageuserTypetext p {
+  font-weight:700
+}
+.Messageunread .messageuserTypetext {
+  background:#fdf9f1
+}
+**/
+.rightSideMessage .messageuserTypetext {
+	background: #ffefcb;
+	border-color: #ffde95;
+}
+.messageType {
+  padding:10px 7px 10px 10px!important
+}
+.messageTypebottom {
+  background:#fdfdfd;
+  padding:9px;
+  border-top:1px solid #ccc;
+  position:absolute;
+  bottom:0;
+  right:0;
+  width:378px
+}
+.messageScroll {
+  overflow-y:scroll;
+  height:100%;
+  padding-bottom:30px;
+  padding-right:15px
+}
+.chatMain {
+  position:relative
+}
+.messagetextareafield {
+  width:100%;
+  background:#fff;
+  height:40px;
+  border-radius:6px;
+  padding:6px;
+  border:1px solid #ccc
+}
+.attachfile {
+  width:30px;
+  background:#f0f0f0;
+  height:30px;
+  display:inline-block;
+  border-radius:50%;
+  margin:0 8px 0 0
+}
+.sendmessage {
+	width: 31px;
+	background: #ffaf00;
+	height: 31px;
+	display: flex;
+	border-radius: 50%;
+	margin: 0 8px;
+	color: #fff;
+	text-align: center;
+	justify-content: center;
+	align-items: center;
+}
+.sendmessage svg {
+	width: 18px;
+	height: 17px;
+	transform: rotate(40deg);
+	position: relative;
+	left: -2px;
+}
+
+.messagetextarea {
+  width:320px
+}
+.messageTypeTop {
+  height:84vh
+}
+.messageInn {
+  height:100%
+}
+.tab-content {
+  height:95%
+}
+.sendmessage:hover {
+  background:#303030
+}
+.attachfile:hover {
+  background:#14867b;
+  color:#fff
+}
+.messageuserTypetext {
+  background:#f2f2f2;
+  padding:9px;
+  border:1px solid #ececec;
+  border-radius:6px
+}
+.messageuserType {
+  width:229px;
+  margin:0 0 16px
+}
+.messageuserTypetext p {
+  font-size:13px;
+  line-height:18px;
+  margin:0
+}
+.messageuserType h6 {
+  font-size:12px;
+  color:#8c8c8c
+}
+.rightSideMessage {
+  display:flex;
+  justify-content:end
+}
+.tabmessage:hover {
+  background:#ffaf00!important
+}
+.PFname {
+  background:#cee8e5;
+  padding:12px;
+  margin:0 0 10px;
+  border-radius:6px
+}
+.chatMain,
+.chatMain .ant-drawer-body {
+  overflow:initial!important
+}
+.backchat {
+  display:flex;
+  align-items:center;
+  background:#d4f0ee;
+  padding:5px 13px;
+  margin:0 0 20px;
+  border-radius:5px;
+  cursor:pointer
+}
+.backchat h4 {
+  font-weight:700;
+  margin:0 0 0 10px
+}
+.privateTiottle {
+  position:absolute;
+  top:15px;
+  background:#fff;
+  right:-10px;
+  display:flex;
+  justify-content:space-between;
+  width:90%;
+  padding:0 20px
+}
+.tab {
+  position:relative
+}
+
+
+.chatbox {
+	width: 380px !important;
+}
+
+@media (max-width:767px) {
+
+.chatbox {width: 313px!important;}
+.messageTypebottom {width: 312px;}
+.sendmessage {width: 38px;}
+
+}
+
+
+
+
