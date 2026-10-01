@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+﻿import React, { useEffect, useRef, useState } from "react";
 
 import {
   FolderOpen,
@@ -11,7 +11,19 @@ import {
   RefreshCcw,
   Download,
   XCircle,
+  Briefcase,
+  Wallet,
+  Loader,
+  MessageCircle,
+  Box,
+  MapPin,
+  ChevronRight,
+  User,
+  Calendar,
+  Bookmark,
+  Scroll,
 } from "lucide-react";
+
 import {
   FormCheck,
   FormInput,
@@ -161,10 +173,16 @@ export const IsDashboard = () => {
     "Destination",
     "Chargeable Weight",
   ]);
-  const [counter, setCounter] = useState<any>(0)
+  const [counter, setCounter] = useState<any>(0);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const [enquiryModal, setEnquiryModal] = useState<boolean>(false);
+  const [viewCardModal, setViewCardModal] = useState<boolean>(false);
+  const [viewApprovedModal, setViewApprovedModal] = useState<boolean>(false);
+  const [ViewInsufficientModal, setViewInsufficientModal] =
+    useState<boolean>(false);
+
+  const [selectedCardData, setSelectedCardData] = useState<any>(null);
   const [productTypes, setProductTypes] = useState([]);
   const [editdata, setEditData] = useState<any>(inteditdata);
   const [datatoget, setDatatoget] = useState<any>(intdata);
@@ -231,7 +249,9 @@ export const IsDashboard = () => {
     },
   ]);
   const [saveLoading, setSaveLoading] = useState(false);
-  const [shipperInvoiceFile, setShipperInvoiceFile] = useState<File | null>(null);
+  const [shipperInvoiceFile, setShipperInvoiceFile] = useState<File | null>(
+    null,
+  );
   const [shipperInvoiceUrl, setShipperInvoiceUrl] = useState<string>("");
   const [shipperInvoiceUploading, setShipperInvoiceUploading] = useState(false);
   const [bookingLoading, setBookingLoading] = useState({
@@ -286,14 +306,12 @@ export const IsDashboard = () => {
             Number(item?.breadth) *
             Number(item?.length) *
             Number(item?.quantity)) /
-          5000,
+            5000,
         )
       );
     }, 0);
     return Number((total || 0).toFixed(3));
   };
-
-
 
   const bookingStatusColorMap: Record<number, string> = {
     1: "text-green-400",
@@ -477,9 +495,9 @@ export const IsDashboard = () => {
     setHasUpdated(false);
     setExposureData([]);
     setEmailModal(false);
-    setCounter(0)
+    setCounter(0);
     setForwhat("");
-    setCounter(0)
+    setCounter(0);
     // data.setShowForm(true);
     setEditData(inteditdata);
     // getData(hit);
@@ -682,23 +700,28 @@ export const IsDashboard = () => {
   }, []);
 
   // real-time: refetch when any booking status changes from pricing or any other source
-  useServiceSocket("booking", "booking_status_changed", () => {
-    if (!enquiryModal) {
-      gettopdata();
-      getspotenqdata(1, [0, 16]);
-      getspotenqdata(2, 0);
-      getspotenqdata(3, [1, 3, 7, 8, 9, 10]);
-      getspotenqdata(4, [14]);
-    }
-  }, () => {
-    if (!enquiryModal) {
-      gettopdata();
-      getspotenqdata(1, [0, 16]);
-      getspotenqdata(2, 0);
-      getspotenqdata(3, [1, 3, 7, 8, 9, 10]);
-      getspotenqdata(4, [14]);
-    }
-  });
+  useServiceSocket(
+    "booking",
+    "booking_status_changed",
+    () => {
+      if (!enquiryModal) {
+        gettopdata();
+        getspotenqdata(1, [0, 16]);
+        getspotenqdata(2, 0);
+        getspotenqdata(3, [1, 3, 7, 8, 9, 10]);
+        getspotenqdata(4, [14]);
+      }
+    },
+    () => {
+      if (!enquiryModal) {
+        gettopdata();
+        getspotenqdata(1, [0, 16]);
+        getspotenqdata(2, 0);
+        getspotenqdata(3, [1, 3, 7, 8, 9, 10]);
+        getspotenqdata(4, [14]);
+      }
+    },
+  );
 
   useEffect(() => {
     gettopdata();
@@ -751,11 +774,14 @@ export const IsDashboard = () => {
           obj1.franchisee_id = f;
         }
         const response = await commonpostrequest(
-          `booking/get_spot_enquiry?sales_id=${userdata?.mapped_id
-          }&limit=5&page=${datatoget.page1 - 1}${debouncedSearch ? `&key=${debouncedSearch.trim()}` : ""
-          }${inputs?.weight ? `&weight=${inputs.weight}` : ""}${inputs?.dest_country_id
-            ? `&dest_country_id=${inputs?.dest_country_id}`
-            : ""
+          `booking/get_spot_enquiry?sales_id=${
+            userdata?.mapped_id
+          }&limit=4&page=${datatoget.page1 - 1}${
+            debouncedSearch ? `&key=${debouncedSearch.trim()}` : ""
+          }${inputs?.weight ? `&weight=${inputs.weight}` : ""}${
+            inputs?.dest_country_id
+              ? `&dest_country_id=${inputs?.dest_country_id}`
+              : ""
           }`,
           obj1,
         );
@@ -777,14 +803,18 @@ export const IsDashboard = () => {
       }
       if (value == 2) {
         const response = await commongetrequest(
-          `booking/job-list?status=${ids || 0}${debouncedSearch2 ? `&key=${debouncedSearch2.trim()}` : ""
-          }&sales_id=${userdata?.mapped_id}&limit=5&page=${(datatoget.page2 - 1) * 5
-          }${inputs?.weight ? `&weight=${inputs.weight}` : ""}${inputs?.dest_country_id
-            ? `&destination_country=${inputs?.dest_country_id}`
-            : ""
-          }${inputs?.franchisee_id && inputs?.franchisee_id?.length >= 1
-            ? `&franchisee_id=${inputs?.franchisee_id[0]}`
-            : ""
+          `booking/job-list?status=${ids || 0}${
+            debouncedSearch2 ? `&key=${debouncedSearch2.trim()}` : ""
+          }&sales_id=${userdata?.mapped_id}&limit=4&page=${
+            (datatoget.page2 - 1) * 5
+          }${inputs?.weight ? `&weight=${inputs.weight}` : ""}${
+            inputs?.dest_country_id
+              ? `&destination_country=${inputs?.dest_country_id}`
+              : ""
+          }${
+            inputs?.franchisee_id && inputs?.franchisee_id?.length >= 1
+              ? `&franchisee_id=${inputs?.franchisee_id[0]}`
+              : ""
           }`,
         );
         if (response?.status == 200) {
@@ -809,11 +839,14 @@ export const IsDashboard = () => {
           obj3.franchisee_id = f;
         }
         const response = await commonpostrequest(
-          `booking/get_spot_enquiry?sales_id=${userdata?.mapped_id
-          }&limit=5&page=${datatoget.page3 - 1}${debouncedSearch3 ? `&key=${debouncedSearch3.trim()}` : ""
-          }${inputs?.weight ? `&weight=${inputs.weight}` : ""}${inputs?.dest_country_id
-            ? `&dest_country_id=${inputs?.dest_country_id}`
-            : ""
+          `booking/get_spot_enquiry?sales_id=${
+            userdata?.mapped_id
+          }&limit=4&page=${datatoget.page3 - 1}${
+            debouncedSearch3 ? `&key=${debouncedSearch3.trim()}` : ""
+          }${inputs?.weight ? `&weight=${inputs.weight}` : ""}${
+            inputs?.dest_country_id
+              ? `&dest_country_id=${inputs?.dest_country_id}`
+              : ""
           }`,
           obj3,
         );
@@ -839,11 +872,14 @@ export const IsDashboard = () => {
           obj4.franchisee_id = f;
         }
         const response = await commonpostrequest(
-          `booking/get_spot_enquiry?sales_id=${userdata?.mapped_id
-          }&limit=5&page=${datatoget.page4 - 1}${debouncedSearch4 ? `&key=${debouncedSearch4.trim()}` : ""
-          }${inputs?.weight ? `&weight=${inputs.weight}` : ""}${inputs?.dest_country_id
-            ? `&dest_country_id=${inputs?.dest_country_id}`
-            : ""
+          `booking/get_spot_enquiry?sales_id=${
+            userdata?.mapped_id
+          }&limit=4&page=${datatoget.page4 - 1}${
+            debouncedSearch4 ? `&key=${debouncedSearch4.trim()}` : ""
+          }${inputs?.weight ? `&weight=${inputs.weight}` : ""}${
+            inputs?.dest_country_id
+              ? `&dest_country_id=${inputs?.dest_country_id}`
+              : ""
           }`,
           obj4,
         );
@@ -992,7 +1028,7 @@ export const IsDashboard = () => {
                   (+item?.breadth || 0) *
                   (+item?.height || 0) *
                   (+item?.quantity || 0)) /
-                data[0]?.denom_fac,
+                  data[0]?.denom_fac,
                 +item?.weight || 0,
               ),
             0,
@@ -1009,7 +1045,7 @@ export const IsDashboard = () => {
                 (+item?.breadth || 0) *
                 (+item?.height || 0) *
                 (+item?.quantity || 0)) /
-              data[0]?.denom_fac,
+                data[0]?.denom_fac,
             0,
           );
           chargeable_weight = Math.max(gross_w, vol_w);
@@ -1292,7 +1328,10 @@ export const IsDashboard = () => {
     try {
       const formData = new FormData();
       formData.append("shipper_invoice", file);
-      const response = await commonpostrequest("book/upload_shipper_invoice", formData);
+      const response = await commonpostrequest(
+        "book/upload_shipper_invoice",
+        formData,
+      );
       if (response?.data?.status == 200) {
         setShipperInvoiceUrl(response.data?.shipper_url || "");
         showAlert("Shipper invoice uploaded successfully");
@@ -1300,7 +1339,9 @@ export const IsDashboard = () => {
         setShipperInvoiceFile(null);
         setShipperInvoiceUrl("");
         showAlert(
-          response?.data?.message || response?.response?.data?.message || "Upload failed",
+          response?.data?.message ||
+            response?.response?.data?.message ||
+            "Upload failed",
           "error",
         );
       }
@@ -1393,7 +1434,11 @@ export const IsDashboard = () => {
     }
   };
 
-  const handleBooking = async (job_id: any, is_draft: any = 1, self: any = 0) => {
+  const handleBooking = async (
+    job_id: any,
+    is_draft: any = 1,
+    self: any = 0,
+  ) => {
     if (!job_id) return showAlert("Job Id is required", "warning");
     setBookingLoading({ status: true, forWhat: is_draft });
     try {
@@ -1408,24 +1453,25 @@ export const IsDashboard = () => {
       if (res?.status == 200) {
         handleCancel(1);
         setOpenImport(false);
-        setCounter(0)
+        setCounter(0);
         showAlert(res?.data?.message);
         setCounter(0);
         setShipperInvoiceFile(null);
         setShipperInvoiceUrl("");
-        if (shipperInvoiceInputRef.current) shipperInvoiceInputRef.current.value = "";
+        if (shipperInvoiceInputRef.current)
+          shipperInvoiceInputRef.current.value = "";
       } else if (res?.status == 400) {
         showAlert(
           res?.data?.message || res?.response?.data?.message || res?.message,
           "error",
         );
-        setCounter(counter + 1)
+        setCounter(counter + 1);
       } else {
         showAlert(
           res?.data?.message || res?.response?.data?.message || res?.message,
           "error",
         );
-        setCounter(counter + 1)
+        setCounter(counter + 1);
       }
     } catch (error) {
       if (error) showAlert("something went wrong", "error");
@@ -1468,7 +1514,8 @@ export const IsDashboard = () => {
   };
 
   const handleBook = async () => {
-    if (!editBookingData?.job_id) return showAlert("Job id is required", "warning");
+    if (!editBookingData?.job_id)
+      return showAlert("Job id is required", "warning");
     const chWeight = getChargeableWeight(dimensionData);
     setBookSpinner(true);
     const weightFrom = Number(editBookingData?.weight_from);
@@ -1483,21 +1530,29 @@ export const IsDashboard = () => {
     try {
       let res;
       if (isInWeightRange) {
-        res = await commonpostrequest(`booking/generate-booking/${editBookingData?.job_id}`, {
-          counter: counter || 0,
-          airwaybill_no: editBookingData?.airwaybilno,
-          flag: "edit_booking",
-        });
+        res = await commonpostrequest(
+          `booking/generate-booking/${editBookingData?.job_id}`,
+          {
+            counter: counter || 0,
+            airwaybill_no: editBookingData?.airwaybilno,
+            flag: "edit_booking",
+          },
+        );
       } else {
         res = await commonpostrequest(`/raise_spot_enquiry`, {
           ...editBookingData,
-          booking_status: 7, weight: chWeight, chargeable_weight: chWeight
+          booking_status: 7,
+          weight: chWeight,
+          chargeable_weight: chWeight,
         });
       }
       if (res?.status == 200) {
         handleCancel(1);
         if (!isInWeightRange) {
-          showAlert("Shipment is out of weight range, send to Pricing for Approval", "warning");
+          showAlert(
+            "Shipment is out of weight range, send to Pricing for Approval",
+            "warning",
+          );
         } else {
           showAlert(res?.data?.message);
         }
@@ -1517,7 +1572,37 @@ export const IsDashboard = () => {
   };
 
   const handleEditDetails = async () => {
+    if (!editBookingData?.commodity)
+      return showAlert("Commodity is required", "warning");
+    if (!editBookingData?.incoterm)
+      return showAlert("Incoterm is required", "warning");
+    if (
+      (editBookingData?.shipment_type == 4 ||
+        editBookingData?.shipment_type == 5) &&
+      !editBookingData?.clearence_type
+    )
+      return showAlert("Clearance Type is required", "warning");
+    if (
+      (editBookingData?.shipment_type == 4 ||
+        editBookingData?.shipment_type == 5) &&
+      editBookingData?.import_booking == 2 &&
+      !editBookingData?.import_service_type
+    )
+      return showAlert("Import Service Type is required", "warning");
+    if (
+      (editBookingData?.shipment_type == 4 ||
+        editBookingData?.shipment_type == 5) &&
+      !editBookingData?.currency_id
+    )
+      return showAlert("Currency is required", "warning");
+    if (!dimensionData?.length)
+      return showAlert(
+        "At least one shipment dimension is required",
+        "warning",
+      );
+
     const chWeight = getChargeableWeight(dimensionData);
+
     setEditSpinner(true);
     try {
       const res = await commonpostrequest("booking/update-job", {
@@ -1539,14 +1624,17 @@ export const IsDashboard = () => {
       } else if (res?.response?.status == 406) {
         showAlert(res?.response?.data?.errors[0]?.msg, "warning");
       } else {
-        showAlert(res?.data?.message || res?.response?.data?.message || res?.message, "error");
+        showAlert(
+          res?.data?.message || res?.response?.data?.message || res?.message,
+          "error",
+        );
       }
     } catch (error: any) {
       showAlert(error?.message || error?.msg, "error");
     } finally {
       setEditSpinner(false);
     }
-  }
+  };
 
   const ImportDescription = (
     <>
@@ -1559,10 +1647,11 @@ export const IsDashboard = () => {
           <div className="flex gap-2 ">
             <div className="text-center p-1 border-2 h-auto  sm:h-14 w-full  sm:w-10 rounded flex flex-col items-center">
               <img
-                src={`https://flagsapi.com/${importData?.origin_country_code
-                  ? importData?.origin_country_code
-                  : "IN"
-                  }/flat/32.png`}
+                src={`https://flagsapi.com/${
+                  importData?.origin_country_code
+                    ? importData?.origin_country_code
+                    : "IN"
+                }/flat/32.png`}
                 alt="origin-flag"
               />
               <span className="text-sm block sm:hidden">
@@ -1777,17 +1866,20 @@ export const IsDashboard = () => {
                 SHIPMENT CURRENCY
                 {/* Shipment Currency */}
               </FormLabel>
-              <FormSelect value={importData?.currency_id || "24"} onChange={(e) => {
-                setImportData((prev: any) => ({
-                  ...prev,
-                  currency_id: Number(e.target.value) || "",
-                }));
-              }}>
+              <FormSelect
+                value={importData?.currency_id || "24"}
+                onChange={(e) => {
+                  setImportData((prev: any) => ({
+                    ...prev,
+                    currency_id: Number(e.target.value) || "",
+                  }));
+                }}
+              >
                 <option value="">Select</option>
                 {currencydata?.length >= 1
                   ? currencydata?.map((item: any) => (
-                    <option value={item?.id}>{item?.currency}</option>
-                  ))
+                      <option value={item?.id}>{item?.currency}</option>
+                    ))
                   : ""}
               </FormSelect>
             </div>
@@ -1816,68 +1908,68 @@ export const IsDashboard = () => {
             </div>
             {(importData?.shipment_type == 4 ||
               importData?.shipment_type == 5) && (
-                <>
-                  <div className="col-span-3 md:col-span-3 lg:col-span-1">
-                    <FormLabel
-                      htmlFor="clearence-type"
-                      className="text-base text-slate-500"
-                    >
-                      CLEARANCE TYPE <span className="text-red-400">*</span>
-                    </FormLabel>
+              <>
+                <div className="col-span-3 md:col-span-3 lg:col-span-1">
+                  <FormLabel
+                    htmlFor="clearence-type"
+                    className="text-base text-slate-500"
+                  >
+                    CLEARANCE TYPE <span className="text-red-400">*</span>
+                  </FormLabel>
 
-                    <FormSelect
-                      className={`sm:mr-2`}
-                      disabled
-                      value={importData?.clearence_type}
-                    >
-                      <option value="">Select Clearance Type</option>
-                      {clearanceType &&
-                        clearanceType?.map((ele, index) => (
-                          <option key={index} value={ele?.id}>
-                            {ele?.name}
-                          </option>
-                        ))}
-                    </FormSelect>
-                  </div>
+                  <FormSelect
+                    className={`sm:mr-2`}
+                    disabled
+                    value={importData?.clearence_type}
+                  >
+                    <option value="">Select Clearance Type</option>
+                    {clearanceType &&
+                      clearanceType?.map((ele, index) => (
+                        <option key={index} value={ele?.id}>
+                          {ele?.name}
+                        </option>
+                      ))}
+                  </FormSelect>
+                </div>
 
-                  <div className="col-span-3 md:col-span-3 lg:col-span-1">
-                    {" "}
-                    <FormLabel className="text-base text-slate-500">
-                      VENDOR NAME <span className="text-red-400">*</span>
-                      {/* Shipment Currency */}
-                    </FormLabel>
-                    <FormSelect disabled value={importData?.courier_id}>
-                      {/* <option value="">Select</option> */}
-                      {products?.length >= 1
-                        ? products?.map((item: any) => (
+                <div className="col-span-3 md:col-span-3 lg:col-span-1">
+                  {" "}
+                  <FormLabel className="text-base text-slate-500">
+                    VENDOR NAME <span className="text-red-400">*</span>
+                    {/* Shipment Currency */}
+                  </FormLabel>
+                  <FormSelect disabled value={importData?.courier_id}>
+                    {/* <option value="">Select</option> */}
+                    {products?.length >= 1
+                      ? products?.map((item: any) => (
                           <option value={item?.product_id}>
                             {item?.product_name}
                           </option>
                         ))
-                        : ""}
+                      : ""}
+                  </FormSelect>
+                </div>
+
+                {importData?.import_booking == 2 ? (
+                  <div className="col-span-3 md:col-span-3 lg:col-span-1">
+                    {" "}
+                    <FormLabel className="text-base text-slate-500">
+                      IMPORT SERVICE TYPE{" "}
+                      <span className="text-red-400">*</span>
+                    </FormLabel>
+                    <FormSelect
+                      disabled
+                      value={importData?.import_service_type}
+                    >
+                      {/* <option value="">Select</option> */}
+                      <option value="">Select</option>
+                      <option value={1}>Economy</option>
+                      <option value={2}>Express (IP)</option>
                     </FormSelect>
                   </div>
-
-                  {importData?.import_booking == 2 ? (
-                    <div className="col-span-3 md:col-span-3 lg:col-span-1">
-                      {" "}
-                      <FormLabel className="text-base text-slate-500">
-                        IMPORT SERVICE TYPE{" "}
-                        <span className="text-red-400">*</span>
-                      </FormLabel>
-                      <FormSelect
-                        disabled
-                        value={importData?.import_service_type}
-                      >
-                        {/* <option value="">Select</option> */}
-                        <option value="">Select</option>
-                        <option value={1}>Economy</option>
-                        <option value={2}>Express (IP)</option>
-                      </FormSelect>
-                    </div>
-                  ) : null}
-                </>
-              )}
+                ) : null}
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -1904,9 +1996,9 @@ export const IsDashboard = () => {
       </div>
 
       {importData?.booking_status == "1" ||
-        importData?.booking_status == "8" ||
-        importData?.booking_status == "9" ||
-        importData?.booking_status == "10" ? (
+      importData?.booking_status == "8" ||
+      importData?.booking_status == "9" ||
+      importData?.booking_status == "10" ? (
         <div className="col-span-12 p-2">
           <FormLabel className="block font-semibold text-sm mb-1">
             Shipper Invoice
@@ -1917,7 +2009,9 @@ export const IsDashboard = () => {
                 File
               </span>
               <span className="px-3 py-1.5 text-sm text-gray-500 bg-white">
-                {shipperInvoiceFile ? shipperInvoiceFile.name : "No file chosen"}
+                {shipperInvoiceFile
+                  ? shipperInvoiceFile.name
+                  : "No file chosen"}
               </span>
               <input
                 ref={shipperInvoiceInputRef}
@@ -1926,14 +2020,17 @@ export const IsDashboard = () => {
                 accept=".pdf,.jpg,.jpeg,.png"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
-                  if (shipperInvoiceInputRef.current) shipperInvoiceInputRef.current.value = "";
+                  if (shipperInvoiceInputRef.current)
+                    shipperInvoiceInputRef.current.value = "";
                   if (file) handleShipperInvoiceUpload(file);
                 }}
               />
             </label>
             {shipperInvoiceUploading && <Spinner size="sm" />}
             {shipperInvoiceUrl && !shipperInvoiceUploading && (
-              <span className="text-green-600 text-xs font-medium">Uploaded</span>
+              <span className="text-green-600 text-xs font-medium">
+                Uploaded
+              </span>
             )}
             {shipperInvoiceFile && !shipperInvoiceUploading && (
               <button
@@ -1942,7 +2039,8 @@ export const IsDashboard = () => {
                 onClick={() => {
                   setShipperInvoiceFile(null);
                   setShipperInvoiceUrl("");
-                  if (shipperInvoiceInputRef.current) shipperInvoiceInputRef.current.value = "";
+                  if (shipperInvoiceInputRef.current)
+                    shipperInvoiceInputRef.current.value = "";
                 }}
               >
                 <X className="w-4 h-4" />
@@ -1975,7 +2073,13 @@ export const IsDashboard = () => {
               isEdit={true}
               booking={jobData}
               setJobData={setJobData}
-              enquiryData={{ ...importData, courier_name: products?.find((item: any) => item?.product_id == importData?.courier_id)?.product_name || "N.A." }}
+              enquiryData={{
+                ...importData,
+                courier_name:
+                  products?.find(
+                    (item: any) => item?.product_id == importData?.courier_id,
+                  )?.product_name || "N.A.",
+              }}
               countryData={countryData || []}
             />
           )}
@@ -2050,16 +2154,16 @@ export const IsDashboard = () => {
         className="text-white bg-gray-500 p-2"
         onClick={() => {
           setOpenImport(false);
-          setCounter(0)
+          setCounter(0);
         }}
       >
         CLOSE
       </Button>
       {importData?.booking_status == "1" ||
-        importData?.booking_status == "8" ||
-        importData?.booking_status == "9" ||
-        importData?.booking_status == "10" ||
-        importData?.booking_status == "19" ? (
+      importData?.booking_status == "8" ||
+      importData?.booking_status == "9" ||
+      importData?.booking_status == "10" ||
+      importData?.booking_status == "19" ? (
         <Button
           className="text-white bg-mustard p-2 ml-4"
           onClick={() => {
@@ -2107,124 +2211,132 @@ export const IsDashboard = () => {
             disabled={bookingLoading?.status || selfSpinner}
           >
             FINAL BOOKING
-            {bookingLoading?.status && bookingLoading?.forWhat == 0 && !selfSpinner && (
-              <LoadingIcon
-                icon="puff"
-                color="white"
-                className="w-5 h-5 ml-2 stroke-2.5 text-white"
-              />
-            )}
+            {bookingLoading?.status &&
+              bookingLoading?.forWhat == 0 &&
+              !selfSpinner && (
+                <LoadingIcon
+                  icon="puff"
+                  color="white"
+                  className="w-5 h-5 ml-2 stroke-2.5 text-white"
+                />
+              )}
           </Button>
-          {showBtn && (<Button
-            className="text-white bg-mustard p-2 ml-4"
-            onClick={() => { handleBooking(importData?.job_id, 0, 1), setSelfSpinner(true) }}
-            disabled={bookingLoading?.status || selfSpinner}
-          >
-            GENERATE SKART LABEL
-            {selfSpinner && (
-              <LoadingIcon
-                icon="puff"
-                color="white"
-                className="w-5 h-5 ml-2 stroke-2.5 text-white"
-              />
-            )}
-          </Button>)}
+          {showBtn && (
+            <Button
+              className="text-white bg-mustard p-2 ml-4"
+              onClick={() => {
+                (handleBooking(importData?.job_id, 0, 1), setSelfSpinner(true));
+              }}
+              disabled={bookingLoading?.status || selfSpinner}
+            >
+              GENERATE SKART LABEL
+              {selfSpinner && (
+                <LoadingIcon
+                  icon="puff"
+                  color="white"
+                  className="w-5 h-5 ml-2 stroke-2.5 text-white"
+                />
+              )}
+            </Button>
+          )}
         </>
       )}
     </>
   );
 
-  const EditBookingDescription = (<div className="max-h-[75vh] overflow-y-auto">
-    <div className="box col-span-12   px-4 py-2  intro-x font-medium cursor-pointer text-sm flex flex-row justify-between gap-4 rounded-lg bg-white h-auto">
-      <div>
+  const EditBookingDescription = (
+    <div className="max-h-[75vh] overflow-y-auto">
+      <div className="box col-span-12   px-4 py-2  intro-x font-medium cursor-pointer text-sm flex flex-row justify-between gap-4 rounded-lg bg-white h-auto">
         <div>
-          <span className="mt-2 text-lg font-bold">ORIGIN </span>
-        </div>
+          <div>
+            <span className="mt-2 text-lg font-bold">ORIGIN </span>
+          </div>
 
-        <div className="flex gap-2 ">
-          <div className="text-center p-1 border-2 h-auto  sm:h-14 w-full  sm:w-10 rounded flex flex-col items-center">
-            <img
-              src={`https://flagsapi.com/${editBookingData?.origin_country_code
-                ? editBookingData?.origin_country_code
-                : "IN"
+          <div className="flex gap-2 ">
+            <div className="text-center p-1 border-2 h-auto  sm:h-14 w-full  sm:w-10 rounded flex flex-col items-center">
+              <img
+                src={`https://flagsapi.com/${
+                  editBookingData?.origin_country_code
+                    ? editBookingData?.origin_country_code
+                    : "IN"
                 }/flat/32.png`}
-              alt="origin-flag"
-            />
-            <span className="text-sm block sm:hidden">
-              {" "}
-              {editBookingData?.org_zip}
-            </span>
-            <span className="text-sm">
-              (
-              {editBookingData?.origin_country_code
-                ? editBookingData?.origin_country_code
-                : "IN"}
-              )
-            </span>
-          </div>
-          <div className=" p-1 pt-2 h-14 min-w-28 border-2 rounded hidden sm:flex flex-col  justify-center">
-            <h1 className="font-medium text-lg whitespace-nowrap overflow-hidden overflow-ellipsis">
-              {countryData?.find(
-                (item: any) =>
-                  item?.country_code == editBookingData?.origin_country_code,
-              )?.country_name || "INDIA"}
-            </h1>
-            <p className="whitespace-nowrap overflow-hidden overflow-ellipsis">
-              ( {editBookingData?.org_zip})
-            </p>
+                alt="origin-flag"
+              />
+              <span className="text-sm block sm:hidden">
+                {" "}
+                {editBookingData?.org_zip}
+              </span>
+              <span className="text-sm">
+                (
+                {editBookingData?.origin_country_code
+                  ? editBookingData?.origin_country_code
+                  : "IN"}
+                )
+              </span>
+            </div>
+            <div className=" p-1 pt-2 h-14 min-w-28 border-2 rounded hidden sm:flex flex-col  justify-center">
+              <h1 className="font-medium text-lg whitespace-nowrap overflow-hidden overflow-ellipsis">
+                {countryData?.find(
+                  (item: any) =>
+                    item?.country_code == editBookingData?.origin_country_code,
+                )?.country_name || "INDIA"}
+              </h1>
+              <p className="whitespace-nowrap overflow-hidden overflow-ellipsis">
+                ( {editBookingData?.org_zip})
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className=" mt-11 flex ">
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
-          className="w-5 h-5 opacity-25 hidden lg:block"
-          alt="dot-icon"
-        />
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
-          className="w-5 h-5 opacity-50 hidden lg:block"
-          alt="dot-icon"
-        />
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
-          className="w-5 h-5 opacity-75 hidden lg:block"
-          alt="dot-icon"
-        />
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
-          className="w-5 h-5 hidden lg:block"
-          alt="dot-icon"
-        />
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/61/61212.png"
-          className="w-5 h-5"
-          alt="plane-icon"
-        />
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
-          className="w-5 h-5 hidden lg:block"
-          alt="dot-icon"
-        />
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
-          className="w-5 h-5 opacity-75 hidden lg:block"
-          alt="dot-icon"
-        />
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
-          className="w-5 h-5 opacity-50 hidden lg:block"
-          alt="dot-icon"
-        />
-        <img
-          src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
-          className="w-5 h-5 opacity-25 hidden lg:block"
-          alt="dot-icon"
-        />
-      </div>
+        <div className=" mt-11 flex ">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
+            className="w-5 h-5 opacity-25 hidden lg:block"
+            alt="dot-icon"
+          />
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
+            className="w-5 h-5 opacity-50 hidden lg:block"
+            alt="dot-icon"
+          />
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
+            className="w-5 h-5 opacity-75 hidden lg:block"
+            alt="dot-icon"
+          />
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
+            className="w-5 h-5 hidden lg:block"
+            alt="dot-icon"
+          />
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/61/61212.png"
+            className="w-5 h-5"
+            alt="plane-icon"
+          />
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
+            className="w-5 h-5 hidden lg:block"
+            alt="dot-icon"
+          />
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
+            className="w-5 h-5 opacity-75 hidden lg:block"
+            alt="dot-icon"
+          />
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
+            className="w-5 h-5 opacity-50 hidden lg:block"
+            alt="dot-icon"
+          />
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
+            className="w-5 h-5 opacity-25 hidden lg:block"
+            alt="dot-icon"
+          />
+        </div>
 
-      {/* <div className="flex sm:hidden justify-center">
+        {/* <div className="flex sm:hidden justify-center">
                 <img
                   src="https://cdn-icons-png.flaticon.com/512/61/61212.png"
                   className="w-6 h-6 md:hidden block"
@@ -2232,175 +2344,178 @@ export const IsDashboard = () => {
                 />
               </div> */}
 
-      <div>
         <div>
-          <span className="mt-2 text-lg font-bold">DESTINATION</span>
-        </div>
-
-        <div className="flex gap-2 ">
-          <div className="text-center p-1 border-2 h-auto mx-6 sm:mx-0 sm:h-14 w-full  sm:w-10 rounded flex flex-col items-center">
-            <img
-              src={`https://flagsapi.com/IN/flat/32.png`}
-              alt="destination-flag"
-            />
-            <span className="text-sm block sm:hidden">
-              {editBookingData?.dest_zip == "0000"
-                ? editBookingData?.dest_city
-                : editBookingData?.dest_zip || "0000"}
-            </span>
-            <span className="text-sm">(IN)</span>
+          <div>
+            <span className="mt-2 text-lg font-bold">DESTINATION</span>
           </div>
-          <div className=" p-1 pt-2 min-w-28 h-14 border-2 rounded hidden sm:flex flex-col  justify-center text-wrap">
-            <h1 className="font-medium text-lg whitespace-nowrap overflow-hidden overflow-ellipsis">
-              INDIA
-            </h1>
-            <p className="whitespace-nowrap overflow-hidden overflow-ellipsis">
-              (
-              {editBookingData?.dest_zip == "0000"
-                ? editBookingData?.dest_city
-                : editBookingData?.dest_zip || "0000"}
-              )
-            </p>
+
+          <div className="flex gap-2 ">
+            <div className="text-center p-1 border-2 h-auto mx-6 sm:mx-0 sm:h-14 w-full  sm:w-10 rounded flex flex-col items-center">
+              <img
+                src={`https://flagsapi.com/IN/flat/32.png`}
+                alt="destination-flag"
+              />
+              <span className="text-sm block sm:hidden">
+                {editBookingData?.dest_zip == "0000"
+                  ? editBookingData?.dest_city
+                  : editBookingData?.dest_zip || "0000"}
+              </span>
+              <span className="text-sm">(IN)</span>
+            </div>
+            <div className=" p-1 pt-2 min-w-28 h-14 border-2 rounded hidden sm:flex flex-col  justify-center text-wrap">
+              <h1 className="font-medium text-lg whitespace-nowrap overflow-hidden overflow-ellipsis">
+                INDIA
+              </h1>
+              <p className="whitespace-nowrap overflow-hidden overflow-ellipsis">
+                (
+                {editBookingData?.dest_zip == "0000"
+                  ? editBookingData?.dest_city
+                  : editBookingData?.dest_zip || "0000"}
+                )
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div className="box col-span-12">
-      <div className="space-y-4 px-2 py-1">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ">
-          <div className=" col-span-3 md:col-span-3 lg:col-span-1">
-            <div>
-              <FormLabel className="text-base text-slate-500">
-                FRANCHISEE <span className="text-red-400">*</span>
-              </FormLabel>
-            </div>
-            <FormInput
-              value={
-                getparticulardata(
-                  "franchisee",
-                  editBookingData?.franchisee_id,
-                  allfdata,
-                )?.franchisee_name || ""
-              }
-              disabled
-            />
-          </div>
-          <div className=" col-span-3 md:col-span-3 lg:col-span-1">
-            <FormLabel
-              htmlFor="origin-country"
-              className="text-base text-slate-500"
-            >
-              SHIPMENT TYPE <span className="text-red-400">*</span>
-            </FormLabel>
-            <FormSelect
-              id="default"
-              value={editBookingData?.shipment_type}
-              disabled
-            >
-              {getShipment?.map(
-                (type) =>
-                  type?.booking_shipment_type_id !== 2 &&
-                  type?.is_active == 1 && (
-                    <option
-                      key={type?.booking_shipment_type_id}
-                      value={type?.booking_shipment_type_id}
-                    >
-                      {type?.shipment_type}
-                    </option>
-                  ),
-              )}
-            </FormSelect>
-          </div>
-          <div className=" col-span-3 md:col-span-3 lg:col-span-1">
-            {" "}
-            <FormLabel
-              htmlFor="origin-city"
-              className="text-base text-slate-500"
-            >
-              QUOTED BY <span className="text-red-400">*</span>
-            </FormLabel>
-            <div className="flex items-center gap-2 w-[100%]">
+      <div className="box col-span-12">
+        <div className="space-y-4 px-2 py-1">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ">
+            <div className=" col-span-3 md:col-span-3 lg:col-span-1">
+              <div>
+                <FormLabel className="text-base text-slate-500">
+                  FRANCHISEE <span className="text-red-400">*</span>
+                </FormLabel>
+              </div>
               <FormInput
-                className="w-[100%]"
-                id="origin-city"
-                value={editBookingData?.quoted_by}
+                value={
+                  getparticulardata(
+                    "franchisee",
+                    editBookingData?.franchisee_id,
+                    allfdata,
+                  )?.franchisee_name || ""
+                }
                 disabled
               />
             </div>
-          </div>
-          <div className=" col-span-3 md:col-span-3 lg:col-span-1">
-            {" "}
-            <FormLabel
-              htmlFor="origin-city"
-              className="text-base text-slate-500"
-            >
-              COMMODITY <span className="text-red-400">*</span>
-            </FormLabel>
-            <CommonSearchableAll
-              apiEndpoint={`admin/commodity-type`}
-              placeholder={"Search Commodity Type"}
-              selecteddata={selectedEditCommoditydata}
-              setSelecteddata={setSelectedEditCommoditydata}
-              fun1={() => {}}
-              comingselectedname={"commodity"}
-              comingselectedid={"commodity_id"}
-              funtoempty={() => {}}
-              key1={"key"}
-              id={editBookingData?.commodity}
-              zIndex={20}
-              isDisabled
-            />
-          </div>
+            <div className=" col-span-3 md:col-span-3 lg:col-span-1">
+              <FormLabel
+                htmlFor="origin-country"
+                className="text-base text-slate-500"
+              >
+                SHIPMENT TYPE <span className="text-red-400">*</span>
+              </FormLabel>
+              <FormSelect
+                id="default"
+                value={editBookingData?.shipment_type}
+                disabled
+              >
+                {getShipment?.map(
+                  (type) =>
+                    type?.booking_shipment_type_id !== 2 &&
+                    type?.is_active == 1 && (
+                      <option
+                        key={type?.booking_shipment_type_id}
+                        value={type?.booking_shipment_type_id}
+                      >
+                        {type?.shipment_type}
+                      </option>
+                    ),
+                )}
+              </FormSelect>
+            </div>
+            <div className=" col-span-3 md:col-span-3 lg:col-span-1">
+              {" "}
+              <FormLabel
+                htmlFor="origin-city"
+                className="text-base text-slate-500"
+              >
+                QUOTED BY <span className="text-red-400">*</span>
+              </FormLabel>
+              <div className="flex items-center gap-2 w-[100%]">
+                <FormInput
+                  className="w-[100%]"
+                  id="origin-city"
+                  value={editBookingData?.quoted_by}
+                  disabled
+                />
+              </div>
+            </div>
+            <div className=" col-span-3 md:col-span-3 lg:col-span-1">
+              {" "}
+              <FormLabel
+                htmlFor="origin-city"
+                className="text-base text-slate-500"
+              >
+                COMMODITY <span className="text-red-400">*</span>
+              </FormLabel>
+              <CommonSearchableAll
+                apiEndpoint={`admin/commodity-type`}
+                placeholder={"Search Commodity Type"}
+                selecteddata={selectedEditCommoditydata}
+                setSelecteddata={setSelectedEditCommoditydata}
+                fun1={() => {}}
+                comingselectedname={"commodity"}
+                comingselectedid={"commodity_id"}
+                funtoempty={() => {}}
+                key1={"key"}
+                id={editBookingData?.commodity}
+                zIndex={20}
+                // isDisabled
+              />
+            </div>
 
-          <div>
-            {" "}
-            <FormLabel
-              htmlFor="origin-city"
-              className="text-base text-slate-500"
-            >
-              SHIPMENT CURRENCY
-              {/* Shipment Currency */}
-            </FormLabel>
-            <FormSelect disabled value={editBookingData?.currency_id || "24"}>
-              <option value="">Select</option>
-              {currencydata?.length >= 1
-                ? currencydata?.map((item: any) => (
-                  <option value={item?.id}>{item?.currency}</option>
-                ))
-                : ""}
-            </FormSelect>
-          </div>
-          <div className=" col-span-3 md:col-span-3 lg:col-span-1">
-            <FormLabel
-              htmlFor="incoterm"
-              className="text-base text-slate-500"
-            >
-              INCOTERM <span className="text-red-400">*</span>
-            </FormLabel>
+            <div>
+              {" "}
+              <FormLabel
+                htmlFor="origin-city"
+                className="text-base text-slate-500"
+              >
+                SHIPMENT CURRENCY
+                {/* Shipment Currency */}
+              </FormLabel>
+              <FormSelect
+                // disabled
+                value={editBookingData?.currency_id || "24"}
+              >
+                <option value="">Select</option>
+                {currencydata?.length >= 1
+                  ? currencydata?.map((item: any) => (
+                      <option value={item?.id}>{item?.currency}</option>
+                    ))
+                  : ""}
+              </FormSelect>
+            </div>
+            <div className=" col-span-3 md:col-span-3 lg:col-span-1">
+              <FormLabel
+                htmlFor="incoterm"
+                className="text-base text-slate-500"
+              >
+                INCOTERM <span className="text-red-400">*</span>
+              </FormLabel>
 
-            <FormSelect
-              id="incoterm"
-              className={`sm:mr-2`}
-              value={editBookingData?.incoterm}
-              onChange={(e) =>
-                setEditBookingData((prev) => ({
-                  ...prev,
-                  incoterm: e.target.value,
-                }))
-              }
-            >
-              <option value="">Select Incoterm</option>
-              {incotermType &&
-                incotermType?.map((ele, index) => (
-                  <option key={ele?.id} value={ele?.id}>
-                    {ele?.name}
-                  </option>
-                ))}
-            </FormSelect>
-          </div>
-          {(editBookingData?.shipment_type == 4 ||
-            editBookingData?.shipment_type == 5) && (
+              <FormSelect
+                id="incoterm"
+                className={`sm:mr-2`}
+                value={editBookingData?.incoterm}
+                onChange={(e) =>
+                  setEditBookingData((prev) => ({
+                    ...prev,
+                    incoterm: e.target.value,
+                  }))
+                }
+              >
+                <option value="">Select Incoterm</option>
+                {incotermType &&
+                  incotermType?.map((ele, index) => (
+                    <option key={ele?.id} value={ele?.id}>
+                      {ele?.name}
+                    </option>
+                  ))}
+              </FormSelect>
+            </div>
+            {(editBookingData?.shipment_type == 4 ||
+              editBookingData?.shipment_type == 5) && (
               <>
                 <div className="col-span-3 md:col-span-3 lg:col-span-1">
                   <FormLabel
@@ -2440,10 +2555,10 @@ export const IsDashboard = () => {
                     {/* <option value="">Select</option> */}
                     {products?.length >= 1
                       ? products?.map((item: any) => (
-                        <option value={item?.product_id}>
-                          {item?.product_name}
-                        </option>
-                      ))
+                          <option value={item?.product_id}>
+                            {item?.product_name}
+                          </option>
+                        ))
                       : ""}
                   </FormSelect>
                 </div>
@@ -2487,41 +2602,41 @@ export const IsDashboard = () => {
                   >
                     {currencydata?.length >= 1
                       ? currencydata?.map((item: any) => (
-                        <option key={item?.id} value={item?.id}>
-                          {item?.currency}
-                        </option>
-                      ))
+                          <option key={item?.id} value={item?.id}>
+                            {item?.currency}
+                          </option>
+                        ))
                       : ""}
                   </FormSelect>
                 </div>
               </>
             )}
+          </div>
         </div>
       </div>
-    </div>
 
-    <div className="mb-4 col-span-12 overflow-x-auto">
-      <FormLabel
-        htmlFor="regular-form-1"
-        className="text-base font-medium text-gray-900"
-      >
-        {" "}
-        Shipment Dimension
-      </FormLabel>
+      <div className="mb-4 col-span-12 overflow-x-auto">
+        <FormLabel
+          htmlFor="regular-form-1"
+          className="text-base font-medium text-gray-900"
+        >
+          {" "}
+          Shipment Dimension
+        </FormLabel>
 
-      <ShipmentDimensions
-        dimensionData={dimensionData}
-        setDimensionData={setDimensionData}
-        setJobData={setJobData}
-        jobdata={jobData}
-        checkdisable={false}
-        currencyData={currencydata}
-        currencyId={editBookingData?.currency_id}
-        weightUnit={editBookingData?.weight_unit}
-      />
-    </div>
+        <ShipmentDimensions
+          dimensionData={dimensionData}
+          setDimensionData={setDimensionData}
+          setJobData={setJobData}
+          jobdata={jobData}
+          checkdisable={false}
+          currencyData={currencydata}
+          currencyId={editBookingData?.currency_id}
+          weightUnit={editBookingData?.weight_unit}
+        />
+      </div>
 
-    {/* {editBookingData?.booking_status != "1" &&
+      {/* {editBookingData?.booking_status != "1" &&
       editBookingData?.booking_status != "8" &&
       editBookingData?.booking_status != "9" &&
       editBookingData?.booking_status != "19" && (
@@ -2570,123 +2685,132 @@ export const IsDashboard = () => {
         </div>
       )} */}
 
-    <div className="grid grid-cols-2 col-span-12 p-2">
-      <div className="flex gap-4 items-center">
-        {" "}
-        <h1 className="font-bold text-sm md:text-lg whitespace-nowrap">
-          Sender Details
-        </h1>
-        <Tippy content="Add Sender Details" options={{ placement: "right" }}>
-          <PlusCircle
-            className="w-6 h-6 cursor-pointer text-mustard"
-            onClick={() => {
-              setSenderOpen(true);
-            }}
-          />
-        </Tippy>
-        {senderOpen && (
-          <SenderDetails
-            open={senderOpen}
-            onClose={() => {
-              setSenderOpen(false);
-            }}
-            isEdit={true}
-            booking={jobData}
-            setJobData={setJobData}
-            enquiryData={{ ...editBookingData, courier_name: products?.find((item: any) => item?.product_id == editBookingData?.courier_id)?.product_name || "N.A." }}
-            countryData={countryData || []}
-          />
-        )}
+      <div className="grid grid-cols-2 col-span-12 p-2">
+        <div className="flex gap-4 items-center">
+          {" "}
+          <h1 className="font-bold text-sm md:text-lg whitespace-nowrap">
+            Sender Details
+          </h1>
+          <Tippy content="Add Sender Details" options={{ placement: "right" }}>
+            <PlusCircle
+              className="w-6 h-6 cursor-pointer text-mustard"
+              onClick={() => {
+                setSenderOpen(true);
+              }}
+            />
+          </Tippy>
+          {senderOpen && (
+            <SenderDetails
+              open={senderOpen}
+              onClose={() => {
+                setSenderOpen(false);
+              }}
+              isEdit={true}
+              booking={jobData}
+              setJobData={setJobData}
+              enquiryData={{
+                ...editBookingData,
+                courier_name:
+                  products?.find(
+                    (item: any) =>
+                      item?.product_id == editBookingData?.courier_id,
+                  )?.product_name || "N.A.",
+              }}
+              countryData={countryData || []}
+            />
+          )}
+        </div>
+        <div className="flex gap-4 items-center">
+          <h1 className="font-bold text-sm md:text-lg whitespace-nowrap">
+            Receiver Details
+          </h1>
+          <Tippy
+            content="Add Receiver Details"
+            options={{ placement: "right" }}
+          >
+            <PlusCircle
+              className="w-6 h-6 cursor-pointer text-mustard"
+              onClick={() => {
+                setReceiverOpen(true);
+              }}
+            />
+          </Tippy>
+          {receiverOpen && (
+            <ReceiverDetails
+              open={receiverOpen}
+              onClose={() => {
+                setReceiverOpen(false);
+              }}
+              isEdit={true}
+              countryData={countryData || []}
+              booking={jobData}
+              setJobData={setJobData}
+              dimensionData={dimensionData || []}
+              enquiryData={editBookingData}
+            />
+          )}
+        </div>
+        <div>
+          <p className="font-semibold ">
+            {jobData?.shipper_details?.consigner_first_name}
+          </p>
+          <p className="font-semibold ">
+            {jobData?.shipper_details?.consigner_address_1}
+          </p>
+          <p className="font-semibold ">
+            {jobData?.shipper_details?.consigner_city}
+          </p>
+          <p className="font-semibold ">
+            {" "}
+            {jobData?.shipper_details?.consigner_pincode}
+          </p>
+        </div>
+        <div>
+          <p className="font-semibold ">
+            {jobData?.consignee_details?.consignee_first_name}
+          </p>
+          <p className="font-semibold ">
+            {jobData?.consignee_details?.consignee_address_1}
+          </p>
+          <p className="font-semibold ">
+            {jobData?.consignee_details?.consignee_city}
+          </p>
+          <p className="font-semibold ">
+            {" "}
+            {jobData?.consignee_details?.consignee_pincode}
+          </p>
+        </div>
       </div>
-      <div className="flex gap-4 items-center">
-        <h1 className="font-bold text-sm md:text-lg whitespace-nowrap">
-          Receiver Details
-        </h1>
-        <Tippy
-          content="Add Receiver Details"
-          options={{ placement: "right" }}
+    </div>
+  );
+  const EditBookingFooter = (
+    <>
+      <div className="flex justify-end gap-2">
+        <Button
+          variant="mustard"
+          disabled={editSpinner || bookSpinner}
+          onClick={handleEditDetails}
+          className="ml-2 bg-mustard p-2 whitespace-nowrap"
         >
-          <PlusCircle
-            className="w-6 h-6 cursor-pointer text-mustard"
-            onClick={() => {
-              setReceiverOpen(true);
-            }}
-          />
-        </Tippy>
-        {receiverOpen && (
-          <ReceiverDetails
-            open={receiverOpen}
-            onClose={() => {
-              setReceiverOpen(false);
-            }}
-            isEdit={true}
-            countryData={countryData || []}
-            booking={jobData}
-            setJobData={setJobData}
-            dimensionData={dimensionData || []}
-            enquiryData={editBookingData}
-          />
-        )}
+          Edit Booking
+          {(editSpinner || bookSpinner) && (
+            <LoadingIcon
+              icon="puff"
+              color="white"
+              className="w-5 h-5 ml-2 stroke-2.5 text-white"
+            />
+          )}
+        </Button>
       </div>
-      <div>
-        <p className="font-semibold ">
-          {jobData?.shipper_details?.consigner_first_name}
-        </p>
-        <p className="font-semibold ">
-          {jobData?.shipper_details?.consigner_address_1}
-        </p>
-        <p className="font-semibold ">
-          {jobData?.shipper_details?.consigner_city}
-        </p>
-        <p className="font-semibold ">
-          {" "}
-          {jobData?.shipper_details?.consigner_pincode}
-        </p>
-      </div>
-      <div>
-        <p className="font-semibold ">
-          {jobData?.consignee_details?.consignee_first_name}
-        </p>
-        <p className="font-semibold ">
-          {jobData?.consignee_details?.consignee_address_1}
-        </p>
-        <p className="font-semibold ">
-          {jobData?.consignee_details?.consignee_city}
-        </p>
-        <p className="font-semibold ">
-          {" "}
-          {jobData?.consignee_details?.consignee_pincode}
-        </p>
-      </div>
-    </div>
-
-
-  </div>);
-  const EditBookingFooter = (<>
-    <div className="flex justify-end gap-2">
-      <Button
-        variant="mustard"
-        disabled={editSpinner || bookSpinner}
-        onClick={handleEditDetails}
-        className="ml-2 bg-mustard p-2 whitespace-nowrap"
-      >
-        Edit Booking
-        {(editSpinner || bookSpinner) && (
-          <LoadingIcon
-            icon="puff"
-            color="white"
-            className="w-5 h-5 ml-2 stroke-2.5 text-white"
-          />
-        )}
-      </Button>
-    </div>
-
-  </>);
+    </>
+  );
 
   const handleProformaInvoice = async () => {
     setProformaLoading(true);
     try {
-      const res = await commongetrequest(`booking/proforma-invoice/${proformaData?.job_id}`);
+      const res = await commongetrequest(
+        `booking/proforma-invoice/${proformaData?.job_id}`,
+      );
       if (res?.status === 200 && res?.data?.url) {
         window.open(res.data.url, "_blank");
         setProformaOpen(false);
@@ -2721,10 +2845,14 @@ export const IsDashboard = () => {
         </div>
         <div className="bg-gray-200 rounded p-2 overflow-hidden truncate w-full min-w-0 sm:max-w-1/2">
           <b>FRANCHISEE : </b>
-          {allfdata?.find((item: any) => item?.franchisee_id == proformaData?.franchisee_id)?.franchisee_name || proformaData?.franchisee_id}
+          {allfdata?.find(
+            (item: any) => item?.franchisee_id == proformaData?.franchisee_id,
+          )?.franchisee_name || proformaData?.franchisee_id}
         </div>
       </div>
-      <p className="text-center text-sm">Are you sure you want to Generate Proforma Invoice ?</p>
+      <p className="text-center text-sm">
+        Are you sure you want to Generate Proforma Invoice ?
+      </p>
     </>
   );
 
@@ -2810,7 +2938,9 @@ export const IsDashboard = () => {
                 key={index}
                 className="flex items-center gap-1 max-w-full bg-[#efb847]/10 text-[#efb847] px-3 py-1 rounded-full text-sm font-medium"
               >
-                <span className="truncate max-w-[45vw] sm:max-w-[200px]">{email}</span>
+                <span className="truncate max-w-[45vw] sm:max-w-[200px]">
+                  {email}
+                </span>
                 <button
                   type="button"
                   className="ml-1 text-red-400 hover:text-red-500 transition font-bold"
@@ -3220,7 +3350,7 @@ export const IsDashboard = () => {
       branch_id:
         value == "job"
           ? getrelateddata("franchisee", allfdata, data?.franchisee_id)
-            ?.branch || ""
+              ?.branch || ""
           : data?.branch_id || "",
       booking_id: data?.id || "",
       origin_pincode: data?.org_zip || "0000",
@@ -3261,21 +3391,21 @@ export const IsDashboard = () => {
       remarks: data?.franchisee_remarks || "",
       ...(data?.shipment_type == 8
         ? {
-          fair_id: data?.fair_data?.fair_id,
-          fair_venue: data?.fair_data?.fair_venue,
-          fair_start_date: data?.fair_data?.fair_start_date,
-          fair_end_date: data?.fair_data?.fair_end_date,
-          mode: data?.fair_data?.mode || "",
-          mode_value: data?.fair_data?.mode_value || "",
-          // fair_date: spotData?.fair_date,
-        }
+            fair_id: data?.fair_data?.fair_id,
+            fair_venue: data?.fair_data?.fair_venue,
+            fair_start_date: data?.fair_data?.fair_start_date,
+            fair_end_date: data?.fair_data?.fair_end_date,
+            mode: data?.fair_data?.mode || "",
+            mode_value: data?.fair_data?.mode_value || "",
+            // fair_date: spotData?.fair_date,
+          }
         : {}),
       ...(data?.import_booking == 2
         ? {
-          import_booking: data?.import_booking,
-          import_booking_type: data?.import_booking_type,
-          import_service_type: data?.import_service_type,
-        }
+            import_booking: data?.import_booking,
+            import_booking_type: data?.import_booking_type,
+            import_service_type: data?.import_service_type,
+          }
         : {}),
     };
     if (data?.shipment_dimensions && data?.shipment_dimensions?.length >= 1) {
@@ -3299,241 +3429,317 @@ export const IsDashboard = () => {
     <>
       {/* <h2 className=" text-lg font-medium my-5">IS DASHBOARD</h2> */}
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-5">
-        <div className="isBox  isBox2 flex  bg-white rounded-md p-3 justify-between shadow-blue-900 w-full ">
-          <aside>
-            <h2 className="text-sm">Initiated Jobs</h2>
-            <p className="text-lg">{Number(topdata?.intjobs) || 0} </p>
-          </aside>
-          <figure className="pl-4">
-            {" "}
-            <img src={imgg1} className="max-w-auto" />
-          </figure>
+      <div className="grid grid-cols-12  gap-2 my-5">
+        <div className="col-span-5 lg:col-span-2 ">
+          <div className="relative  overflow-hidden bg-white rounded-[10px] p-3 w-full h-full text-center bg-gradient-to-t from-[#fff] via-[#FFF9EC] to-[#FFF9EC] border border-[#fff]">
+            <figure className=" bg-[#ffc24b] rounded-full w-[45px] h-[45px] flex justify-center items-center m-auto">
+              <Briefcase className="text-white w-[23px]" />
+            </figure>
+
+            <h2 className="text-sm text-[#4e4e4e] mb-[5px] mt-[12px]">
+              {" "}
+              Initiated Jobs
+            </h2>
+            <p className="text-[22px]">{Number(topdata?.intjobs) || 0} </p>
+
+            <div className="absolute bottom-[-60px] left-0 right-0 w-[200%]  ">
+              <img
+                src="https://www.icegif.com/wp-content/uploads/2023/06/icegif-902.gif"
+                className=" m-auto mt-2 [filter:sepia(2)_saturate(12)] opacity-50"
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="isBox isBox2 flex  bg-white rounded-md p-3 justify-between shadow-blue-900 w-full">
-          <aside>
-            <h2 className="text-sm">Request for Credit Balance</h2>
-            <span className="text-lg">
+        <div className="col-span-7 lg:col-span-3 ">
+          <div className="relative  overflow-hidden bg-white rounded-[10px] p-3 w-full h-full text-center  bg-gradient-to-t from-[#fff] via-[#fff] to-[#D1FFDC] border border-[#fff]">
+            <figure className=" bg-[#48cd68] rounded-full w-[45px] h-[45px] flex justify-center items-center m-auto">
+              {" "}
+              <Wallet className="text-white  w-[25px]" />
+            </figure>
+            <h2 className="text-sm text-[#4e4e4e] mb-[5px] mt-[12px]">
+              Request for Credit Balance
+            </h2>
+            <p className="text-[22px]">
               {Number(topdata?.credit_pending) || 0}{" "}
-            </span>
-          </aside>
-          <figure className="pl-2">
-            <img src={imgg2} className="max-w-max" />
-          </figure>
+            </p>
+
+            <div className="absolute bottom-[-60px] left-0 right-0 w-[200%]  ">
+              <img
+                src="https://www.icegif.com/wp-content/uploads/2023/06/icegif-902.gif"
+                className=" m-auto mt-2 [filter:sepia(11111)_saturate(5)_hue-rotate(403deg)] opacity-50"
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="isBox isBoxlast flex col-span-2 bg-white rounded-md justify-between shadow-blue-900 ">
-          <div className="lg:flex md:flex  sm:block  dashboxxlast w-full">
-            <div className="boxSpotLeft p-4  text-center sm:block w-full lg:w-24 md:w-24 mb-3 lg:mb-03 ms:mb-0  sm:mb-0 ">
-              <i className="md:inline-block  hidden">
-                <img src={imgg3} />
-              </i>
-              <h5 className="text-xl lg:text-sm  md:text-sm  sm:text-sm">
-                Spot Enquires
-              </h5>
+        <div className="col-span-12 lg:col-span-7 ">
+          <div className="bg-white rounded-[10px]   w-full h-full text-center bg-gradient-to-t from-[#fff] via-[#fff] to-[#ECECEC] border border-[#fff]">
+            <div className=" block lg:flex justify-between items-center   px-[12px] py-[3px] rounded-t-[8px]  bg-gradient-to-r from-[#fff4da] via-[#FFE8E8] to-[#FFE8E8] ">
+              <div className="   rounded-[5px] py-[3px]  flex justify-center items-center ">
+                <i className="md:inline-block  hidden">
+                  <Search className="w-[16px]" />
+                </i>
+                <h5 className="text-[15px] font-bold ml-[4px] uppercase">
+                  Spot Enquires
+                </h5>
+              </div>
+
+              <div className="flex gap-2 items-center justify-center lg:justify-end">
+                <div className=" rounded-[10px] gap-2 flex justify-center items-center">
+                  <div className="flex border-r border-[#ffb0b0] pr-2">
+                    <figure className="">
+                      <ShieldAlert className="w-[14px] h-[22px] text-[#f94141] " />
+                    </figure>
+
+                    <p className="pl-1 text-sm text-left flex text-[#f94141]">
+                      Expired :{" "}
+                      <b className="block">{Number(topdata?.expired) || 0}</b>
+                    </p>
+                  </div>
+
+                  <div className="flex">
+                    <figure className="">
+                      <ThumbsDown className="w-[14px] h-[22px] text-[#f94141] " />
+                    </figure>
+                    <p className="pl-1 text-sm text-left flex text-[#f94141]">
+                      Rejected :{" "}
+                      <b className="block">{Number(topdata?.rejected) || 0}</b>
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="boxSpotRightBox flex p-2 ">
-              <ul className="flex flex-wrap lg:grid md:grid sm:grid lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-3">
-                <li className="flex text-sm w-1/2 lg:w-auto md:w-auto sm:w-auto mb-2 lg:mb-0 md:mb-0  sm:mb-0">
-                  <FolderOpen className="w-6 p-1  text-green-500 bg-green-100 rounded-3xl" />
-                  <p className="pl-2 text-sm ">
-                    Open <b className="block">{Number(topdata?.open) || 0}</b>
-                  </p>
-                </li>
+            <div className="p-3">
+              <div className="grid grid-cols-12  gap-2 ">
+                <div className="col-span-12 md:col-span-6 ">
+                  <div className="flex items-center">
+                    <figure className=" bg-[#ccfbd7] rounded-full w-[29px] h-[29px] flex justify-center items-center">
+                      <FolderOpen className="w-[15px]  text-green-500 " />
+                    </figure>
+                    <p className="pl-2 text-sm text-left flex">
+                      Open :{" "}
+                      <b className="block">{Number(topdata?.open) || 0}</b>
+                    </p>
+                  </div>
+                </div>
 
-                <li className="flex w-1/2 mb-2 lg:w-auto md:w-auto sm:w-auto lg:mb-0 md:mb-0  sm:mb-0">
-                  <ShieldAlert className="w-6 p-1  text-red-500 bg-red-100 rounded-3xl" />
-                  <p className="pl-2">
-                    Expired{" "}
-                    <b className="block">{Number(topdata?.expired) || 0}</b>
-                  </p>
-                </li>
+                <div className="col-span-12 md:col-span-6 ">
+                  <div className="flex items-center">
+                    <figure className=" bg-[#ffedc3] rounded-full w-[29px] h-[29px] flex justify-center items-center">
+                      <MessageCircle className="w-[18px]  text-[#c78c03]" />
+                    </figure>
 
-                <li className=" flex redColor w-1/2 lg:w-auto md:w-auto sm:w-auto mb-2 lg:mb-0 md:mb-0  sm:mb-0">
-                  <ThumbsDown className="w-6 p-1  text-red-500 bg-red-100 rounded-3xl" />
-                  <p className="pl-2">
-                    Rejected{" "}
-                    <b className="block">{Number(topdata?.rejected) || 0}</b>
-                  </p>
-                </li>
+                    <p className="pl-2 text-sm text-left flex">
+                      Requoted :{" "}
+                      <b className="block">{Number(topdata?.requoted) || 0}</b>
+                    </p>
+                  </div>
+                </div>
 
-                <li className="flex yellowColor w-1/2 lg:w-auto md:w-auto sm:w-auto mb-2 lg:mb-0 md:mb-0  sm:mb-0">
-                  <UserPlus className="w-6 p-1  text-yellow-500 bg-yellow-100 rounded-3xl" />
-                  <p className="pl-2">
-                    Requoted
-                    <b className="block">{Number(topdata?.requoted) || 0}</b>
-                  </p>
-                </li>
+                <div className="col-span-12 md:col-span-6 ">
+                  <div className="flex items-center">
+                    <figure className=" bg-blue-100 rounded-full w-[29px] h-[29px] flex justify-center items-center">
+                      <Loader className="w-[15px]  text-[#106acb]" />
+                    </figure>
 
-                <li className="redColor flex w-1/2 lg:w-auto md:w-auto sm:w-auto mb-2 lg:mb-0 md:mb-0  sm:mb-0">
-                  <Clock8 className="w-6 p-1  text-blue-500 bg-blue-100 rounded-3xl" />
-                  <p className="pl-2">
-                    Approval Pending{" "}
-                    <b className="block">
-                      {Number(topdata?.approval_pending) || 0}
-                    </b>
-                  </p>
-                </li>
+                    <p className="pl-2 text-sm text-left flex">
+                      Approval Pending :{" "}
+                      <b className="block">
+                        {Number(topdata?.approval_pending) || 0}
+                      </b>
+                    </p>
+                  </div>
+                </div>
 
-                <li className=" flex w-1/2 lg:w-auto md:w-auto sm:w-auto mb-2 lg:mb-0 md:mb-0  sm:mb-0">
-                  <Laptop className="w-6 p-1  text-green-500 bg-green-100 rounded-3xl" />
-                  <p className="pl-2">
-                    Insufficient Balance{" "}
-                    <b className="block">
-                      {Number(topdata?.insufficient) || 0}
-                    </b>
-                  </p>
-                </li>
-              </ul>
+                <div className="col-span-12 md:col-span-6 ">
+                  <div className="flex items-center">
+                    <figure className="  bg-[#ffd7d7] rounded-full w-[29px] h-[29px] flex justify-center items-center">
+                      <Wallet className="w-[18px]  text-[#d21a1a]" />
+                    </figure>
+
+                    <p className="pl-2 text-sm text-left flex">
+                      Insufficient Balance :{" "}
+                      <b className="block">
+                        {Number(topdata?.insufficient) || 0}
+                      </b>
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div className="lg:flex items-center space-x-4 bg-white p-2 shadow-lg">
-        {/* Dropdown Section */}
-        <div
-          className={`relative w-64 ${selectedOptions?.length >= 1 ? "mt-9" : ""
-            }`}
-          ref={dropdownRef}
-        >
-          <button
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="w-full bg-gray-200 p-2 rounded-md"
-          >
-            Search By
-          </button>
 
-          {dropdownOpen && (
-            <div className="absolute left-0 mt-2 w-full bg-white border rounded-md shadow-md z-30">
-              {options.map((option) => (
-                <div key={option.id} className="flex items-center p-2">
-                  <input
-                    type="checkbox"
-                    id={option.id}
-                    checked={selectedOptions.includes(option.id)}
-                    // checked={(e: any) => {
-                    //   selectedOptions.includes(option.id);
+      <div className="relative   bg-white rounded-[10px] p-4 w-full  text-center   border border-[#fff]">
+        <div className="grid grid-cols-12  gap-2 ">
+          <div className="col-span-12 lg:col-span-2">
+            {/* Dropdown Section */}
+            <div
+              className={`relative ${
+                selectedOptions?.length >= 1 ? "mt-[21px]" : ""
+              }`}
+              ref={dropdownRef}
+            >
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="w-full bg-[#efb847] text-white px-3 py-[7px] rounded-md font-medium text-[#303030] flex justify-between items-center uppercase"
+              >
+                Search By <ChevronDown className="w-[17px]" />
+              </button>
 
-                    // }}
-                    onChange={(e: any) => {
-                      handleCheckboxChange(option.id);
-                      if (!e.target.checked && option.id == "Franchisee") {
-                        const newdata = { ...inputs };
-                        delete newdata["franchisee_id"];
-                        setInputs(newdata);
-                        setSelectedfranchisedata(intfranchiseedata);
-                      } else if (
-                        !e.target.checked &&
-                        option.id == "Destination"
-                      ) {
-                        const newdata = { ...inputs };
-                        delete newdata["dest_country_id"];
-                        setInputs(newdata);
-                        setSelecteddata(intselecteddata);
-                      } else if (
-                        !e.target.checked &&
-                        option.id == "Chargeable Weight"
-                      ) {
-                        const newdata = { ...inputs };
-                        delete newdata["weight"];
-                        setInputs(newdata);
-                      }
-                    }}
-                    className="mr-2"
-                  />
-                  <label htmlFor={option.id}>{option.label}</label>
+              {dropdownOpen && (
+                <div className="absolute left-0 mt-2 w-[160px] bg-white border rounded-md shadow-md z-30">
+                  {options.map((option) => (
+                    <div key={option.id} className="flex items-center p-2">
+                      <input
+                        type="checkbox"
+                        id={option.id}
+                        checked={selectedOptions.includes(option.id)}
+                        // checked={(e: any) => {
+                        //   selectedOptions.includes(option.id);
+
+                        // }}
+                        onChange={(e: any) => {
+                          handleCheckboxChange(option.id);
+                          if (!e.target.checked && option.id == "Franchisee") {
+                            const newdata = { ...inputs };
+                            delete newdata["franchisee_id"];
+                            setInputs(newdata);
+                            setSelectedfranchisedata(intfranchiseedata);
+                          } else if (
+                            !e.target.checked &&
+                            option.id == "Destination"
+                          ) {
+                            const newdata = { ...inputs };
+                            delete newdata["dest_country_id"];
+                            setInputs(newdata);
+                            setSelecteddata(intselecteddata);
+                          } else if (
+                            !e.target.checked &&
+                            option.id == "Chargeable Weight"
+                          ) {
+                            const newdata = { ...inputs };
+                            delete newdata["weight"];
+                            setInputs(newdata);
+                          }
+                        }}
+                        className="mr-1"
+                      />
+                      <label className="text-[13px] " htmlFor={option.id}>
+                        {option.label}
+                      </label>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Input Fields Section (Right by Right) */}
-        <div
-          className={`min-[548px]:grid grid-cols-${selectedOptions?.length} gap-2  md:mt-2 sm:mt-2`}
-        >
-          {selectedOptions.map((optionId) => (
-            <div key={optionId} className="flex flex-col">
-              <FormLabel>{optionId}:</FormLabel>
-              {optionId == "Franchisee" ? (
-                <CommonSearchableAll
-                  apiEndpoint={`admin/franchisee-settings?sales_id=${userdata?.mapped_id}`}
-                  placeholder={"Search For  Franchisee"}
-                  selecteddata={selectedfranchisedata}
-                  setSelecteddata={setSelectedfranchisedata}
-                  fun1={fun1}
-                  comingselectedname={"franchisee_name"}
-                  comingselectedid={"franchisee_id"}
-                  funtoempty={fun2}
-                  questionmark={true}
-                  zIndex={20}
-                  key1={"key"}
-                // border={error?.franchisee ? true : false}
-                />
-              ) : optionId == "Destination" ? (
-                <CommonSearchableAll
-                  apiEndpoint={"admin/country"}
-                  placeholder={"Search For Country"}
-                  selecteddata={selecteddata}
-                  setSelecteddata={setSelecteddata}
-                  fun1={fun3}
-                  key1={"country"}
-                  comingselectedname={"country_name"}
-                  comingselectedid={"country_id"}
-                  funtoempty={fun3toempty}
-                  zIndex={20}
-                />
-              ) : (
-                <FormInput
-                  type="number"
-                  placeholder="Chargeable Weight"
-                  value={inputs["weight"] || ""}
-                  onChange={(e) =>
-                    setInputs((pre: any) => ({
-                      ...pre,
-                      weight: e.target.value,
-                    }))
-                  }
-                />
               )}
             </div>
-          ))}
-        </div>
-
-        {/* Search Button */}
-        {selectedOptions.length > 0 && (
-          <div className="flex justify-between">
-            <Button
-              onClick={handleSearch}
-              className="bg-mustard text-white px-4 py-2 rounded-md mt-9 mr-2"
-            >
-              <Search className="" /> Search
-            </Button>
-            <Button
-              onClick={() => handlereset()}
-              disabled={checkisEmpty(inputs) ? true : false}
-              className="bg-red-400 text-white px-4 py-2 rounded-md mt-9"
-            >
-              <RefreshCcw className="mr-2" /> Reset
-            </Button>
           </div>
-        )}
+
+          {/* Input Fields Section (Right by Right) */}
+
+          {selectedOptions.map((optionId) => (
+            <React.Fragment key={optionId}>
+              {optionId == "Franchisee" ? (
+                <div className="col-span-12 lg:col-span-3">
+                  <FormLabel className="text-left w-full  mb-[3px] text-[14px] text-[#4c4c4c]">
+                    {optionId}:
+                  </FormLabel>
+                  <CommonSearchableAll
+                    inputClassName="w-full border border-[#e6e9ec] bg-[#fafcff] !shadow-none !px-2"
+                    apiEndpoint={`admin/franchisee-settings?sales_id=${userdata?.mapped_id}`}
+                    placeholder={"Search For  Franchisee"}
+                    selecteddata={selectedfranchisedata}
+                    setSelecteddata={setSelectedfranchisedata}
+                    fun1={fun1}
+                    comingselectedname={"franchisee_name"}
+                    comingselectedid={"franchisee_id"}
+                    funtoempty={fun2}
+                    questionmark={true}
+                    zIndex={20}
+                    key1={"key"}
+                    // border={error?.franchisee ? true : false}
+                  />
+                </div>
+              ) : optionId == "Destination" ? (
+                <div className="col-span-12 lg:col-span-3">
+                  <FormLabel className="text-left w-full  mb-[3px] text-[14px] text-[#4c4c4c]">
+                    {optionId}:
+                  </FormLabel>
+                  <CommonSearchableAll
+                    inputClassName="w-full border border-[#e6e9ec] bg-[#fafcff] !shadow-none !px-2"
+                    apiEndpoint={"admin/country"}
+                    placeholder={"Search For Country"}
+                    selecteddata={selecteddata}
+                    setSelecteddata={setSelecteddata}
+                    fun1={fun3}
+                    key1={"country"}
+                    comingselectedname={"country_name"}
+                    comingselectedid={"country_id"}
+                    funtoempty={fun3toempty}
+                    zIndex={20}
+                  />
+                </div>
+              ) : (
+                <div className="col-span-12 lg:col-span-2">
+                  <FormLabel className="text-left w-full  mb-[3px] text-[14px] text-[#4c4c4c]">
+                    {optionId}:
+                  </FormLabel>
+                  <FormInput
+                    className="w-full border border-[#e6e9ec] bg-[#fafcff] !shadow-none !px-2"
+                    type="number"
+                    placeholder="Chargeable Weight"
+                    value={inputs["weight"] || ""}
+                    onChange={(e) =>
+                      setInputs((pre: any) => ({
+                        ...pre,
+                        weight: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+              )}
+            </React.Fragment>
+          ))}
+
+          <div className="col-span-12 lg:col-span-2">
+            {/* Search Button */}
+            {selectedOptions.length > 0 && (
+              <div className="flex justify-between mt-[24px]">
+                <Button
+                  onClick={handleSearch}
+                  className="bg-mustard text-white px-4 py-2 rounded-md  mr-1 border-none w-full"
+                >
+                  {/* <Search className="" /> */} Search
+                </Button>
+                <Button
+                  onClick={() => handlereset()}
+                  disabled={checkisEmpty(inputs) ? true : false}
+                  className="bg-red-400 text-white px-3 py-2 rounded-md  border-none w-full"
+                >
+                  {/* <RefreshCcw className="mr-2" /> */} Reset
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div className="lg:grid lg:grid-cols-2  md:grid-cols-2   sm:grid-cols-2  gap-3 mt-4">
-        <div className="lg:flex-none lg:flex-wrap grid-flow-col grid-rows-2">
-          <div className="w-full mb-5 firstTable">
+      <div className="grid grid-cols-12  gap-3 mt-4">
+     
+          <div className="col-span-12 lg:col-span-6">
             <div className="">
-              <div className="NewtableBox  bg-white rounded-md justify-between shadow-blue-900  ">
-                <div className="tbaleTittle p-2 bg-gray-50 flex justify-between items-center ">
-                  <h2 className="text-sm font-medium">
+              <div className="NewtableBox min-h-auto lg:h-full bg-white rounded-md justify-between shadow-blue-900 border border-[#fff]  ">
+                <div className="tbaleTittle p-2 bg-[#e9edf2] flex justify-between items-center rounded-t-md ">
+                  <h2 className="text-[15px] font-medium">
                     Pending Spot Enquiries
                   </h2>
 
                   <div className="tableSearch relative w-200">
                     <FormInput
+                      className="h-[30px] !p-1 !px-2"
                       id="vertical-form-1"
                       type="text"
                       placeholder="Search By Enquiry Id "
@@ -3552,282 +3758,200 @@ export const IsDashboard = () => {
                           getspotenqdata(1, [0, 16]);
                         }
                       }}
-                      className="searchListTable absolute top-2 right-3 text-stone-300"
+                      className="searchListTable absolute top-[6px] right-2 text-stone-300"
                     >
                       {" "}
-                      <Search />
+                      <Search className="w-[17px] h-[17px]" />
                     </button>
                   </div>
                 </div>
 
                 <div
-                  className={`tablelist p-3 ${isActive ? "showtable" : "hideTable"
-                    }`}
+                  className={`tablelist p-3 ${
+                    isActive ? "showtable" : "hideTable"
+                  }`}
                 >
-                  <div
+                  {/* <div
                     className={`overflow-x-auto  overflow-y-hidden ${"h-[60vh]"}`}
-                  >
+                  > */}
+                  <div className="overflow-x-auto">
                     <div className="table-responsive ">
                       {datatoget?.spotdata1?.length >= 1 &&
-                        !datatoget?.loading1 ? (
-                        <Table
-                          sm
-                          className="table table-text-small mb-0 border whitespace-nowrap "
-                        >
-                          <Table.Thead className="thead-primary table-sorting bg-mustard">
-                            <Table.Tr className="text-center text-white">
-                              <Table.Th className="whitespace-nowrap border text-right">
-                                SR.NO.
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-center">
-                                ACTIONS
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                STATUS{" "}
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                CUSTOMER NAME
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                ENQUIRY NO
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                ENQUIRY DATE
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                ORIGIN
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                DESTINATION
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                WEIGHT
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                VENDOR
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                SHIPMENT TYPE
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                QUOTED BY
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-right">
-                                QUOTED PRICE (₹)
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                RATE VALID TILL
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                AIRWAYBILL NO.
-                              </Table.Th>
-                            </Table.Tr>
-                          </Table.Thead>
-                          <Table.Tbody>
-                            {datatoget?.spotdata1?.map(
-                              (data: any, index: number) => (
-                                <Table.Tr
-                                  key={index}
-                                  // ${
-                                  //   data?.booking_status == 0
-                                  //     ? "bg-yellow-200"
-                                  //     : data?.booking_status == 1
-                                  //     ? "bg-green-200"
-                                  //     : data?.booking_status == 7
-                                  //     ? "bg-blue-200"
-                                  //     : "bg-orange-200"
-                                  // }
-                                  className={`text-left intro-x capitalize
-                                
-                                  
-                                  `}
-                                >
-                                  <Table.Td className="border whitespace-nowrap text-right">
-                                    {(datatoget?.page1 - 1) * 5 + (index + 1)}
-                                  </Table.Td>
-                                  <Table.Td>
-                                    <div className="flex justify-center items-center">
-                                      <Button
-                                        className="p-1 bg-mustard text-white"
-                                        onClick={() => {
-                                          handleEdit(data, "enq");
-                                        }}
-                                      >
-                                        Action
-                                      </Button>
-                                      {/* <Menu className="Ndropdown">
-                                        <Menu.Button
-                                          as={Button}
-                                          variant="primary"
-                                          className="bg-inherit text-blue-600 p-1 border-blue-600"
+                      !datatoget?.loading1 ? (
+                        <div className="w-full">
+                          {datatoget?.spotdata1?.map(
+                            (data: any, index: number) => (
+                              <div
+                                key={index}
+                                className="w-full border rounded-lg mb-3 group bg-[#fff] border-[#fff1d3] even:bg-[#fff] even:border-[#eaf1f6] hover:bg-[#fff] hover:border-[#E6E6E6]"
+                              >
+                                <div className="justify-between border-[#fff1d3] border-b w-full  block lg:flex pt-[5px] pb-[3px] px-2 items-center bg-[#fffbf2] group-even:bg-[#f6faff] rounded-t-lg group-even:border-[#eaf1f6] group-hover:bg-[#F8F8F8] group-hover:border-[#E6E6E6]">
+                                  <div className="flex relative mb-2 lg:mb-0">
+                                    <figure className="bg-[#FFF0CE] group-even:bg-[#E8F2FF] rounded-full p-[2px] w-[30px] h-[30px] justify-between flex items-center group-hover:bg-[#e3e3e3]">
+                                      <FileText className="w-[18px] h-[18px] text-[#B68F34] group-even:text-[#5A81B4] m-auto group-hover:text-[#303030]" />
+                                    </figure>
+
+                                    <aside className="ml-2 leading-[14px]">
+                                      <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[14px] ">
+                                        Shipment :{" "}
+                                        {shipmentTypedata?.find(
+                                          (item2: any) =>
+                                            item2?.booking_shipment_type_id ==
+                                            data?.shipment_type,
+                                        )?.shipment_type || "-"}
+                                      </h2>
+
+                                      <h3 className="text-[12px] font-bold text-[#e1a722] rounded-[10px] ">
+                                        ENQUIRY NO: {data?.booking_no || "N.A."}
+                                      </h3>
+                                    </aside>
+                                  </div>
+
+                                  <div className="flex gap-2 items-center">
+                                    <div className="text-left lg:text-right leading-[16px]">
+                                      <h4 className="font-medium text-[13px]">
+                                        {" "}
+                                        WEIGHT :
+                                        <span>
+                                          {" "}
+                                          {Number(data?.weight) || "-"}{" "}
+                                          {data?.weight_unit
+                                            ? `(${data.weight_unit})`
+                                            : ""}
+                                        </span>
+                                      </h4>
+                                      <p className="text-[13px] text-[#797979]">
+                                        {formatDate(data?.created_date) || "-"}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="px-3 pt-3 pb-2">
+                                  <div className="grid grid-cols-12 gap-2">
+                                    <div className="col-span-12 lg:col-span-8">
+                                      <div className="w-full">
+                                        <div className="w-full font-medium text-[14px]">
+                                          {" "}
+                                          Name :{" "}
+                                          {getrelateddata(
+                                            "franchisee",
+                                            allfdata,
+                                            data?.franchisee_id,
+                                          )?.franchisee_name || "-"}
+                                        </div>
+
+                                        <div className="w-full block lg:flex gap-x-5 mt-1">
+                                          <div className="leading-[16px] mb-2 lg:mb-0">
+                                            <small className="text-[11px] text-[#797979] flex items-center">
+                                              <i className="w-[5px] h-[5px] bg-green-500 group-even:bg-[#6EA8E0] rounded-full mr-1 inline-block group-hover:bg-[#a0a0a0]"></i>{" "}
+                                              ORIGIN{" "}
+                                            </small>
+                                            <p className="text-[14px] text-[#303030]">
+                                              {data?.org_city || "-"}
+                                            </p>
+                                          </div>
+
+                                          <div className="leading-[16px]">
+                                            <small className="text-[11px] text-[#797979] flex items-center">
+                                              <i className="w-[5px] h-[5px] bg-[#efb847] group-even:bg-[#6EA8E0] rounded-full mr-1 inline-block group-hover:bg-[#a0a0a0]"></i>{" "}
+                                              DESTINATION{" "}
+                                            </small>
+                                            <p className="text-[14px] text-[#303030]">
+                                              {data?.org_country_id == "97" &&
+                                              data?.dest_country_id == "97"
+                                                ? data?.dest_city
+                                                : countryData?.find(
+                                                    (item: any) =>
+                                                      item.country_id ==
+                                                      data?.dest_country_id,
+                                                  )?.country_name ||
+                                                  data?.dest_city ||
+                                                  "N.A."}
+                                            </p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <div className="col-span-12 lg:col-span-4">
+                                      <div className="flex relative gap-2 justify-start lg:justify-end">
+                                        <Button
+                                          className="text-[13px] bg-mustard text-white border-none px-3 py-[1px] hover:bg-[#d2d2d2] hover:text-[#303030]"
+                                          onClick={() => {
+                                            handleEdit(data, "enq");
+                                          }}
                                         >
-                                          <UserCog className="size-[19px]" />{" "}
-                                          <ChevronDown className="size-[15px]" />
-                                        </Menu.Button>
-                                        <Menu.Items
-                                          className="w-48 bg-white "
-                                          placement="bottom"
-                                          // placement={`${index>3?"top":"bottom"}`}
+                                          Action
+                                        </Button>
+
+                                        <Button
+                                          onClick={() => {
+                                            setSelectedCardData(data);
+                                            setViewCardModal(true);
+                                          }}
+                                          className="text-[13px] bg-mustard text-white border-none hover:bg-[#d2d2d2] hover:text-[#303030] rounded-md flex items-center pl-2 pr-1 py-[3px]"
                                         >
-                                          <Menu.Item
-                                            onClick={() => {
-                                              handleEdit(data);
-                                            }}
+                                          View{" "}
+                                          <ChevronRight className="w-[14px] h-[16px]" />
+                                        </Button>
+                                      </div>
+                                      <div className="w-full text-[13px] mt-2 text-left lg:text-right">
+                                        Price (₹) :{" "}
+                                        <span>
+                                          {indianFormat(data?.spot_price) ||
+                                            "-"}{" "}
+                                          {data?.price_type == "1"
+                                            ? "(a)"
+                                            : data?.price_type == "2"
+                                              ? "(k)"
+                                              : ""}
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    <div className="col-span-12 lg:col-span-12">
+                                      <div className=" flex  w-full  border-t border-[#f2f2f2] px-[0] pt-[4px]">
+                                        <h2 className="flex text-[#9099a2] text-[11px] font-medium  uppercase leading-[20px]  ">
+                                          <i className="mr-1 bg-[#f1f5f9] border-none p-[2px] w-[18px] h-[18px] rounded-full flex justify-center items-center ">
+                                            <User
+                                              className="w-[12px] h-[12px]  text-[#959595]"
+                                              strokeWidth={3}
+                                            />
+                                          </i>
+                                          <span className="text-[#959595]">
+                                            Status{" "}
+                                          </span>
+                                          &nbsp; : &nbsp;{" "}
+                                          <span
+                                            className={
+                                              bookingStatusColorMap[
+                                                Number(data?.booking_status)
+                                              ] || ""
+                                            }
                                           >
-                                            {" "}
-                                            <Eye
-                                              className="w-[24px] pr-2"
-                                              onClick={() => {
-                                                handleEdit(data);
-                                              }}
-                                            />{" "}
-                                            View/Edit
-                                          </Menu.Item>
-                                          <Menu.Item>
-                                            {" "}
-                                            <Eye className="w-[24px] pr-2" />{" "}
-                                           Send To Pricing
-                                          </Menu.Item>
-                                          <Menu.Item>
-                                            {" "}
-                                            <ClipboardList className="w-[24px] pr-2" />{" "}
-                                          Ready To Process
-                                          </Menu.Item>
-                                        </Menu.Items>
-                                      </Menu> */}
+                                            {bookingStatuses.find(
+                                              (s) =>
+                                                s.status_code ==
+                                                data?.booking_status,
+                                            )?.status_name || "-"}
+                                          </span>
+                                        </h2>
+                                      </div>
                                     </div>
-                                  </Table.Td>
-                                  <Table.Td>
-                                    <div className="flex justify-left items-left">
-                                      <span
-                                        className={bookingStatusColorMap[Number(data?.booking_status)] || ""}
-                                      >
-                                        {bookingStatuses.find(
-                                          (s) => s.status_code == data?.booking_status
-                                        )?.status_name || ""}
-                                      </span>
-                                    </div>
-                                  </Table.Td>
-                                  <Table.Td>
-                                    {getrelateddata(
-                                      "franchisee",
-                                      franhiseedata,
-                                      data?.franchisee_id,
-                                    )?.franchisee_name || ""}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {data?.booking_no || "-"}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {formatDate(data?.created_date) || "-"}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {data?.org_city || "-"}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {data?.org_country_id == "97" &&
-                                      data?.dest_country_id == "97"
-                                      ? data?.dest_city
-                                      : countryData?.find(
-                                        (item: any) =>
-                                          item.country_id ==
-                                          data?.dest_country_id,
-                                      )?.country_name ||
-                                      data?.dest_city ||
-                                      "N.A."}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap text-right">
-                                    {Number(data?.weight) || "-"}{" "}
-                                    {data?.weight_unit
-                                      ? `(${data.weight_unit})`
-                                      : ""}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {productTypes?.find(
-                                      (item) =>
-                                        item.product_id == data?.courier_id,
-                                    )?.product_name || "-"}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {shipmentTypedata?.find(
-                                      (item2: any) =>
-                                        item2?.booking_shipment_type_id ==
-                                        data?.shipment_type,
-                                    )?.shipment_type || "-"}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {data?.quoted_by || "-"}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap lowercase text-right">
-                                    {indianFormat(data?.spot_price) || "-"}{" "}
-                                    {data?.price_type == "1"
-                                      ? "(a)"
-                                      : data?.price_type == "2"
-                                        ? "(k)"
-                                        : ""}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {formatDate(data?.valid_till) || "N.A."}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {data?.airwaybilno || "N.A."}
-                                  </Table.Td>
-                                  {/* <Table.Td className="px-8 flex justify-center">
-                                  {data?.valid_till &&
-                                  curr > new Date(data?.valid_till) ? (
-                                    <p className="text-base  text-gray-500 whitespace-nowrap">
-                                      Rate Expired
-                                    </p>
-                                  ) : data?.booking_status == 1 ||
-                                    data?.booking_status == 3 ||
-                                    data?.booking_status == 6 ? (
-                                    <Button
-                                      rounded
-                                      className="w-24 text-base  text-white bg-green-500"
-                                      onClick={() => {
-                                        setSpotId(data?.id);
-                                        setOpen(true);
-                                      }}
-                                    >
-                                      APPROVE
-                                    </Button>
-                                  ) : data?.booking_status == 2 ? (
-                                    <p className="text-base   text-red-500">
-                                      REJECTED
-                                    </p>
-                                  ) : data?.booking_status == 5 ? (
-                                    <p className=" text-green-500 text-base ">
-                                      BOOKED
-                                    </p>
-                                  ) : data?. ? (
-                                    <Button
-                                      rounded
-                                      size="sm"
-                                      className="w-20  text-base text-white bg-green-500"
-                                      onClick={() => handleBooking(data)}
-                                    >
-                                      BOOK
-                                    </Button>
-                                  ) : data?.booking_status == 0 ? (
-                                    <Edit
-                                      className="cursor-pointer text-mustard stroke-2.5"
-                                      onClick={() => handleEdit(data)}
-                                    />
-                                  ) : (
-                                    "N.A."
-                                  )}
-                                </Table.Td> */}
-                                </Table.Tr>
-                              ),
-                            )}
-                          </Table.Tbody>
-                        </Table>
+                                  </div>
+                                </div>
+                              </div>
+                            ),
+                          )}
+                        </div>
                       ) : datatoget?.loading1 ? (
                         <IsLoading w={"w-[50vw]"} h={"h-[40vh]"} />
                       ) : (
                         <Nodatafound w={"w-[50vw]"} h={"h-[50vh]"} />
                       )}
                     </div>
+
                     {datatoget?.spotdata1?.length > 0 &&
                       datatoget?.totalpages1 > 1 && (
                         <CommonPagination
@@ -4083,16 +4207,18 @@ export const IsDashboard = () => {
               </div>
             </div>
           </div> */}
-          <div className="w-full mb-5">
-            <div className=" tableMain ">
-              <div className="NewtableBox  bg-white rounded-md justify-between shadow-blue-900  ">
-                <div className="tbaleTittle p-2 bg-gray-50 flex justify-between items-center ">
-                  <h2 className="text-sm font-medium">
+ 
+   <div className="col-span-12 lg:col-span-6 mb-5">
+            <div className=" tableMain lg:h-full ">
+              <div className="NewtableBox  min-h-auto lg:h-full  bg-white rounded-md justify-between shadow-blue-900 border border-[#fff]  ">
+                <div className="tbaleTittle p-2 bg-[#e9edf2] flex justify-between items-center rounded-t-md ">
+                  <h2 className="text-[15px] font-medium">
                     Approved/Pending/Rejected
                   </h2>
 
                   <div className="tableSearch relative w-200">
                     <FormInput
+                      className="h-[30px] !p-1 !px-2"
                       id="vertical-form-1"
                       type="text"
                       placeholder="Search By Enquiry No. "
@@ -4111,172 +4237,214 @@ export const IsDashboard = () => {
                           getspotenqdata(3, [1, 3, 7, 8, 9, 10]);
                         }
                       }}
-                      className="searchListTable absolute top-2 right-3 text-stone-300"
+                      className="searchListTable absolute top-[6px] right-2 text-stone-300"
                     >
                       {" "}
-                      <Search />
+                      <Search className="w-[17px] h-[17px]" />
                     </button>
                   </div>
                 </div>
 
                 <div
-                  className={`tablelist p-3 ${isActive ? "showtable" : "hideTable"
-                    }`}
+                  className={`tablelist p-3 ${
+                    isActive ? "showtable" : "hideTable"
+                  }`}
                 >
-                  <div
-                    className={`overflow-x-auto overflow-y-hidden  ${"h-[60vh]"}`}
-                  >
+                  <div className="w=full">
                     <div className="table-responsive ">
                       {datatoget?.spotdata3?.length >= 1 &&
-                        !datatoget?.loading3 ? (
-                        <Table
-                          sm
-                          className="table table-text-small mb-0 border whitespace-nowrap  "
-                        >
-                          <Table.Thead className="thead-primary table-sorting bg-mustard">
-                            <Table.Tr className="text-center text-white">
-                              <Table.Th className="whitespace-nowrap border text-right">
-                                SR.NO.
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-center">
-                                ACTIONS
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                STATUS
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                CUSTOMER NAME
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                ENQUIRY NUMBER
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                ENQUIRY DATE
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                ORIGIN
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                DESTINATION
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                WEIGHT
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                VENDOR
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                SHIPMENT TYPE
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                QUOTED BY
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-right">
-                                QUOTED PRICE (₹)
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                RATE VALID TILL
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                AIRWAYBILL NO.
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                DISPATCH LABEL
-                              </Table.Th>
-                            </Table.Tr>
-                          </Table.Thead>
-                          <Table.Tbody>
-                            {datatoget?.spotdata3?.map(
-                              (data: any, index: number) => (
-                                <Table.Tr
-                                  key={index}
-                                  className={`text-left intro-x capitalize `}
-                                >
-                                  <Table.Td className="border whitespace-nowrap text-right">
-                                    {(datatoget?.page3 - 1) * 5 + (index + 1)}
-                                  </Table.Td>
-                                  <Table.Td>
-                                    {(data?.shipment_type == 5 ||
-                                      data?.shipment_type == 1 ||
-                                      data?.shipment_type == 8) &&
-                                      data?.import_booking == 2 &&
-                                      data?.booking_status != 3 &&
-                                      data?.booking_status != 7 &&
-                                      data?.booking_status != 18 ? (
-                                      <Menu>
-                                        <Menu.Button className=" bg-blue-100 text-blue-500 border-blue-500 flex p-1 rounded-md border-2">
-                                          <UserCog className="w-5 stroke-2.5" />
-                                          <ChevronDown className="w-4 stroke-2.5 mt-1" />
-                                        </Menu.Button>
-                                        <Menu.Items
-                                          className="w-44 mt-px border-2 border-slate-200"
-                                          placement="right-start"
-                                        >
-                                          {/* <Menu.Divider  /> */}
-                                          {data?.booking_status == "1" && (
-                                            <Menu.Item
-                                              className="hover:bg-mustard hover:text-white"
-                                              onClick={() => {
-                                                handleEdit(data, "credit");
-                                              }}
-                                            >
-                                              REQUEST CREDIT
-                                            </Menu.Item>
-                                          )}
+                      !datatoget?.loading3 ? (
+                        <div className="w-full ">
+                          {datatoget?.spotdata3?.map(
+                            (data: any, index: number) => (
+                              <div
+                                key={index}
+                                className="w-full border rounded-lg mb-3 group bg-[#fff] border-[#fff1d3] even:bg-[#fff] even:border-[#eaf1f6] hover:bg-[#fff] hover:border-[#E6E6E6]"
+                              >
+                                <div className="justify-between border-[#fff1d3] border-b w-full  block lg:flex pt-[5px] pb-[3px] px-2 items-center bg-[#fffbf2] group-even:bg-[#f6faff] rounded-t-lg group-even:border-[#eaf1f6] group-hover:bg-[#F8F8F8] group-hover:border-[#E6E6E6]">
+                                  <div className="flex relative mb-2 lg:mb-0">
+                                    <figure className="bg-[#FFF0CE] group-even:bg-[#E8F2FF] rounded-full p-[2px] w-[30px] h-[30px] justify-between flex items-center group-hover:bg-[#e3e3e3]">
+                                      <FileText className="w-[18px] h-[18px] text-[#B68F34] group-even:text-[#5A81B4] m-auto group-hover:text-[#303030]" />
+                                    </figure>
 
-                                          {data?.booking_status == "5" &&
-                                            data?.airwaybilno ? (
-                                            <>
-                                              {/* <Menu.Divider />
-                                              <Menu.Item
-                                                className="hover:bg-mustard hover:text-white"
-                                                onClick={() => {
-                                                  setEditBookingData(data);
-                                                  setDimensionData(
-                                                    data?.shipment_dimensions || [
-                                                      {
-                                                        item_description: "",
-                                                        weight: "",
-                                                        value: "",
-                                                        quantity: "",
-                                                        length: "",
-                                                        breadth: "",
-                                                        height: "",
-                                                        hsn_code: "",
-                                                      },
-                                                    ],
-                                                  );
-                                                  getJobData(data?.job_id);
-                                                  setShowEditBooking(true)
-                                                }}
+                                    <aside className="ml-2 leading-[14px]">
+                                      <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[14px] ">
+                                        Shipment :{" "}
+                                        {shipmentTypedata?.find(
+                                          (item2: any) =>
+                                            item2?.booking_shipment_type_id ==
+                                            data?.shipment_type,
+                                        )?.shipment_type || "-"}
+                                      </h2>
+
+                                      <h3 className="text-[12px] font-bold text-[#e1a722] rounded-[10px] ">
+                                        ENQUIRY NO: {data?.booking_no || "N.A."}
+                                      </h3>
+                                    </aside>
+                                  </div>
+
+                                  <div className="flex gap-2 items-center">
+                                    <div className="text-left lg:text-right leading-[16px]">
+                                      <h4 className="font-medium text-[13px]">
+                                        {" "}
+                                        WEIGHT :
+                                        <span>
+                                          {Number(data?.weight) || "-"}{" "}
+                                          {data?.weight_unit
+                                            ? `(${data.weight_unit})`
+                                            : ""}
+                                        </span>
+                                      </h4>
+                                      <p className="text-[13px] text-[#797979]">
+                                        {formatDate(data?.created_date) || "-"}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="px-3 pt-3 pb-2">
+                                  <div className="grid grid-cols-12 gap-2">
+                                    <div className="col-span-12 lg:col-span-8">
+                                      <div className="w-full">
+                                        <div className="w-full font-medium text-[14px]">
+                                          {" "}
+                                          Name :{" "}
+                                          {getrelateddata(
+                                            "franchisee",
+                                            allfdata,
+                                            data?.franchisee_id,
+                                          )?.franchisee_name || ""}
+                                        </div>
+
+                                        <div className="w-full block lg:flex gap-x-5 mt-1">
+                                          <div className="leading-[16px] mb-2 lg:mb-0">
+                                            <small className="text-[11px] text-[#797979] flex items-center">
+                                              <i className="w-[5px] h-[5px] bg-green-500 group-even:bg-[#6EA8E0] rounded-full mr-1 inline-block group-hover:bg-[#a0a0a0]"></i>{" "}
+                                              ORIGIN{" "}
+                                            </small>
+                                            <p className="text-[14px] text-[#303030]">
+                                              {data?.org_city || "-"}
+                                            </p>
+                                          </div>
+
+                                          <div className="leading-[16px]">
+                                            <small className="text-[11px] text-[#797979] flex items-center">
+                                              <i className="w-[5px] h-[5px] bg-[#efb847] group-even:bg-[#6EA8E0] rounded-full mr-1 inline-block group-hover:bg-[#a0a0a0]"></i>{" "}
+                                              DESTINATION{" "}
+                                            </small>
+                                            <p className="text-[14px] text-[#303030]">
+                                              {data?.org_country_id == "97" &&
+                                              data?.dest_country_id == "97"
+                                                ? data?.dest_city
+                                                : countryData?.find(
+                                                    (item: any) =>
+                                                      item.country_id ==
+                                                      data?.dest_country_id,
+                                                  )?.country_name ||
+                                                  data?.dest_city ||
+                                                  "N.A."}
+                                            </p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <div className="col-span-12 lg:col-span-4">
+                                      <div className="flex relative gap-2 justify-start lg:justify-end">
+                                        <div className="">
+                                          {(data?.shipment_type == 5 ||
+                                            data?.shipment_type == 1 ||
+                                            data?.shipment_type == 8) &&
+                                          data?.import_booking == 2 &&
+                                          data?.booking_status != 3 &&
+                                          data?.booking_status != 7 &&
+                                          data?.booking_status != 18 ? (
+                                            <Menu>
+                                              <Menu.Button className=" bg-blue-100 text-blue-500 border-blue-300 flex py-[3px] px-2 rounded-md border h-[26px] ">
+                                                <UserCog className="w-[17px] h-[17px] stroke-2.5" />
+                                                <ChevronDown className="w-[16px] h-[16px]  stroke-2.5 mt-0 ml-2 relative top-[1px]" />
+                                              </Menu.Button>
+                                              <Menu.Items
+                                                className="w-44 mt-px border-2 border-slate-200"
+                                                placement="left-start"
                                               >
-                                                EDIT BOOKING
-                                              </Menu.Item> */}
-                                              <Menu.Divider />
+                                                {/* <Menu.Divider  /> */}
+                                                {data?.booking_status ==
+                                                  "1" && (
+                                                  <Menu.Item
+                                                    className="hover:bg-mustard hover:text-white !px-[9px] !py-[4px]"
+                                                    onClick={() => {
+                                                      handleEdit(
+                                                        data,
+                                                        "credit",
+                                                      );
+                                                    }}
+                                                  >
+                                                    REQUEST CREDIT
+                                                  </Menu.Item>
+                                                )}
+
+                                                {data?.booking_status == "5" &&
+                                                data?.airwaybilno ? (
+                                                  <>
+                                                    <Menu.Item
+                                                      className="hover:bg-mustard hover:text-white !px-[9px] !py-[4px]"
+                                                      onClick={() => {
+                                                        setEditBookingData(
+                                                          data,
+                                                        );
+                                                        setDimensionData(
+                                                          data?.shipment_dimensions || [
+                                                            {
+                                                              item_description:
+                                                                "",
+                                                              weight: "",
+                                                              value: "",
+                                                              quantity: "",
+                                                              length: "",
+                                                              breadth: "",
+                                                              height: "",
+                                                              hsn_code: "",
+                                                            },
+                                                          ],
+                                                        );
+                                                        getJobData(
+                                                          data?.job_id,
+                                                        );
+                                                        setShowEditBooking(
+                                                          true,
+                                                        );
+                                                      }}
+                                                    >
+                                                      EDIT BOOKING
+                                                    </Menu.Item>
+
+                                                    <Menu.Item
+                                                      className="hover:bg-mustard hover:text-white !px-[9px] !py-[4px]"
+                                                      onClick={() => {
+                                                        setTagData({
+                                                          job_id: data?.job_id,
+                                                          booking_no:
+                                                            data?.booking_no,
+                                                          franchisee_id:
+                                                            data?.franchisee_id,
+                                                          mawb:
+                                                            data?.master || "",
+                                                          hawb:
+                                                            data?.airwaybilno ||
+                                                            "",
+                                                        });
+                                                        setMawbPresent(
+                                                          !!data?.master,
+                                                        );
+                                                        setTagOpen(true);
+                                                      }}
+                                                    >
+                                                      TAG HOUSE/MASTER
+                                                    </Menu.Item>
+                                                    {/* <Menu.Divider />
                                               <Menu.Item
-                                                className="hover:bg-mustard hover:text-white"
-                                                onClick={() => {
-                                                  setTagData({
-                                                    job_id: data?.job_id,
-                                                    booking_no:
-                                                      data?.booking_no,
-                                                    franchisee_id:
-                                                      data?.franchisee_id,
-                                                    mawb: data?.master || "",
-                                                    hawb:
-                                                      data?.airwaybilno || "",
-                                                  });
-                                                  setMawbPresent(
-                                                    !!data?.master,
-                                                  );
-                                                  setTagOpen(true);
-                                                }}
-                                              >
-                                                TAG HOUSE/MASTER
-                                              </Menu.Item>
-                                              {/* <Menu.Divider />
-                                              <Menu.Item
-                                                className="hover:bg-mustard hover:text-white"
+                                                className="hover:bg-mustard hover:text-white !p-0"
                                                 onClick={() => {
                                                   setScanData((pre) => ({
                                                     ...pre,
@@ -4300,281 +4468,219 @@ export const IsDashboard = () => {
                                               >
                                                 UPDATE SCAN EVENTS
                                               </Menu.Item> */}
-                                            </>
-                                          ) : (
-                                            <>
-                                              <Menu.Divider />
-                                              {((data?.booking_status == "1" ||
-                                                data?.booking_status == "8" ||
-                                                data?.booking_status == "9" ||
-                                                data?.booking_status == "10" ||
-                                                data?.booking_status == "19") &&
-                                                data?.is_draft == null &&
-                                                data?.is_import_reject_approve ==
-                                                0) ||
-                                                data?.booking_status == "15" ||
-                                                (data?.booking_status == "18" &&
-                                                  data?.is_draft == null &&
-                                                  data?.is_import_reject_approve ==
-                                                  0) ||
-                                                data?.booking_status == "15" ||
-                                                (data?.booking_status == "18" &&
-                                                  data?.is_draft == 1 &&
-                                                  data?.is_import_reject_approve ==
-                                                  1) ? (
-                                                <Menu.Item
-                                                  className="hover:bg-mustard hover:text-white"
-                                                  onClick={async () => {
-                                                    setDimensionData(
-                                                      data?.shipment_dimensions || [
-                                                        {
-                                                          item_description: "",
-                                                          weight: "",
-                                                          value: "",
-                                                          quantity: "",
-                                                          length: "",
-                                                          breadth: "",
-                                                          height: "",
-                                                          hsn_code: "",
-                                                        },
-                                                      ],
-                                                    );
-                                                    setEmailData({
-                                                      job_id: data?.job_id,
-                                                      booking_no:
-                                                        data?.booking_no,
-                                                      franchisee_id:
-                                                        data?.franchisee_id,
-                                                      cc_email: allfdata?.find(
-                                                        (item: any) =>
-                                                          item?.franchisee_id ==
-                                                          data?.franchisee_id,
-                                                      )?.email_id
-                                                        ? [
-                                                          allfdata.find(
-                                                            (item: any) =>
-                                                              item?.franchisee_id ==
+                                                  </>
+                                                ) : (
+                                                  <>
+                                                    {((data?.booking_status ==
+                                                      "1" ||
+                                                      data?.booking_status ==
+                                                        "8" ||
+                                                      data?.booking_status ==
+                                                        "9" ||
+                                                      data?.booking_status ==
+                                                        "10" ||
+                                                      data?.booking_status ==
+                                                        "19") &&
+                                                      data?.is_draft == null &&
+                                                      data?.is_import_reject_approve ==
+                                                        0) ||
+                                                    data?.booking_status ==
+                                                      "15" ||
+                                                    (data?.booking_status ==
+                                                      "18" &&
+                                                      data?.is_draft == null &&
+                                                      data?.is_import_reject_approve ==
+                                                        0) ||
+                                                    data?.booking_status ==
+                                                      "15" ||
+                                                    (data?.booking_status ==
+                                                      "18" &&
+                                                      data?.is_draft == 1 &&
+                                                      data?.is_import_reject_approve ==
+                                                        1) ? (
+                                                      <Menu.Item
+                                                        className="hover:bg-mustard hover:text-white !p-0"
+                                                        onClick={async () => {
+                                                          setDimensionData(
+                                                            data?.shipment_dimensions || [
+                                                              {
+                                                                item_description:
+                                                                  "",
+                                                                weight: "",
+                                                                value: "",
+                                                                quantity: "",
+                                                                length: "",
+                                                                breadth: "",
+                                                                height: "",
+                                                                hsn_code: "",
+                                                              },
+                                                            ],
+                                                          );
+                                                          setEmailData({
+                                                            job_id:
+                                                              data?.job_id,
+                                                            booking_no:
+                                                              data?.booking_no,
+                                                            franchisee_id:
                                                               data?.franchisee_id,
-                                                          )!.email_id,
-                                                        ]
-                                                        : [],
-                                                    });
-                                                    setImportData(data);
-                                                    getJobData(data?.job_id);
-                                                    setShowBtn(false);
-                                                    setOpenImport(true);
-                                                    handleImportLastMail(
-                                                      data?.franchisee_id,
-                                                    );
-                                                  }}
-                                                >
-                                                  {data?.booking_status ==
-                                                    "1" ||
-                                                    data?.booking_status == "8" ||
-                                                    data?.booking_status == "9" ||
-                                                    data?.booking_status == "10"
-                                                    ? "ADD DETAILS"
-                                                    : "COMPLETE BOOKING"}
-                                                </Menu.Item>
-                                              ) : null}
-                                              {(data?.booking_status == "1" ||
-                                                data?.booking_status == "8" ||
-                                                data?.booking_status == "9" ||
-                                                data?.booking_status == "10" ||
-                                                data?.booking_status == "19") && (
-                                                <>
-                                                <Menu.Divider />
-                                                <Menu.Item
-                                                  className="hover:bg-mustard hover:text-white"
-                                                  onClick={() => {
-                                                    setProformaData(data);
-                                                    setProformaOpen(true);
-                                                  }}
-                                                >
-                                                  PROFORMA INVOICE
-                                                </Menu.Item>
-                                                </>
-                                              )}
-                                            </>
+                                                            cc_email:
+                                                              allfdata?.find(
+                                                                (item: any) =>
+                                                                  item?.franchisee_id ==
+                                                                  data?.franchisee_id,
+                                                              )?.email_id
+                                                                ? [
+                                                                    allfdata.find(
+                                                                      (
+                                                                        item: any,
+                                                                      ) =>
+                                                                        item?.franchisee_id ==
+                                                                        data?.franchisee_id,
+                                                                    )!.email_id,
+                                                                  ]
+                                                                : [],
+                                                          });
+                                                          setImportData(data);
+                                                          getJobData(
+                                                            data?.job_id,
+                                                          );
+                                                          setShowBtn(false);
+                                                          setOpenImport(true);
+                                                          handleImportLastMail(
+                                                            data?.franchisee_id,
+                                                          );
+                                                        }}
+                                                      >
+                                                        {data?.booking_status ==
+                                                          "1" ||
+                                                        data?.booking_status ==
+                                                          "8" ||
+                                                        data?.booking_status ==
+                                                          "9" ||
+                                                        data?.booking_status ==
+                                                          "10"
+                                                          ? "ADD DETAILS"
+                                                          : "COMPLETE BOOKING"}
+                                                      </Menu.Item>
+                                                    ) : null}
+                                                    {(data?.booking_status ==
+                                                      "1" ||
+                                                      data?.booking_status ==
+                                                        "8" ||
+                                                      data?.booking_status ==
+                                                        "9" ||
+                                                      data?.booking_status ==
+                                                        "10" ||
+                                                      data?.booking_status ==
+                                                        "19") && (
+                                                      <>
+                                                        <Menu.Item
+                                                          className="hover:bg-mustard hover:text-white"
+                                                          onClick={() => {
+                                                            setProformaData(
+                                                              data,
+                                                            );
+                                                            setProformaOpen(
+                                                              true,
+                                                            );
+                                                          }}
+                                                        >
+                                                          PROFORMA INVOICE
+                                                        </Menu.Item>
+                                                      </>
+                                                    )}
+                                                  </>
+                                                )}
+                                              </Menu.Items>
+                                            </Menu>
+                                          ) : (
+                                            <div className="flex justify-center items-center">
+                                              <Button
+                                                className="h-[26px] text-[13px] bg-mustard text-white border-none px-3 py-[1px] hover:bg-[#d2d2d2] hover:text-[#303030]"
+                                                onClick={() => {
+                                                  handleEdit(data, "credit");
+                                                }}
+                                              >
+                                                Action
+                                              </Button>
+                                            </div>
                                           )}
-                                        </Menu.Items>
-                                      </Menu>
-                                    ) : (
-                                      <div className="flex justify-center items-center">
+                                        </div>
+
                                         <Button
-                                          className="p-1 bg-mustard text-white"
                                           onClick={() => {
-                                            handleEdit(data, "credit");
+                                            setSelectedCardData(data);
+                                            setViewApprovedModal(true);
                                           }}
+                                          className="text-[13px] bg-mustard text-white border-none hover:bg-[#d2d2d2] hover:text-[#303030] rounded-md flex items-center pl-2 pr-1 py-[3px]"
                                         >
-                                          Action
+                                          View{" "}
+                                          <ChevronRight className="w-[14px] h-[16px]" />
                                         </Button>
                                       </div>
-                                    )}
-                                  </Table.Td>
-                                  <Table.Td>
-                                    <div className="text-left">
-                                      <span
-                                        className={
-                                          data?.booking_status == 15
-                                            ? data?.import_booking == 2
-                                              ? "text-green-400"
-                                              : data?.is_checklist == 1
-                                                ? "text-green-400"
-                                                : "text-red-400"
-                                            : statusdata?.find(
-                                              (s: any) => s.status_code == data?.booking_status
-                                            )?.css_class
-                                        }
-                                      >
-                                        {data?.booking_status == 15
-                                          ? data?.import_booking == 2
-                                            ? "Customer Approval Pending"
-                                            : data?.is_checklist == 1
-                                              ? "CheckList Done"
-                                              : "CheckList Pending"
-                                          : statusdata?.find(
-                                            (s: any) => s.status_code == data?.booking_status
-                                          )?.status_name}
-                                      </span>
+                                      <div className="w-full text-[13px] mt-2 text-left lg:text-right">
+                                        Price (₹) :{" "}
+                                        <span>
+                                          {indianFormat(data?.spot_price) ||
+                                            "-"}{" "}
+                                          {data?.price_type == "1"
+                                            ? "(a)"
+                                            : data?.price_type == "2"
+                                              ? "(k)"
+                                              : ""}
+                                        </span>
+                                      </div>
                                     </div>
-                                  </Table.Td>
-                                  <Table.Td>
-                                    {getrelateddata(
-                                      "franchisee",
-                                      allfdata,
-                                      data?.franchisee_id,
-                                    )?.franchisee_name || ""}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {data?.booking_no || "-"}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {formatDate(data?.created_date) || "-"}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {data?.org_city || "-"}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {data?.org_country_id == "97" &&
-                                      data?.dest_country_id == "97"
-                                      ? data?.dest_city
-                                      : countryData?.find(
-                                        (item: any) =>
-                                          item.country_id ==
-                                          data?.dest_country_id,
-                                      )?.country_name ||
-                                      data?.dest_city ||
-                                      "N.A."}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap text-right">
-                                    {Number(data?.weight) || "-"}{" "}
-                                    {data?.weight_unit
-                                      ? `(${data.weight_unit})`
-                                      : ""}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {productTypes?.find(
-                                      (item) =>
-                                        item.product_id == data?.courier_id,
-                                    )?.product_name || "-"}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {shipmentTypedata?.find(
-                                      (item2: any) =>
-                                        item2?.booking_shipment_type_id ==
-                                        data?.shipment_type,
-                                    )?.shipment_type || "-"}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {data?.quoted_by || "-"}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap lowercase text-right">
-                                    {indianFormat(data?.spot_price) || "-"}{" "}
-                                    {data?.price_type == "1"
-                                      ? "(a)"
-                                      : data?.price_type == "2"
-                                        ? "(k)"
-                                        : ""}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {formatDate(data?.valid_till) || "N.A."}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {data?.airwaybilno || "N.A."}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {data?.house_pdf ? (
-                                      <div className="items-center">
-                                        <FileText
-                                          className="cursor-pointer text-mustard stroke-2.5 m-auto"
-                                          onClick={() =>
-                                            downloadAttachment(
-                                              data?.house_pdf.replace(
-                                                "_mawb",
-                                                "",
-                                              ),
-                                              "Dispatch Label",
-                                            )
-                                          }
-                                        />
+
+                                    <div className="col-span-12 lg:col-span-12">
+                                      <div className=" flex  w-full  border-t border-[#f2f2f2] px-[0] pt-[4px]">
+                                        <h2 className="flex text-[#9099a2] text-[11px] font-medium  uppercase leading-[20px]  ">
+                                          <i className="mr-1 bg-[#f1f5f9] border-none p-[2px] w-[18px] h-[18px] rounded-full flex justify-center items-center ">
+                                            <User
+                                              className="w-[12px] h-[12px]  text-[#959595]"
+                                              strokeWidth={3}
+                                            />
+                                          </i>
+                                          <span className="text-[#959595]">
+                                            Status{" "}
+                                          </span>
+                                          &nbsp; : &nbsp;
+                                          <span
+                                            className={
+                                              data?.booking_status == 15
+                                                ? data?.import_booking == 2
+                                                  ? "text-green-400"
+                                                  : data?.is_checklist == 1
+                                                    ? "text-green-400"
+                                                    : "text-red-400"
+                                                : statusdata?.find(
+                                                    (s: any) =>
+                                                      s.status_code ==
+                                                      data?.booking_status,
+                                                  )?.css_class
+                                            }
+                                          >
+                                            {data?.booking_status == 15
+                                              ? data?.import_booking == 2
+                                                ? "Customer Approval Pending"
+                                                : data?.is_checklist == 1
+                                                  ? "CheckList Done"
+                                                  : "CheckList Pending"
+                                              : statusdata?.find(
+                                                  (s: any) =>
+                                                    s.status_code ==
+                                                    data?.booking_status,
+                                                )?.status_name}
+                                          </span>
+                                        </h2>
                                       </div>
-                                    ) : (
-                                      <div className="text-gray-400 text-center">
-                                        Not Available
-                                      </div>
-                                    )}
-                                  </Table.Td>
-                                  {/* <Table.Td className="px-8 flex justify-center">
-                                  {data?.valid_till &&
-                                  curr > new Date(data?.valid_till) ? (
-                                    <p className="text-base  text-gray-500 whitespace-nowrap">
-                                      Rate Expired
-                                    </p>
-                                  ) : data?.booking_status == 1 ||
-                                    data?.booking_status == 3 ||
-                                    data?.booking_status == 6 ? (
-                                    <Button
-                                      rounded
-                                      className="w-24 text-base  text-white bg-green-500"
-                                      onClick={() => {
-                                        setSpotId(data?.id);
-                                        setOpen(true);
-                                      }}
-                                    >
-                                      APPROVE
-                                    </Button>
-                                  ) : data?.booking_status == 2 ? (
-                                    <p className="text-base   text-red-500">
-                                      REJECTED
-                                    </p>
-                                  ) : data?.booking_status == 5 ? (
-                                    <p className=" text-green-500 text-base ">
-                                      BOOKED
-                                    </p>
-                                  ) : data?.booking_status == 4 ? (
-                                    <Button
-                                      rounded
-                                      size="sm"
-                                      className="w-20  text-base text-white bg-green-500"
-                                      onClick={() => handleBooking(data)}
-                                    >
-                                      BOOK
-                                    </Button>
-                                  ) : data?.booking_status == 0 ? (
-                                    <Edit
-                                      className="cursor-pointer text-mustard stroke-2.5"
-                                      onClick={() => handleEdit(data)}
-                                    />
-                                  ) : (
-                                    "N.A."
-                                  )}
-                                </Table.Td> */}
-                                </Table.Tr>
-                              ),
-                            )}
-                          </Table.Tbody>
-                        </Table>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ),
+                          )}
+                        </div>
                       ) : datatoget?.loading3 ? (
                         <IsLoading w={"w-[50vw]"} h={"h-[40vh]"} />
                       ) : (
@@ -4595,19 +4701,20 @@ export const IsDashboard = () => {
               </div>
             </div>
           </div>
-        </div>
+        
 
-        <div className="lg:flex lg:flex-wrap grid-flow-col grid-rows-2 ">
-          <div className="w-full mb-5">
-            <div className=" tableMain ">
-              <div className="NewtableBox  bg-white rounded-md justify-between shadow-blue-900  ">
-                <div className="tbaleTittle p-2 bg-gray-50 flex justify-between items-center ">
-                  <h2 className="text-sm font-medium">
+  
+    <div className="col-span-12 lg:col-span-6 mb-5">
+            <div className=" tableMain lg:h-full ">
+              <div className="NewtableBox min-h-auto lg:h-full  bg-white rounded-md justify-between shadow-blue-900 border border-[#fff]  ">
+                <div className="tbaleTittle p-2 bg-[#e9edf2] flex justify-between items-center rounded-t-md ">
+                  <h2 className="text-[15px] font-medium">
                     Initiated Jobs by OPS Team
                   </h2>
 
                   <div className="tableSearch relative w-200">
                     <FormInput
+                      className="h-[30px] !p-1 !px-2"
                       id="vertical-form-1"
                       type="text"
                       placeholder="Search By Franchisee "
@@ -4626,30 +4733,27 @@ export const IsDashboard = () => {
                           getspotenqdata(2, 0);
                         }
                       }}
-                      className="searchListTable absolute top-2 right-3 text-stone-300"
+                      className="searchListTable absolute top-[6px] right-2 text-stone-300"
                     >
                       {" "}
-                      <Search />
+                      <Search className="w-[17px] h-[17px]" />
                     </button>
                   </div>
                 </div>
 
                 <div
-                  className={`tablelist p-3 ${isActive ? "showtable" : "hideTable"
-                    }`}
+                  className={`tablelist p-3 ${
+                    isActive ? "showtable" : "hideTable"
+                  }`}
                 >
                   <div
-                    className={`overflow-x-auto overflow-y-hidden  ${"h-[60vh]"}`}
+                    className={`overflow-x-auto overflow-y-hidden  ${""}`}
                   >
                     <div className="table-responsive ">
                       {datatoget?.spotdata2?.length >= 1 &&
-                        !datatoget?.loading2 ? (
-                        <Table
-                          sm
-                          className="table table-text-small mb-0 border whitespace-nowrap  "
-                        >
-                          <Table.Thead className="thead-primary table-sorting bg-mustard">
-                            <Table.Tr className="text-center text-white">
+                      !datatoget?.loading2 ? (
+                        <div className="w-full  ">
+                          {/* <Table.Tr className="text-center text-white">
                               <Table.Th className="whitespace-nowrap border text-right">
                                 SR.NO.
                               </Table.Th>
@@ -4659,9 +4763,9 @@ export const IsDashboard = () => {
                               {/* <Table.Th className="whitespace-nowrap border text-left">
                                 JOB ID
                               </Table.Th> */}
-                              {/* <Table.Th className="whitespace-nowrap border text-left">
+                          {/* <Table.Th className="whitespace-nowrap border text-left">
                                 STATUS
-                              </Table.Th> */}
+                              </Table.Th> 
                               <Table.Th className="whitespace-nowrap border text-left">
                                 FRANCHISEE
                               </Table.Th>
@@ -4675,22 +4779,85 @@ export const IsDashboard = () => {
                                 WEIGHT
                               </Table.Th>
                             </Table.Tr>
-                          </Table.Thead>
-                          <Table.Tbody>
-                            {datatoget?.spotdata2?.map(
-                              (data: any, index: number) => (
-                                <Table.Tr
-                                  key={index}
-                                  className={`text-left intro-x capitalize `}
-                                >
-                                  <Table.Td className="border whitespace-nowrap text-right">
-                                    {(datatoget?.page2 - 1) * 5 + (index + 1)}
-                                  </Table.Td>
-                                  <Table.Td>
+                          </Table.Thead> */}
 
-                                    <div className="flex justify-center items-center">
+                          {datatoget?.spotdata2?.map(
+                            (data: any, index: number) => (
+                              <div
+                                className="w-full border   rounded-lg mb-3   group bg-[#fff] border-[#fff1d3] even:bg-[#fff] even:border-[#eaf1f6]    hover:bg-[#fff]  hover:border-[#E6E6E6] "
+                                key={index}
+                              >
+                                <div
+                                  className=" justify-between border-[#fff1d3] border-b w-full flex pt-[5px] pb-[3px] px-2  items-center  
+                                bg-[#fffbf2] group-even:bg-[#f6faff] rounded-t-lg   group-even:border-[#eaf1f6]  group-hover:bg-[#F8F8F8]  group-hover:border-[#E6E6E6]"
+                                >
+                                  <div className="  flex      relative ">
+                                    <figure className="bg-[#FFF0CE] group-even:bg-[#E8F2FF] rounded-full p-[2px] w-[30px] h-[30px] justify-between  flex   items-center   group-hover:bg-[#e3e3e3]">
+                                      <MapPin className="w-[18px] h-[18px] text-[#B68F34] group-even:text-[#5A81B4] m-auto group-hover:text-[#303030]" />
+                                    </figure>
+
+                                    <aside className="ml-2 leading-[14px]">
+                                      <small className="text-[12px] text-[#797979]">
+                                        DESTINATION COUNTRY
+                                      </small>
+                                      <h2 className="text-[#515151] text-[15px] font-medium   leading-[20px]">
+                                        {/* {(datatoget?.page2 - 1) * 5 + (index + 1)} */}
+
+                                        {countryData?.find(
+                                          (item: any) =>
+                                            item.country_id ==
+                                            data?.destination_country,
+                                        )?.country_name || ""}
+                                      </h2>
+                                    </aside>
+                                  </div>
+
+                                  <div className="text-right leading-[16px]">
+                                    <h4 className="font-medium">
+                                      {" "}
+                                      WEIGHT :
+                                      <span>
+                                        {" "}
+                                        {(data?.shipment_dimensions?.length >=
+                                          1 &&
+                                          data?.shipment_dimensions?.reduce(
+                                            (acc, item) => {
+                                              return (
+                                                acc + Number(item?.weight || 0)
+                                              ); // Ensure `height` exists, else add 0
+                                            },
+                                            0,
+                                          )) ||
+                                          ""}
+                                      </span>
+                                    </h4>
+
+                                    <p className="text-[13px] text-[#797979]">
+                                      {formatDate(data?.created_date) || ""}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="px-3 pt-3 pb-2">
+                                  <div className=" justify-between  w-full flex  items-center ">
+                                    <div className="        relative ">
+                                      <h2 className=" text-sm mb-[2px] uppercase text-[#797979]">
+                                        FRANCHISEE
+                                      </h2>
+                                      <p className="text-[13px] leading-[15px] text-[#262525] flex items-center">
+                                        <i className="w-[7px] h-[7px] bg-[#efb847] group-even:bg-[#6EA8E0] rounded-full mr-2 inline-block group-hover:bg-[#a0a0a0]"></i>
+
+                                        {getrelateddata(
+                                          "franchisee",
+                                          allfdata,
+                                          data?.franchisee_id,
+                                        )?.franchisee_name || ""}
+                                      </p>
+                                    </div>
+
+                                    <div className="        relative ">
                                       <Button
-                                        className="p-1 bg-mustard text-white"
+                                        className="h-[26px]  p-1 bg-mustard text-white border-none px-4 py-1 hover:bg-[#d2d2d2] hover:text-[#303030]"
                                         onClick={() => {
                                           handleEdit(data, "job");
                                         }}
@@ -4698,46 +4865,12 @@ export const IsDashboard = () => {
                                         Action
                                       </Button>
                                     </div>
-                                  </Table.Td>
-                                  {/* <Table.Td>{data?.job_id || ""}</Table.Td> */}
-                                  <Table.Td>
-                                    {getrelateddata(
-                                      "franchisee",
-                                      allfdata,
-                                      data?.franchisee_id,
-                                    )?.franchisee_name || ""}
-                                  </Table.Td>
-                                  <Table.Td>
-                                    {formatDate(data?.created_date) || ""}
-                                  </Table.Td>
-                                  <Table.Td>
-                                    {countryData?.find(
-                                      (item: any) =>
-                                        item.country_id ==
-                                        data?.destination_country,
-                                    )?.country_name || ""}
-                                  </Table.Td>
-
-                                  <Table.Td className="border whitespace-nowrap text-right">
-                                    {(data?.shipment_dimensions?.length >= 1 &&
-                                      data?.shipment_dimensions?.reduce(
-                                        (acc, item) => {
-                                          return (
-                                            acc + Number(item?.weight || 0)
-                                          ); // Ensure `height` exists, else add 0
-                                        },
-                                        0,
-                                      )) ||
-                                      ""}
-                                  </Table.Td>
-                                  {/* <Table.Td className="border whitespace-nowrap text-right">
-                                    {data?.status || ""}
-                                  </Table.Td> */}
-                                </Table.Tr>
-                              ),
-                            )}
-                          </Table.Tbody>
-                        </Table>
+                                  </div>
+                                </div>
+                              </div>
+                            ),
+                          )}
+                        </div>
                       ) : datatoget?.loading2 ? (
                         <IsLoading w={"w-[50vw]"} h={"h-[40vh]"} />
                       ) : (
@@ -4758,14 +4891,17 @@ export const IsDashboard = () => {
               </div>
             </div>
           </div>
-          <div className="w-full mb-5">
-            <div className=" tableMain ">
-              <div className="NewtableBox  bg-white rounded-md justify-between shadow-blue-900  ">
-                <div className="tbaleTittle p-2 bg-gray-50 flex justify-between items-center ">
-                  <h2 className="text-sm font-medium">Insufficient Balance</h2>
+           <div className="col-span-12 lg:col-span-6 mb-5">
+            <div className=" tableMain lg:h-full ">
+              <div className="NewtableBox min-h-auto lg:h-full  bg-white rounded-md justify-between shadow-blue-900 border border-[#fff]  ">
+                <div className="tbaleTittle p-2 bg-[#e9edf2] flex justify-between items-center rounded-t-md ">
+                  <h2 className="text-[15px] font-medium">
+                    Insufficient Balance
+                  </h2>
 
                   <div className="tableSearch relative w-200">
                     <FormInput
+                      className="h-[30px] !p-1 !px-2"
                       id="vertical-form-1"
                       type="text"
                       placeholder="Search By Enquiry Id "
@@ -4784,191 +4920,539 @@ export const IsDashboard = () => {
                           getspotenqdata(4, [14]);
                         }
                       }}
-                      className="searchListTable absolute top-2 right-3 text-stone-300"
+                      className="searchListTable absolute top-[6px] right-2 text-stone-300"
                     >
                       {" "}
-                      <Search />
+                      <Search className="w-[17px] h-[17px]" />
                     </button>
                   </div>
                 </div>
-
                 <div
-                  className={`tablelist p-3 ${isActive ? "showtable" : "hideTable"
-                    }`}
+                  className={`tablelist p-3 ${
+                    isActive ? "showtable" : "hideTable"
+                  }`}
                 >
-                  <div
-                    className={`overflow-x-auto overflow-y-hidden ${"h-[60vh]"}`}
-                  >
+                  <div className="w-full">
                     <div className="table-responsive ">
                       {datatoget?.spotdata4?.length >= 1 &&
-                        !datatoget?.loading4 ? (
-                        <Table
-                          sm
-                          className="table table-text-small mb-0 border  "
-                        >
-                          <Table.Thead className="thead-primary table-sorting bg-mustard">
-                            <Table.Tr className="text-center text-white">
-                              <Table.Th className="whitespace-nowrap border text-right">
-                                SR.NO.
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-center">
-                                ACTIONS
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                STATUS
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                CUSTOMER NAME
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                ENQUIRY ID
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                ENQUIRY DATE
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                ORIGIN
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                DESTINATION
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                WEIGHT
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                VENDOR
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                SHIPMENT TYPE
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                QUOTED BY
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-right">
-                                QUOTED PRICE (₹)
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                RATE VALID TILL
-                              </Table.Th>
-                              <Table.Th className="whitespace-nowrap border text-left">
-                                AIRWAYBILL NO.
-                              </Table.Th>
-                            </Table.Tr>
-                          </Table.Thead>
-                          <Table.Tbody>
-                            {datatoget?.spotdata4?.map(
-                              (data: any, index: number) => (
-                                <Table.Tr
-                                  key={index}
-                                  className={`text-left intro-x capitalize `}
-                                >
-                                  <Table.Td className="border whitespace-nowrap text-right">
-                                    {(datatoget?.page4 - 1) * 5 + (index + 1)}
-                                  </Table.Td>
-                                  <Table.Td>
-                                    <div className="flex justify-center items-center">
-                                      <Button
-                                        className="p-1 bg-mustard text-white"
-                                        onClick={() => {
-                                          handleEdit(data, "credit");
-                                        }}
-                                      >
-                                        Action
-                                      </Button>
+                      !datatoget?.loading4 ? (
+                        <div className="w-full  ">
+                          {datatoget?.spotdata4?.map(
+                            (data: any, index: number) => (
+                              <div
+                                key={index}
+                                className="w-full border rounded-lg mb-3 group bg-[#fff] border-[#fff1d3] even:bg-[#fff] even:border-[#eaf1f6] hover:bg-[#fff] hover:border-[#E6E6E6]"
+                              >
+                                <div className="justify-between border-[#fff1d3] border-b w-full  block lg:flex pt-[5px] pb-[3px] px-2 items-center bg-[#fffbf2] group-even:bg-[#f6faff] rounded-t-lg group-even:border-[#eaf1f6] group-hover:bg-[#F8F8F8] group-hover:border-[#E6E6E6]">
+                                  <div className="flex relative mb-2 lg:mb-0">
+                                    <figure className="bg-[#FFF0CE] group-even:bg-[#E8F2FF] rounded-full p-[2px] w-[30px] h-[30px] justify-between flex items-center group-hover:bg-[#e3e3e3]">
+                                      <FileText className="w-[18px] h-[18px] text-[#B68F34] group-even:text-[#5A81B4] m-auto group-hover:text-[#303030]" />
+                                    </figure>
+
+                                    <aside className="ml-2 leading-[14px]">
+                                      <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase  leading-[14px] ">
+                                        Shipment :
+                                        {shipmentTypedata?.find(
+                                          (item2: any) =>
+                                            item2?.booking_shipment_type_id ==
+                                            data?.shipment_type,
+                                        )?.shipment_type || "-"}
+                                      </h2>
+
+                                      <h3 className="text-[12px] font-bold text-[#e1a722] rounded-[10px]">
+                                        ENQUIRY NO: {data?.booking_no || "N.A."}
+                                      </h3>
+                                    </aside>
+                                  </div>
+
+                                  <div className="flex gap-2 items-center">
+                                    <div className="text-left lg:text-right leading-[16px]">
+                                      <h4 className="font-medium text-[13px]">
+                                        {" "}
+                                        WEIGHT :
+                                        <span>
+                                          {Number(data?.weight) || "-"}{" "}
+                                          {data?.weight_unit
+                                            ? `(${data.weight_unit})`
+                                            : ""}
+                                        </span>
+                                      </h4>
+                                      <p className="text-[13px] text-[#797979]">
+                                        {formatDate(data?.created_date) || "-"}
+                                      </p>
                                     </div>
-                                  </Table.Td>
-                                  <Table.Td>
-                                    <div className="flex justify-center items-center">
-                                      <span
-                                        className={
-                                          data?.booking_status == 15
-                                            ? data?.import_booking == 2
-                                              ? "text-green-400"
-                                              : data?.is_checklist == 1
-                                                ? "text-green-400"
-                                                : "text-red-400"
-                                            : statusdata?.find(
-                                              (s: any) => s.status_code == data?.booking_status
-                                            )?.css_class
-                                        }
-                                      >
-                                        {data?.booking_status == 15
-                                          ? data?.import_booking == 2
-                                            ? "Customer Approval Pending"
-                                            : data?.is_checklist == 1
-                                              ? "CheckList Done"
-                                              : "CheckList Pending"
-                                          : statusdata?.find(
-                                            (s: any) => s.status_code == data?.booking_status
-                                          )?.status_name}
-                                      </span>
+                                  </div>
+                                </div>
+
+                                <div className="px-3 pt-3 pb-2">
+                                  <div className="grid grid-cols-12 gap-2">
+                                    <div className="col-span-12 lg:col-span-8">
+                                      <div className="w-full">
+                                        <div className="w-full font-medium text-[14px]">
+                                          Name:
+                                          {getrelateddata(
+                                            "franchisee",
+                                            allfdata,
+                                            data?.franchisee_id,
+                                          )?.franchisee_name || ""}
+                                        </div>
+
+                                        <div className="w-full block lg:flex gap-x-5 mt-1">
+                                          <div className="leading-[16px] mb-2 lg:mb-0">
+                                            <small className="text-[11px] text-[#797979] flex items-center">
+                                              <i className="w-[5px] h-[5px] bg-green-500 group-even:bg-[#6EA8E0] rounded-full mr-1 inline-block group-hover:bg-[#a0a0a0]"></i>{" "}
+                                              ORIGIN{" "}
+                                            </small>
+                                            <p className="text-[14px] text-[#303030]">
+                                              {data?.org_city || "-"}
+                                            </p>
+                                          </div>
+
+                                          <div className="leading-[16px]">
+                                            <small className="text-[11px] text-[#797979] flex items-center">
+                                              <i className="w-[5px] h-[5px] bg-[#efb847] group-even:bg-[#6EA8E0] rounded-full mr-1 inline-block group-hover:bg-[#a0a0a0]"></i>{" "}
+                                              DESTINATION{" "}
+                                            </small>
+                                            <p className="text-[14px] text-[#303030]">
+                                              {data?.org_country_id == "97" &&
+                                              data?.dest_country_id == "97"
+                                                ? data?.dest_city
+                                                : countryData?.find(
+                                                    (item: any) =>
+                                                      item.country_id ==
+                                                      data?.dest_country_id,
+                                                  )?.country_name ||
+                                                  data?.dest_city ||
+                                                  "N.A."}
+                                            </p>
+                                          </div>
+                                        </div>
+                                      </div>
                                     </div>
-                                  </Table.Td>
-                                  <Table.Td>
-                                    {getrelateddata(
-                                      "franchisee",
-                                      allfdata,
-                                      data?.franchisee_id,
-                                    )?.franchisee_name || ""}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {data?.booking_no || "-"}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {formatDate(data?.created_date) || "-"}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {data?.org_city || "-"}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {data?.org_country_id == "97" &&
-                                      data?.dest_country_id == "97"
-                                      ? data?.dest_city
-                                      : countryData?.find(
-                                        (item: any) =>
-                                          item.country_id ==
-                                          data?.dest_country_id,
-                                      )?.country_name ||
-                                      data?.dest_city ||
-                                      "N.A."}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap text-right">
-                                    {Number(data?.weight) || "-"}{" "}
-                                    {data?.weight_unit
-                                      ? `(${data.weight_unit})`
-                                      : ""}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {productTypes?.find(
-                                      (item) =>
-                                        item.product_id == data?.courier_id,
-                                    )?.product_name || "-"}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {shipmentTypedata?.find(
-                                      (item2: any) =>
-                                        item2?.booking_shipment_type_id ==
-                                        data?.shipment_type,
-                                    )?.shipment_type || "-"}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {data?.quoted_by || "-"}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap lowercase text-right">
-                                    {indianFormat(data?.spot_price) || "-"}{" "}
-                                    {data?.price_type == "1"
-                                      ? "(a)"
-                                      : data?.price_type == "2"
-                                        ? "(k)"
-                                        : ""}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {formatDate(data?.valid_till) || "N.A."}
-                                  </Table.Td>
-                                  <Table.Td className="border whitespace-nowrap">
-                                    {data?.airwaybilno || "N.A."}
-                                  </Table.Td>
-                                  {/* <Table.Td className="px-8 flex justify-center">
+
+                                    <div className="col-span-12 lg:col-span-4">
+                                      <div className="flex relative gap-2 justify-start lg:justify-end">
+                                        <div className="">
+                                          <Button
+                                            className="h-[26px]  text-[13px] bg-mustard text-white border-none hover:bg-[#d2d2d2] hover:text-[#303030] rounded-md flex items-center pl-2 pr-1 py-[3px]"
+                                            onClick={() => {
+                                              handleEdit(data, "credit");
+                                            }}
+                                          >
+                                            Action
+                                          </Button>
+                                        </div>
+
+                                        <Button
+                                          onClick={() => {
+                                            setSelectedCardData(data);
+                                            setViewInsufficientModal(true);
+                                          }}
+                                          className="text-[13px] bg-mustard text-white border-none hover:bg-[#d2d2d2] ghover:text-[#303030] rounded-md flex items-center pl-2 pr-1 py-[3px]"
+                                        >
+                                          View{" "}
+                                          <ChevronRight className="w-[14px] h-[16px]" />
+                                        </Button>
+                                      </div>
+                                      <div className="w-full text-[13px] mt-2 text-left lg:text-right">
+                                        Price (₹) :{" "}
+                                        <span>
+                                          {indianFormat(data?.spot_price) ||
+                                            "-"}{" "}
+                                          {data?.price_type == "1"
+                                            ? "(a)"
+                                            : data?.price_type == "2"
+                                              ? "(k)"
+                                              : ""}
+                                        </span>
+                                      </div>
+                                    </div>
+
+
+
+<div className="col-span-12 lg:col-span-12">
+
+
+
+                    <div className=" flex  w-full  border-t border-[#f2f2f2] px-[0] pt-[4px]">
+
+
+                        <h2 className="flex text-[#9099a2] text-[11px] font-medium  uppercase leading-[20px]  ">
+                          <i className="mr-1 bg-[#f1f5f9] border-none p-[2px] w-[18px] h-[18px] rounded-full flex justify-center items-center ">
+                             <User className="w-[12px] h-[12px]  text-[#959595]" strokeWidth={3}/></i>
+                             <span className="text-[#959595]" >Status </span>&nbsp; : &nbsp;
+                             
+                           
+                          <span
+                            className={
+                              data?.booking_status == 15
+                                ? data?.import_booking == 2
+                                  ? "text-green-400"
+                                  : data?.is_checklist == 1
+                                    ? "text-green-400"
+                                    : "text-red-400"
+                                : statusdata?.find(
+                                    (s: any) =>
+                                      s.status_code ==
+                                      data?.booking_status,
+                                  )?.css_class
+                            }
+                          >
+                            {data?.booking_status == 15
+                              ? data?.import_booking == 2
+                                ? "Customer Approval Pending"
+                                : data?.is_checklist == 1
+                                  ? "CheckList Done"
+                                  : "CheckList Pending"
+                              : statusdata?.find(
+                                  (s: any) =>
+                                    s.status_code ==
+                                    data?.booking_status,
+                                )?.status_name}
+                          </span>
+                   
+
+                  
+
+
+                        </h2>
+
+                      </div>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+                                  </div>
+                                </div>
+                              </div>
+                            ),
+                          )}
+                        </div>
+                      ) : datatoget?.loading4 ? (
+                        <IsLoading w={"w-[50vw]"} h={"h-[40vh]"} />
+                      ) : (
+                        <Nodatafound w={"w-[50vw]"} h={"h-[50vh]"} />
+                      )}
+                    </div>
+                    {datatoget?.spotdata4?.length > 0 &&
+                      datatoget?.totalpages4 > 1 && (
+                        <CommonPagination
+                          totalpages={datatoget?.totalpages4}
+                          onPageChange={handlePagechange}
+                          page={datatoget?.page4}
+                          value={4}
+                        />
+                      )}
+                  </div>
+                </div>
+              </div>
+            </div>
+         
+        </div>
+        {viewCardModal ? (
+          <CommonModal
+            className="!p-0"
+            open={viewCardModal}
+            setOpen={setViewCardModal}
+            title={
+              <div className="flex items-center p-0 !gap-0 w-[130%] lg:w-[120%] bg-[#fff1ce] mx-[-28px] my-[-16px] px-[20px] py-[5px] rounded-t-md">
+                <figure className="flex items-center justify-center  relative mr-1  block bg-[linear-gradient(to_bottom,#ffd675_0%,#f9cf51_50%,#f2be42_100%)] rounded-full border border-[#cda329] w-[35px] h-[35px] ">
+                  <User className="w-[20px] h-[20px] text-[#8a6a0c]" />
+                </figure>
+
+                <div className=" w-full  pl-2 gap-0">
+                  <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                    Name
+                  </h2>
+
+                  <p className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                    {getrelateddata(
+                      "franchisee",
+                      allfdata,
+                      selectedCardData?.franchisee_id,
+                    )?.franchisee_name || "-"}
+                  </p>
+                </div>
+              </div>
+            }
+            titleClassName="bg-[#fff6e2] rounded-t-md"
+            size="lg"
+            gridColumns={0}
+            description={
+              <div className="w-full mt-4 mb-3">
+                <div className=" grid grid-cols-12 gap-x-2 ">
+                  <div className=" col-span-12  md:col-span-6 mb-2 ">
+                    <div className=" flex justify-center w-full  mb-1">
+                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                        <FileText className="w-[21px]  text-[#949DA6] " />
+                      </figure>
+                      <div className=" w-full  pl-2">
+                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                          ENQUIRY No
+                        </h2>
+                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                          {" "}
+                          {selectedCardData?.booking_no || "-"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className=" col-span-12  md:col-span-6 mb-2 ">
+                    <div className=" flex justify-center w-full  mb-1">
+                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                        <User className="w-[21px]  text-[#949DA6] " />
+                      </figure>
+                      <div className=" w-full  pl-2">
+                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                          Quoted By
+                        </h2>
+                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                          {selectedCardData?.quoted_by || "-"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className=" col-span-12  md:col-span-6 mb-2 ">
+                    <div className=" flex justify-center w-full  mb-1">
+                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                        <Calendar className="w-[21px]  text-[#949DA6] " />
+                      </figure>
+                      <div className=" w-full  pl-2">
+                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                          Rate Valid Till
+                        </h2>
+                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                          {formatDate(selectedCardData?.valid_till) || "N.A."}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className=" col-span-12  md:col-span-6 mb-2 ">
+                    <div className=" flex justify-center w-full  mb-1">
+                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                        <User className="w-[21px]  text-[#949DA6] " />
+                      </figure>
+                      <div className=" w-full  pl-2">
+                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                          Vendor
+                        </h2>
+                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                          {productTypes?.find(
+                            (item: any) =>
+                              item.product_id == selectedCardData?.courier_id,
+                          )?.product_name || "-"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className=" col-span-12  md:col-span-6 mb-2 ">
+                    <div className=" flex justify-center w-full  mb-1">
+                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                        <FileText className="w-[21px]  text-[#949DA6] " />
+                      </figure>
+                      <div className=" w-full  pl-2">
+                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                          FRANCHISEE
+                        </h2>
+                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                          {getrelateddata(
+                            "franchisee",
+                            allfdata,
+                            selectedCardData?.franchisee_id,
+                          )?.franchisee_name || "-"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+            footer={
+              <Button
+                onClick={() => {
+                  setViewCardModal(false);
+                  setSelectedCardData(null);
+                }}
+                className="bg-mustard text-white border-none px-3 py-1 rounded-md"
+              >
+                Close
+              </Button>
+            }
+          />
+        ) : null}
+
+        {viewApprovedModal ? (
+          <CommonModal
+            className="!p-0"
+            open={viewApprovedModal}
+            setOpen={setViewApprovedModal}
+            title={
+              <div className="flex items-center p-0 !gap-0 w-[130%] lg:w-[120%] bg-[#fff1ce] mx-[-28px] my-[-16px] px-[20px] py-[5px] rounded-t-md">
+                <figure className="flex items-center justify-center  relative mr-1  block bg-[linear-gradient(to_bottom,#ffd675_0%,#f9cf51_50%,#f2be42_100%)] rounded-full border border-[#cda329] w-[35px] h-[35px] ">
+                  <User className="w-[20px] h-[20px] text-[#8a6a0c]" />
+                </figure>
+
+                <div className=" w-full  pl-2 gap-0">
+                  <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                    Name
+                  </h2>
+
+                  <p className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                    {getrelateddata(
+                      "franchisee",
+                      allfdata,
+                      selectedCardData?.franchisee_id,
+                    )?.franchisee_name || "-"}
+                  </p>
+                </div>
+              </div>
+            }
+            titleClassName="bg-[#fff6e2] rounded-t-md"
+            size="lg"
+            gridColumns={0}
+            description={
+              <div className="w-full mt-4 mb-3">
+                <div className=" grid grid-cols-12 gap-x-2 ">
+                  <div className=" col-span-12  md:col-span-6 mb-2 ">
+                    <div className=" flex justify-center w-full  mb-1">
+                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                        <Scroll className="w-[21px]  text-[#949DA6] " />
+                      </figure>
+                      <div className=" w-full  pl-2">
+                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                          ENQUIRY No
+                        </h2>
+                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                          {selectedCardData?.booking_no || "-"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className=" col-span-12  md:col-span-6 mb-2 ">
+                    <div className=" flex justify-center w-full  mb-1">
+                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                        <Box className="w-[21px]  text-[#949DA6] " />
+                      </figure>
+                      <div className=" w-full  pl-2">
+                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                          Shipment Type
+                        </h2>
+                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                          {shipmentTypedata?.find(
+                            (item2: any) =>
+                              item2?.booking_shipment_type_id ==
+                              selectedCardData?.shipment_type,
+                          )?.shipment_type || "-"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className=" col-span-12  md:col-span-6 mb-2 ">
+                    <div className=" flex justify-center w-full  mb-1">
+                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                        <User className="w-[21px]  text-[#949DA6] " />
+                      </figure>
+                      <div className=" w-full  pl-2">
+                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                          Vendor
+                        </h2>
+                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                          {productTypes?.find(
+                            (item) =>
+                              item.product_id == selectedCardData?.courier_id,
+                          )?.product_name || "-"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className=" col-span-12  md:col-span-6 mb-2 ">
+                    <div className=" flex justify-center w-full  mb-1">
+                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                        <User className="w-[21px]  text-[#949DA6] " />
+                      </figure>
+                      <div className=" w-full  pl-2">
+                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                          Quoted By
+                        </h2>
+                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                          {selectedCardData?.quoted_by || "-"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className=" col-span-12  md:col-span-6 mb-2 ">
+                    <div className=" flex justify-center w-full  mb-1">
+                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                        <Calendar className="w-[21px]  text-[#949DA6] " />
+                      </figure>
+                      <div className=" w-full  pl-2">
+                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                          Rate Valid Till
+                        </h2>
+                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                          {formatDate(selectedCardData?.valid_till) || "N.A."}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className=" col-span-12  md:col-span-6 mb-2 ">
+                    <div className=" flex justify-center w-full  mb-1">
+                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                        <Bookmark className="w-[21px]  text-[#949DA6] " />
+                      </figure>
+                      <div className=" w-full  pl-2">
+                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                          Dispatch Label
+                        </h2>
+                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                          {selectedCardData?.house_pdf ? (
+                            <div
+                              onClick={() =>
+                                downloadAttachment(
+                                  selectedCardData?.house_pdf.replace(
+                                    "_mawb",
+                                    "",
+                                  ),
+                                  "Dispatch Label",
+                                )
+                              }
+                              className="w-[60px] group bg-[#fff1ce] cursor-pointer hover:bg-[#f1bf59] hover:text-white py-[2px] rounded-md items-center flex items-center justify-center gap-1"
+                            >
+                              <FileText className="group-hover:text-white  text-mustard stroke-2.5 w-[15px] h-[15px]" />
+                              <p className="text-[11px] text-[#b68013] group-hover:text-white">
+                                {" "}
+                                View
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="text-red-400 text-left ">
+                              Not Available
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* <Table.Td className="px-8 flex justify-center">
                                   {data?.valid_till &&
                                   curr > new Date(data?.valid_till) ? (
                                     <p className="text-base  text-gray-500 whitespace-nowrap">
@@ -5013,32 +5497,139 @@ export const IsDashboard = () => {
                                     "N.A."
                                   )}
                                 </Table.Td> */}
-                                </Table.Tr>
-                              ),
-                            )}
-                          </Table.Tbody>
-                        </Table>
-                      ) : datatoget?.loading4 ? (
-                        <IsLoading w={"w-[50vw]"} h={"h-[40vh]"} />
-                      ) : (
-                        <Nodatafound w={"w-[50vw]"} h={"h-[50vh]"} />
-                      )}
-                    </div>
-                    {datatoget?.spotdata4?.length > 0 &&
-                      datatoget?.totalpages4 > 1 && (
-                        <CommonPagination
-                          totalpages={datatoget?.totalpages4}
-                          onPageChange={handlePagechange}
-                          page={datatoget?.page4}
-                          value={4}
-                        />
-                      )}
-                  </div>
+              </div>
+            }
+            footer={
+              <Button
+                onClick={() => {
+                  setViewApprovedModal(false);
+                  setSelectedCardData(null);
+                }}
+                className="bg-mustard text-white border-none px-3 py-1 rounded-md"
+              >
+                Close
+              </Button>
+            }
+          />
+        ) : null}
+
+        {ViewInsufficientModal ? (
+          <CommonModal
+            className="!p-0"
+            open={ViewInsufficientModal}
+            setOpen={setViewInsufficientModal}
+            title={
+              <div className="flex items-center p-0 !gap-0 w-[130%] lg:w-[120%] bg-[#fff1ce] mx-[-28px] my-[-16px] px-[20px] py-[5px] rounded-t-md">
+                <figure className="flex items-center justify-center  relative mr-1  block bg-[linear-gradient(to_bottom,#ffd675_0%,#f9cf51_50%,#f2be42_100%)] rounded-full border border-[#cda329] w-[35px] h-[35px] ">
+                  <User className="w-[20px] h-[20px] text-[#8a6a0c]" />
+                </figure>
+
+                <div className=" w-full  pl-2 gap-0">
+                  <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                    Name
+                  </h2>
+
+                  <p className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                    {getrelateddata(
+                      "franchisee",
+                      allfdata,
+                      selectedCardData?.franchisee_id,
+                    )?.franchisee_name || "-"}
+                  </p>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
+            }
+            titleClassName="bg-[#fff6e2] rounded-t-md"
+            size="lg"
+            gridColumns={0}
+            description={
+              <div className="w-full mt-4 mb-3">
+                <div className="grid grid-cols-12 gap-2">
+                  <div className=" col-span-12  md:col-span-6 mb-2 ">
+                    <div className=" flex justify-center w-full  mb-1">
+                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                        <FileText className="w-[21px]  text-[#949DA6] " />
+                      </figure>
+                      <div className=" w-full  pl-2">
+                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                          ENQUIRY No
+                        </h2>
+                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                          {selectedCardData?.booking_no || "-"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className=" col-span-12  md:col-span-6 mb-2 ">
+                    <div className=" flex justify-center w-full  mb-1">
+                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                        <FileText className="w-[21px]  text-[#949DA6] " />
+                      </figure>
+                      <div className=" w-full  pl-2">
+                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                          Vendor
+                        </h2>
+                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                          {productTypes?.find(
+                            (item: any) =>
+                              item.product_id == selectedCardData?.courier_id,
+                          )?.product_name || "-"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className=" col-span-12  md:col-span-6 mb-2 ">
+                    <div className=" flex justify-center w-full  mb-1">
+                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                        <User className="w-[21px]  text-[#949DA6] " />
+                      </figure>
+                      <div className=" w-full  pl-2">
+                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                          Quoted By
+                        </h2>
+                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                          {selectedCardData?.quoted_by || "-"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className=" col-span-12  md:col-span-6 mb-2 ">
+                    <div className=" flex justify-center w-full  mb-1">
+                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                        <FileText className="w-[21px]  text-[#949DA6] " />
+                      </figure>
+                      <div className=" w-full  pl-2">
+                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                          Rate Valid Till
+                        </h2>
+                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                          {formatDate(selectedCardData?.valid_till) || "N.A."}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+             
+                </div>
+              </div>
+            }
+            footer={
+              <Button
+                onClick={() => {
+                  setViewInsufficientModal(false);
+                  setSelectedCardData(null);
+                }}
+                className="bg-mustard text-white border-none px-3 py-1 rounded-md"
+              >
+                Close
+              </Button>
+            }
+          />
+        ) : null}
+
         {enquiryModal ? (
           <SpotpriceModal
             setOpenModal={setEnquiryModal}
@@ -5110,9 +5701,9 @@ export const IsDashboard = () => {
                   <div>
                     <p className="text-base font-medium">
                       {importData?.booking_status == "1" ||
-                        importData?.booking_status == "8" ||
-                        importData?.booking_status == "9" ||
-                        importData?.booking_status == "19"
+                      importData?.booking_status == "8" ||
+                      importData?.booking_status == "9" ||
+                      importData?.booking_status == "19"
                         ? "ADD IMPORT DETAILS"
                         : "COMPLETE BOOKING"}
                     </p>
@@ -5143,9 +5734,7 @@ export const IsDashboard = () => {
               <>
                 <div className="flex justify-flex justify-between w-full ">
                   <div>
-                    <p className="text-base font-medium">
-                      EDIT BOOKING
-                    </p>
+                    <p className="text-base font-medium">EDIT BOOKING</p>
                   </div>
                   <div className="bg-gray-200 rounded p-2 ml-2">
                     <span className="font-bold">AWB No: </span>
