@@ -64,7 +64,7 @@ const SellBuyForm = (props: any) => {
     disableExchangeSell,
     importBookingType,
     hideSelling = false,
-    hideBuying = false
+    hideBuying = false,
   } = props;
   const { showAlert } = useAlert();
   const { userdata } = useLogin();
@@ -91,7 +91,6 @@ const SellBuyForm = (props: any) => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [hasUpdated]);
 
-
   // handling selling charges here
   const handleSelectChange = (index: any, field: any, value: any) => {
     let newFormData = [...sellingcharges];
@@ -101,7 +100,7 @@ const SellBuyForm = (props: any) => {
     }
     if (field == "charge_id") {
       const singledata = chargesdata?.find(
-        (item: any) => item.ref_sell_id == value
+        (item: any) => item.ref_sell_id == value,
       );
 
       newFormData[index]["charge_id"] = value;
@@ -130,7 +129,7 @@ const SellBuyForm = (props: any) => {
         } else {
           // Case 2: not exists → add a new object
           // logic for cs
-       
+
           if (
             !buycharges[buycharges?.length - 1]?.charge_id &&
             buycharges?.length == 1
@@ -183,22 +182,26 @@ const SellBuyForm = (props: any) => {
               acc[id] = { ...item, charge_id: id };
             }
             return acc;
-          }, {})
+          }, {}),
         );
         setBuyCharges(uniqueData);
       }
     } else {
       // For overseas sell rows: always lock to franchisee currency and exchange rate
       if (singlefranchiseedata?.is_overseas) {
-        newFormData[index]["currency"] = String(singlefranchiseedata?.currency || "24");
-        newFormData[index]["ex_rate"] = String(singlefranchiseedata?.exchange_rate || "1");
+        newFormData[index]["currency"] = String(
+          singlefranchiseedata?.currency || "24",
+        );
+        newFormData[index]["ex_rate"] = String(
+          singlefranchiseedata?.exchange_rate || "1",
+        );
       }
       if (field == "per_kg") {
         const singledata = chargesdata?.find(
-          (item: any) => item.ref_sell_id == newFormData[index]?.charge_id
+          (item: any) => item.ref_sell_id == newFormData[index]?.charge_id,
         );
         const sellingchargesids = newFormData?.map(
-          (item: any) => item?.charge_id
+          (item: any) => item?.charge_id,
         );
         if (value == "1") {
           newFormData[index][field] = value || 0;
@@ -228,7 +231,9 @@ const SellBuyForm = (props: any) => {
         } else {
           newFormData[index][field] = value || 0;
           newFormData[index]["weight"] = 1;
-          newFormData[index]["inr_amount"] = Number(newFormData[index]["rate"]) * (Number(newFormData[index]["ex_rate"]) || 1) || 0;
+          newFormData[index]["inr_amount"] =
+            Number(newFormData[index]["rate"]) *
+              (Number(newFormData[index]["ex_rate"]) || 1) || 0;
           setSellingCharges(newFormData);
 
           if (spotData?.forwhat == "pricing") {
@@ -256,7 +261,7 @@ const SellBuyForm = (props: any) => {
         }
       } else if (field == "rate") {
         const singledata = chargesdata?.find(
-          (item: any) => item.ref_sell_id == newFormData[index]?.charge_id
+          (item: any) => item.ref_sell_id == newFormData[index]?.charge_id,
         );
 
         if (newFormData[index]["per_kg"] == 1) {
@@ -268,7 +273,7 @@ const SellBuyForm = (props: any) => {
           setSellingCharges(newFormData);
           if (spotData?.forwhat == "pricing") {
             const sellingchargesids = newFormData?.map(
-              (item: any) => item?.charge_id
+              (item: any) => item?.charge_id,
             );
             const newdata = newFormData2?.map((item: any) => {
               return sellingchargesids.includes(item?.charge_id)
@@ -288,7 +293,9 @@ const SellBuyForm = (props: any) => {
           }
         } else {
           newFormData[index][field] = value || 0;
-          newFormData[index]["inr_amount"] = Number(newFormData[index]["rate"]) * (Number(newFormData[index]["ex_rate"]) || 1) || 0;
+          newFormData[index]["inr_amount"] =
+            Number(newFormData[index]["rate"]) *
+              (Number(newFormData[index]["ex_rate"]) || 1) || 0;
           setSellingCharges(newFormData);
           if (spotData?.forwhat == "pricing") {
             const newdata = newFormData2?.map((item: any) =>
@@ -299,14 +306,14 @@ const SellBuyForm = (props: any) => {
                     [field]: value,
                     inr_amount: Number(value) || 0,
                   }
-                : item
+                : item,
             );
             setBuyCharges(newdata);
           }
         }
       } else if (field == "weight") {
         const singledata = chargesdata?.find(
-          (item: any) => item.ref_sell_id == newFormData[index]?.charge_id
+          (item: any) => item.ref_sell_id == newFormData[index]?.charge_id,
         );
         if (newFormData[index]["per_kg"] == 1) {
           newFormData[index][field] = value || 0;
@@ -327,13 +334,15 @@ const SellBuyForm = (props: any) => {
                         Number(value) *
                         (Number(item["ex_rate"]) || 1) || 0,
                   }
-                : item
+                : item,
             );
             setBuyCharges(newdata);
           }
         } else {
           newFormData[index][field] = 1;
-          newFormData[index]["inr_amount"] = Number(newFormData[index]["rate"]) * (Number(newFormData[index]["ex_rate"]) || 1) || 0;
+          newFormData[index]["inr_amount"] =
+            Number(newFormData[index]["rate"]) *
+              (Number(newFormData[index]["ex_rate"]) || 1) || 0;
           setSellingCharges(newFormData);
           if (spotData?.forwhat == "pricing") {
             const newdata = newFormData2?.map((item: any) =>
@@ -344,13 +353,17 @@ const SellBuyForm = (props: any) => {
                     [field]: value,
                     inr_amount: Number(item?.rate) * Number(item?.ex_rate) || 0,
                   }
-                : item
+                : item,
             );
             setBuyCharges(newdata);
           }
         }
       } else if (field == "currency") {
-        const exRateFromSell = Number(exchangedataSell?.find((item: any) => item?.currency_id == value)?.ex_rate) || 0;
+        const exRateFromSell =
+          Number(
+            exchangedataSell?.find((item: any) => item?.currency_id == value)
+              ?.ex_rate,
+          ) || 0;
         if (newFormData[index]["per_kg"] == 1) {
           newFormData[index]["ex_rate"] = exRateFromSell;
           newFormData[index][field] = value || 0;
@@ -370,19 +383,29 @@ const SellBuyForm = (props: any) => {
         // Propagate currency + ex_rate to the corresponding buying charge
         if (buycharges && setBuyCharges) {
           const linkedBuyChargeId = chargesdata?.find(
-            (item: any) => item.ref_sell_id == newFormData[index]?.charge_id
+            (item: any) => item.ref_sell_id == newFormData[index]?.charge_id,
           )?.charge_id;
           const exRateFromBuy =
-            Number(exchangedata?.find((item: any) => item?.currency_id == value)?.ex_rate) ||
+            Number(
+              exchangedata?.find((item: any) => item?.currency_id == value)
+                ?.ex_rate,
+            ) ||
             exRateFromSell ||
             0;
           const updatedBuyCharges = buycharges.map((charge: any) => {
             if (String(charge.charge_id) === String(linkedBuyChargeId)) {
               const inrAmount =
                 charge.per_kg == 1
-                  ? Number(charge.rate) * Number(charge.weight) * (exRateFromBuy || 1)
+                  ? Number(charge.rate) *
+                    Number(charge.weight) *
+                    (exRateFromBuy || 1)
                   : Number(charge.rate) * exRateFromBuy;
-              return { ...charge, currency: value, ex_rate: String(exRateFromBuy), inr_amount: inrAmount };
+              return {
+                ...charge,
+                currency: value,
+                ex_rate: String(exRateFromBuy),
+                inr_amount: inrAmount,
+              };
             }
             return charge;
           });
@@ -400,11 +423,11 @@ const SellBuyForm = (props: any) => {
     let newFormData = [...buycharges];
     if (field == "charge_id") {
       const singledata = chargesdata?.find(
-        (item: any) => item.charge_id == value
+        (item: any) => item.charge_id == value,
       );
 
       const singledata2 = sellingcharges.find(
-        (item2: any) => item2?.charge_id == singledata?.ref_sell_id
+        (item2: any) => item2?.charge_id == singledata?.ref_sell_id,
       );
 
       newFormData[index]["charge_id"] = value;
@@ -464,7 +487,7 @@ const SellBuyForm = (props: any) => {
           newFormData[index]["ex_rate"] =
             Number(
               exchangedata?.find((item: any) => item?.currency_id == value)
-                ?.ex_rate
+                ?.ex_rate,
             ) || 0;
           newFormData[index][field] = value || 0;
           newFormData[index]["inr_amount"] =
@@ -472,12 +495,12 @@ const SellBuyForm = (props: any) => {
             Number(newFormData[index]["weight"]) *
             (Number(
               exchangedata?.find((item: any) => item?.currency_id == value)
-                ?.ex_rate
+                ?.ex_rate,
             ) || 1);
           newFormData[index]["ex_rate"] =
             Number(
               exchangedata?.find((item: any) => item?.currency_id == value)
-                ?.ex_rate
+                ?.ex_rate,
             ) || 0;
           setBuyCharges(newFormData);
         } else {
@@ -486,13 +509,13 @@ const SellBuyForm = (props: any) => {
           newFormData[index]["ex_rate"] =
             Number(
               exchangedata?.find((item: any) => item?.currency_id == value)
-                ?.ex_rate
+                ?.ex_rate,
             ) || 0;
           newFormData[index]["inr_amount"] =
             Number(newFormData[index]["rate"]) *
             Number(
               exchangedata?.find((item: any) => item?.currency_id == value)
-                ?.ex_rate
+                ?.ex_rate,
             );
           setBuyCharges(newFormData);
         }
@@ -558,15 +581,18 @@ const SellBuyForm = (props: any) => {
       "currency",
       "party_type",
       "remarks",
-      "is_duty"
+      "is_duty",
     ]; // Add keys you want to exclude
 
     const isAllFilled = sellingcharges.every((item: any) =>
       Object.entries(item).every(([key, value]) =>
         excludedKeys.includes(key)
           ? true
-          : value !== "" && value !== null && value !== undefined && value !== 0
-      )
+          : value !== "" &&
+            value !== null &&
+            value !== undefined &&
+            value !== 0,
+      ),
     );
     if (isAllFilled) {
       const newdata = [...sellingcharges];
@@ -577,8 +603,12 @@ const SellBuyForm = (props: any) => {
         rate: 0,
         per_kg: 2,
         inr_amount: 0,
-        currency: singlefranchiseedata?.is_overseas ? String(singlefranchiseedata?.currency || "24") : "24",
-        ex_rate: singlefranchiseedata?.is_overseas ? String(singlefranchiseedata?.exchange_rate || "1") : "1",
+        currency: singlefranchiseedata?.is_overseas
+          ? String(singlefranchiseedata?.currency || "24")
+          : "24",
+        ex_rate: singlefranchiseedata?.is_overseas
+          ? String(singlefranchiseedata?.exchange_rate || "1")
+          : "1",
         enquiry_id: spotData?.id,
         sac_code: "",
         remarks: "",
@@ -622,8 +652,11 @@ const SellBuyForm = (props: any) => {
       Object.entries(item).every(([key, value]) =>
         excludedKeys.includes(key)
           ? true
-          : value !== "" && value !== null && value !== undefined && value !== 0
-      )
+          : value !== "" &&
+            value !== null &&
+            value !== undefined &&
+            value !== 0,
+      ),
     );
     if (isAllFilled) {
       const newdata = [...buycharges];
@@ -654,12 +687,12 @@ const SellBuyForm = (props: any) => {
 
   const findrate = (charge_id: any) => {
     const masterCharge = chargesdata.find(
-      (master) => master.charge_id == charge_id
+      (master) => master.charge_id == charge_id,
     );
 
     // Find the corresponding selling charge
     const sellCharge = sellingcharges.find(
-      (sell) => sell.charge_id == masterCharge?.ref_sell_id
+      (sell) => sell.charge_id == masterCharge?.ref_sell_id,
     );
 
     return Number(sellCharge?.inr_amount) || 0;
@@ -668,7 +701,7 @@ const SellBuyForm = (props: any) => {
   const handleexchangerate = (
     index?: any,
     forwhat?: string,
-    value?: string
+    value?: string,
   ) => {
     if (toggle == 1) {
       const data: any = [...exchangedataSell];
@@ -696,7 +729,11 @@ const SellBuyForm = (props: any) => {
                   charge.per_kg == 1
                     ? Number(charge.rate) * Number(charge.weight) * newExRate
                     : Number(charge.rate) * newExRate;
-                return { ...charge, ex_rate: String(newExRate), inr_amount: inrAmount };
+                return {
+                  ...charge,
+                  ex_rate: String(newExRate),
+                  inr_amount: inrAmount,
+                };
               }
               return charge;
             });
@@ -709,7 +746,12 @@ const SellBuyForm = (props: any) => {
                   charge.per_kg == 1
                     ? Number(charge.rate) * Number(charge.weight) * exRate
                     : Number(charge.rate) * exRate;
-                return { ...charge, currency: value, ex_rate: String(exRate), inr_amount: inrAmount };
+                return {
+                  ...charge,
+                  currency: value,
+                  ex_rate: String(exRate),
+                  inr_amount: inrAmount,
+                };
               }
               return charge;
             });
@@ -727,7 +769,11 @@ const SellBuyForm = (props: any) => {
               charge.per_kg == 1
                 ? Number(charge.rate) * Number(charge.weight) * newExRate
                 : Number(charge.rate) * newExRate;
-            return { ...charge, ex_rate: String(newExRate), inr_amount: inrAmount };
+            return {
+              ...charge,
+              ex_rate: String(newExRate),
+              inr_amount: inrAmount,
+            };
           }
           return charge;
         });
@@ -740,7 +786,12 @@ const SellBuyForm = (props: any) => {
               charge.per_kg == 1
                 ? Number(charge.rate) * Number(charge.weight) * exRate
                 : Number(charge.rate) * exRate;
-            return { ...charge, currency: value, ex_rate: String(exRate), inr_amount: inrAmount };
+            return {
+              ...charge,
+              currency: value,
+              ex_rate: String(exRate),
+              inr_amount: inrAmount,
+            };
           }
           return charge;
         });
@@ -763,7 +814,11 @@ const SellBuyForm = (props: any) => {
                 charge.per_kg == 1
                   ? Number(charge.rate) * Number(charge.weight) * newExRate
                   : Number(charge.rate) * newExRate;
-              return { ...charge, ex_rate: String(newExRate), inr_amount: inrAmount };
+              return {
+                ...charge,
+                ex_rate: String(newExRate),
+                inr_amount: inrAmount,
+              };
             }
             return charge;
           });
@@ -776,7 +831,12 @@ const SellBuyForm = (props: any) => {
                 charge.per_kg == 1
                   ? Number(charge.rate) * Number(charge.weight) * exRate
                   : Number(charge.rate) * exRate;
-              return { ...charge, currency: value, ex_rate: String(exRate), inr_amount: inrAmount };
+              return {
+                ...charge,
+                currency: value,
+                ex_rate: String(exRate),
+                inr_amount: inrAmount,
+              };
             }
             return charge;
           });
@@ -793,7 +853,7 @@ const SellBuyForm = (props: any) => {
         placeholder="Remarks"
         value={
           sellingcharges?.find(
-            (item: any, index: number) => index == singlechargedata?.index
+            (item: any, index: number) => index == singlechargedata?.index,
           )?.remarks || ""
         }
         name="remarks"
@@ -807,7 +867,7 @@ const SellBuyForm = (props: any) => {
           handleSelectChange(
             singlechargedata?.index,
             "remarks",
-            e.target.value
+            e.target.value,
           );
         }}
         className="w-full p-2 border border-gray-300  rounded"
@@ -816,7 +876,7 @@ const SellBuyForm = (props: any) => {
   );
   const modalTitle = (
     <div>
-      <h1>Add/Update Remarks</h1>
+      <h1 className="text-white">Add/Update Remarks</h1>
     </div>
   );
   const ModalFooter2 = (
@@ -855,9 +915,16 @@ const SellBuyForm = (props: any) => {
         {((toggle == 1 && !singlefranchiseedata?.is_overseas) || toggle == 2) &&
         !checkstatus(spotData?.booking_status) ? (
           <div className="border border-gray-200 shadow-lg p-2 w-[100%] m-auto mb-4 min-[759px]:grid grid-cols-3 gap-2">
-            {(toggle == 1 ? (importBookingType == 3 ? exchangedataSell?.slice(0, 2) : exchangedataSell) : exchangedata)?.map((item: any, index: number) => {
+            {(toggle == 1
+              ? importBookingType == 3
+                ? exchangedataSell?.slice(0, 2)
+                : exchangedataSell
+              : exchangedata
+            )?.map((item: any, index: number) => {
               // Extract already selected currency IDs except the current one to allow re-selection in the same row
-              const selectedCurrencyIds = (toggle == 1 ? exchangedataSell : exchangedata)
+              const selectedCurrencyIds = (
+                toggle == 1 ? exchangedataSell : exchangedata
+              )
                 .map((ex: any, i: number) =>
                   i !== index ? ex.currency_id : null,
                 ) // Exclude current row's selection
@@ -882,14 +949,14 @@ const SellBuyForm = (props: any) => {
                             e.target.value,
                           )
                         }
-                     disabled={
-  index === 0 ||
-  (toggle == 1 && disableExchangeSell) ||
-  (
-    userdata?.type_id !== 9 &&
-    ![0, 16, 7].includes(Number(spotData?.booking_status))
-  )
-}
+                        disabled={
+                          index === 0 ||
+                          (toggle == 1 && disableExchangeSell) ||
+                          (userdata?.type_id !== 9 &&
+                            ![0, 16, 7].includes(
+                              Number(spotData?.booking_status),
+                            ))
+                        }
                         value={item?.currency_id}
                       >
                         <option value="">Select</option>
@@ -914,17 +981,21 @@ const SellBuyForm = (props: any) => {
                       </FormLabel>
 
                       <FormInput
-        disabled={
-  index === 0 ||
-  (toggle == 1 && disableExchangeSell) ||
-  (
-    userdata?.type_id !== 9 &&
-    ![0, 16, 7].includes(Number(spotData?.booking_status))
-  )
-}
+                        disabled={
+                          index === 0 ||
+                          (toggle == 1 && disableExchangeSell) ||
+                          (userdata?.type_id !== 9 &&
+                            ![0, 16, 7].includes(
+                              Number(spotData?.booking_status),
+                            ))
+                        }
                         onChange={(e: any) => {
                           let newValue = limitToThreeDecimals(e.target.value);
-                          if (newValue.startsWith("0") && newValue.length > 1 && !newValue.startsWith("0.")) {
+                          if (
+                            newValue.startsWith("0") &&
+                            newValue.length > 1 &&
+                            !newValue.startsWith("0.")
+                          ) {
                             newValue = newValue.replace(/^0+/, "");
                           }
 
@@ -936,22 +1007,36 @@ const SellBuyForm = (props: any) => {
                         }}
                         onBlur={(e: any) => {
                           const val = Number(e.target.value);
-                          if (e.target.value !== "" && (val <= 0 || isNaN(val))) {
-                            showAlert("Exchange rate must be a positive number greater than 0", "warning");
+                          if (
+                            e.target.value !== "" &&
+                            (val <= 0 || isNaN(val))
+                          ) {
+                            showAlert(
+                              "Exchange rate must be a positive number greater than 0",
+                              "warning",
+                            );
                             handleexchangerate(index, "ex_rate", "");
                           }
                         }}
                         onKeyDown={(e: any) => {
                           const val = e.target.value;
                           const dot = val.indexOf(".");
-                          if (dot !== -1 && /^[0-9]$/.test(e.key) && e.target.selectionStart === e.target.selectionEnd && e.target.selectionStart > dot && val.length - dot - 1 >= 3) {
+                          if (
+                            dot !== -1 &&
+                            /^[0-9]$/.test(e.key) &&
+                            e.target.selectionStart === e.target.selectionEnd &&
+                            e.target.selectionStart > dot &&
+                            val.length - dot - 1 >= 3
+                          ) {
                             e.preventDefault();
                           }
                         }}
                         min="0"
                         type="text"
                         placeholder="Enter Exchange rate"
-                        value={limitToThreeDecimals(String(item?.ex_rate ?? ""))}
+                        value={limitToThreeDecimals(
+                          String(item?.ex_rate ?? ""),
+                        )}
                       />
                     </div>
                   </div>
@@ -963,24 +1048,31 @@ const SellBuyForm = (props: any) => {
           ""
         )}
         <div className="flex justify-end ">
-           {singlefranchiseedata?.is_overseas && toggle == 1 ? (
-                <div className="flex items-center gap-3 mt-5">
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs text-gray-500 font-medium whitespace-nowrap">Currency:</span>
-                    <span className="text-xs font-semibold text-gray-700 bg-white border border-gray-300 rounded px-2 py-1">
-                      {currencydata?.find((c: any) => c.id == singlefranchiseedata?.currency)?.currency || "INR"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs text-gray-500 font-medium whitespace-nowrap">Exchange Rate:</span>
-                    <span className="text-xs font-semibold text-gray-700 bg-white border border-gray-300 rounded px-2 py-1">
-                      {singlefranchiseedata?.exchange_rate || "1"}
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                ""
-              )}</div>
+          {singlefranchiseedata?.is_overseas && toggle == 1 ? (
+            <div className="flex items-center gap-3 mt-5">
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-gray-500 font-medium whitespace-nowrap">
+                  Currency:
+                </span>
+                <span className="text-xs font-semibold text-gray-700 bg-white border border-gray-300 rounded px-2 py-1">
+                  {currencydata?.find(
+                    (c: any) => c.id == singlefranchiseedata?.currency,
+                  )?.currency || "INR"}
+                </span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-gray-500 font-medium whitespace-nowrap">
+                  Exchange Rate:
+                </span>
+                <span className="text-xs font-semibold text-gray-700 bg-white border border-gray-300 rounded px-2 py-1">
+                  {singlefranchiseedata?.exchange_rate || "1"}
+                </span>
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
         {userdata?.type_id == 8 ||
         userdata?.type_id == 6 ||
         userdata?.type_id == 9 ? (
@@ -1018,9 +1110,7 @@ const SellBuyForm = (props: any) => {
               ) : (
                 ""
               )}
-
             </div>
-
 
             {spotData?.incoterm == 2 ? (
               <div className="flex ">
@@ -1110,14 +1200,16 @@ const SellBuyForm = (props: any) => {
                   <Table.Th className="px-1 py-1 text-center">
                     CURRENCY
                   </Table.Th>
-                  <Table.Th className="px-1 py-1 text-center">
-                    EX-RATE
-                  </Table.Th>
+                  <Table.Th className="px-1 py-1 text-center">EX-RATE</Table.Th>
                   <Table.Th className="px-1 py-1 text-center">
                     INR AMOUNT
                   </Table.Th>
-                  <Table.Th className="px-1 py-1 text-center min-w-[70px]">GST %</Table.Th>
-                  <Table.Th className="px-1 py-1 text-center min-w-[110px]">TOTAL AMT</Table.Th>
+                  <Table.Th className="px-1 py-1 text-center min-w-[70px]">
+                    GST %
+                  </Table.Th>
+                  <Table.Th className="px-1 py-1 text-center min-w-[110px]">
+                    TOTAL AMT
+                  </Table.Th>
                   <Table.Th className="px-1 py-1 text-center">REMARKS</Table.Th>
                   {additonalList
                     ? additonalList?.map((item: any) => (
@@ -1242,7 +1334,13 @@ const SellBuyForm = (props: any) => {
                       onKeyDown={(e: any) => {
                         const val = e.target.value;
                         const dot = val.indexOf(".");
-                        if (dot !== -1 && /^[0-9]$/.test(e.key) && e.target.selectionStart === e.target.selectionEnd && e.target.selectionStart > dot && val.length - dot - 1 >= 3) {
+                        if (
+                          dot !== -1 &&
+                          /^[0-9]$/.test(e.key) &&
+                          e.target.selectionStart === e.target.selectionEnd &&
+                          e.target.selectionStart > dot &&
+                          val.length - dot - 1 >= 3
+                        ) {
                           e.preventDefault();
                         }
                       }}
@@ -1279,11 +1377,21 @@ const SellBuyForm = (props: any) => {
                       onKeyDown={(e: any) => {
                         const val = e.target.value;
                         const dot = val.indexOf(".");
-                        if (dot !== -1 && /^[0-9]$/.test(e.key) && e.target.selectionStart === e.target.selectionEnd && e.target.selectionStart > dot && val.length - dot - 1 >= 3) {
+                        if (
+                          dot !== -1 &&
+                          /^[0-9]$/.test(e.key) &&
+                          e.target.selectionStart === e.target.selectionEnd &&
+                          e.target.selectionStart > dot &&
+                          val.length - dot - 1 >= 3
+                        ) {
                           e.preventDefault();
                         }
                       }}
-                      value={row?.per_kg == 2 ? 1 : limitToThreeDecimals(String(row?.weight ?? ""))}
+                      value={
+                        row?.per_kg == 2
+                          ? 1
+                          : limitToThreeDecimals(String(row?.weight ?? ""))
+                      }
                       className="text-right w-full p-2 border border-gray-300 rounded"
                     />
                   </Table.Td>
@@ -1306,22 +1414,35 @@ const SellBuyForm = (props: any) => {
                         }
                       }}
                       onChange={(e: any) => {
-                        if (!singlefranchiseedata?.is_overseas) handleSelectChange(index, "currency", e.target.value);
+                        if (!singlefranchiseedata?.is_overseas)
+                          handleSelectChange(index, "currency", e.target.value);
                       }}
                       className="w-full p-2 border border-gray-300 rounded"
-                      value={singlefranchiseedata?.is_overseas ? String(singlefranchiseedata?.currency || "") : row?.currency}
+                      value={
+                        singlefranchiseedata?.is_overseas
+                          ? String(singlefranchiseedata?.currency || "")
+                          : row?.currency
+                      }
                       disabled={
                         singlefranchiseedata?.is_overseas ||
                         ((spotData?.booking_status == 1 ||
                           spotData?.booking_status == 14) &&
-                        spotData?.forwhat != "pricing")
+                          spotData?.forwhat != "pricing")
                       }
                     >
                       <option value="">Select</option>
                       {singlefranchiseedata?.is_overseas
-                        ? currencydata?.filter((item2: any) => String(item2.id) == String(singlefranchiseedata?.currency))?.map((item: any) => (
-                            <option key={item?.id} value={item?.id}>{item?.currency}</option>
-                          ))
+                        ? currencydata
+                            ?.filter(
+                              (item2: any) =>
+                                String(item2.id) ==
+                                String(singlefranchiseedata?.currency),
+                            )
+                            ?.map((item: any) => (
+                              <option key={item?.id} value={item?.id}>
+                                {item?.currency}
+                              </option>
+                            ))
                         : currencydata?.length
                           ? currencydata
                               .filter((item2: any) => {
@@ -1341,7 +1462,11 @@ const SellBuyForm = (props: any) => {
                   <Table.Td className="px-1 py-1">
                     <FormInput
                       type="text"
-                      value={singlefranchiseedata?.is_overseas ? String(singlefranchiseedata?.exchange_rate || "1") : (formatIndianNumber(Number(row?.ex_rate||1)) || 1)}
+                      value={
+                        singlefranchiseedata?.is_overseas
+                          ? String(singlefranchiseedata?.exchange_rate || "1")
+                          : formatIndianNumber(Number(row?.ex_rate || 1)) || 1
+                      }
                       disabled
                       className="text-right w-full p-2 border border-gray-300 rounded"
                     />
@@ -1349,7 +1474,9 @@ const SellBuyForm = (props: any) => {
                   <Table.Td className="px-1 py-1">
                     <FormInput
                       type="text"
-                      value={formatIndianNumber(parseFloat(Number(row?.inr_amount).toFixed(3)))}
+                      value={formatIndianNumber(
+                        parseFloat(Number(row?.inr_amount).toFixed(3)),
+                      )}
                       disabled
                       onChange={(e: any) => {
                         handleSelectChange(index, "inr_amount", e.target.value);
@@ -1362,9 +1489,14 @@ const SellBuyForm = (props: any) => {
                       type="text"
                       value={(() => {
                         if (!row?.charge_id) return "-";
-                        const zeroGST = singlefranchiseedata?.is_overseas || singlefranchiseedata?.gst_status == 4 || spotData?.import_booking == 3;
+                        const zeroGST =
+                          singlefranchiseedata?.is_overseas ||
+                          singlefranchiseedata?.gst_status == 4 ||
+                          spotData?.import_booking == 3;
                         if (zeroGST) return "0%";
-                        const chargeInfo = chargesdata?.find((c: any) => c.ref_sell_id == row?.charge_id);
+                        const chargeInfo = chargesdata?.find(
+                          (c: any) => c.ref_sell_id == row?.charge_id,
+                        );
                         const igst = chargeInfo?.tax_breakup?.igst;
                         return igst != null ? `${parseFloat(igst)}%` : "-";
                       })()}
@@ -1376,13 +1508,25 @@ const SellBuyForm = (props: any) => {
                     <FormInput
                       type="text"
                       value={(() => {
-                        const inr = parseFloat(Number(row?.inr_amount).toFixed(3));
-                        if (!row?.charge_id || row?.charge_id == 162) return formatIndianNumber(inr);
-                        const zeroGST = singlefranchiseedata?.gst_status == 4 || spotData?.import_booking == 3 || singlefranchiseedata?.is_overseas;
+                        const inr = parseFloat(
+                          Number(row?.inr_amount).toFixed(3),
+                        );
+                        if (!row?.charge_id || row?.charge_id == 162)
+                          return formatIndianNumber(inr);
+                        const zeroGST =
+                          singlefranchiseedata?.gst_status == 4 ||
+                          spotData?.import_booking == 3 ||
+                          singlefranchiseedata?.is_overseas;
                         if (zeroGST) return formatIndianNumber(inr);
-                        const chargeInfo = chargesdata?.find((c: any) => c.ref_sell_id == row?.charge_id);
-                        const igstRate = parseFloat(chargeInfo?.tax_breakup?.igst || "18") / 100;
-                        return formatIndianNumber(parseFloat((inr + inr * igstRate).toFixed(3)));
+                        const chargeInfo = chargesdata?.find(
+                          (c: any) => c.ref_sell_id == row?.charge_id,
+                        );
+                        const igstRate =
+                          parseFloat(chargeInfo?.tax_breakup?.igst || "18") /
+                          100;
+                        return formatIndianNumber(
+                          parseFloat((inr + inr * igstRate).toFixed(3)),
+                        );
                       })()}
                       disabled
                       className="w-full p-2 text-right border border-gray-300 rounded"
@@ -1532,8 +1676,12 @@ const SellBuyForm = (props: any) => {
                   <Table.Th className="px-1 py-1 text-center">
                     INR AMOUNT
                   </Table.Th>
-                  <Table.Th className="px-1 py-1 text-center min-w-[70px]">GST %</Table.Th>
-                  <Table.Th className="px-1 py-1 text-center min-w-[110px]">TOTAL AMT</Table.Th>
+                  <Table.Th className="px-1 py-1 text-center min-w-[70px]">
+                    GST %
+                  </Table.Th>
+                  <Table.Th className="px-1 py-1 text-center min-w-[110px]">
+                    TOTAL AMT
+                  </Table.Th>
 
                   <Table.Th className="px-1 py-1 text-center ">
                     PARTY TYPE
@@ -1642,7 +1790,11 @@ const SellBuyForm = (props: any) => {
                       name="rate"
                       onChange={(e: any) => {
                         let newValue = limitToThreeDecimals(e.target.value);
-                        if (newValue.startsWith("0") && newValue.length > 1 && !newValue.startsWith("0.")) {
+                        if (
+                          newValue.startsWith("0") &&
+                          newValue.length > 1 &&
+                          !newValue.startsWith("0.")
+                        ) {
                           newValue = newValue.replace(/^0+/, "");
                         }
                         handleSelectChange2(index, "rate", newValue);
@@ -1650,7 +1802,13 @@ const SellBuyForm = (props: any) => {
                       onKeyDown={(e: any) => {
                         const val = e.target.value;
                         const dot = val.indexOf(".");
-                        if (dot !== -1 && /^[0-9]$/.test(e.key) && e.target.selectionStart === e.target.selectionEnd && e.target.selectionStart > dot && val.length - dot - 1 >= 3) {
+                        if (
+                          dot !== -1 &&
+                          /^[0-9]$/.test(e.key) &&
+                          e.target.selectionStart === e.target.selectionEnd &&
+                          e.target.selectionStart > dot &&
+                          val.length - dot - 1 >= 3
+                        ) {
                           e.preventDefault();
                         }
                       }}
@@ -1694,11 +1852,21 @@ const SellBuyForm = (props: any) => {
                       onKeyDown={(e: any) => {
                         const val = e.target.value;
                         const dot = val.indexOf(".");
-                        if (dot !== -1 && /^[0-9]$/.test(e.key) && e.target.selectionStart === e.target.selectionEnd && e.target.selectionStart > dot && val.length - dot - 1 >= 3) {
+                        if (
+                          dot !== -1 &&
+                          /^[0-9]$/.test(e.key) &&
+                          e.target.selectionStart === e.target.selectionEnd &&
+                          e.target.selectionStart > dot &&
+                          val.length - dot - 1 >= 3
+                        ) {
                           e.preventDefault();
                         }
                       }}
-                      value={row?.per_kg == 2 ? 1 : limitToThreeDecimals(String(row?.weight ?? ""))}
+                      value={
+                        row?.per_kg == 2
+                          ? 1
+                          : limitToThreeDecimals(String(row?.weight ?? ""))
+                      }
                       className="text-right w-full p-2 border border-gray-300 rounded"
                     />
                   </Table.Td>
@@ -1756,7 +1924,11 @@ const SellBuyForm = (props: any) => {
                   <Table.Td className="px-1 py-1">
                     <FormInput
                       type="text"
-                      value={formatIndianNumber(parseFloat(Number(row?.ex_rate).toFixed(3))) || 1}
+                      value={
+                        formatIndianNumber(
+                          parseFloat(Number(row?.ex_rate).toFixed(3)),
+                        ) || 1
+                      }
                       disabled
                       onChange={(e: any) => {
                         handleSelectChange2(index, "ex_rate", e.target.value);
@@ -1767,7 +1939,9 @@ const SellBuyForm = (props: any) => {
                   <Table.Td className="px-1 py-1">
                     <FormInput
                       type="text"
-                      value={formatIndianNumber(parseFloat(Number(row?.inr_amount).toFixed(3)))}
+                      value={formatIndianNumber(
+                        parseFloat(Number(row?.inr_amount).toFixed(3)),
+                      )}
                       disabled
                       onChange={(e: any) => {
                         handleSelectChange2(
@@ -1783,9 +1957,15 @@ const SellBuyForm = (props: any) => {
                     <FormInput
                       type="text"
                       value={(() => {
-                        const chargeInfo = chargesdata?.find((c: any) => c.charge_id == row?.charge_id);
+                        const chargeInfo = chargesdata?.find(
+                          (c: any) => c.charge_id == row?.charge_id,
+                        );
                         const igst = chargeInfo?.tax_breakup?.igst;
-                        return row?.charge_id ? (igst != null ? `${parseFloat(igst)}%` : "-") : "-";
+                        return row?.charge_id
+                          ? igst != null
+                            ? `${parseFloat(igst)}%`
+                            : "-"
+                          : "-";
                       })()}
                       disabled
                       className="w-full p-2 text-center border border-gray-300 rounded"
@@ -1795,13 +1975,22 @@ const SellBuyForm = (props: any) => {
                     <FormInput
                       type="text"
                       value={(() => {
-                        const inr = parseFloat(Number(row?.inr_amount).toFixed(3));
-                        if (!row?.charge_id || row?.charge_id == 163) return formatIndianNumber(inr);
+                        const inr = parseFloat(
+                          Number(row?.inr_amount).toFixed(3),
+                        );
+                        if (!row?.charge_id || row?.charge_id == 163)
+                          return formatIndianNumber(inr);
                         const zeroGST = singlefranchiseedata?.gst_status == 4;
                         if (zeroGST) return formatIndianNumber(inr);
-                        const chargeInfo = chargesdata?.find((c: any) => c.charge_id == row?.charge_id);
-                        const igstRate = parseFloat(chargeInfo?.tax_breakup?.igst || "18") / 100;
-                        return formatIndianNumber(parseFloat((inr + inr * igstRate).toFixed(3)));
+                        const chargeInfo = chargesdata?.find(
+                          (c: any) => c.charge_id == row?.charge_id,
+                        );
+                        const igstRate =
+                          parseFloat(chargeInfo?.tax_breakup?.igst || "18") /
+                          100;
+                        return formatIndianNumber(
+                          parseFloat((inr + inr * igstRate).toFixed(3)),
+                        );
                       })()}
                       disabled
                       className="w-full p-2 text-right border border-gray-300 rounded"

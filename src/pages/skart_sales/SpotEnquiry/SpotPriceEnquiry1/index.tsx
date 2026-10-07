@@ -40,6 +40,10 @@ import {
   Upload,
 } from "lucide-react";
 import DocumentUploadModal from "./DocumentUploadModal";
+
+import AOS from "aos";
+import "aos/dist/aos.css";
+
 axios.defaults.withCredentials = true;
 
 const fieldLabelCls =
@@ -71,7 +75,13 @@ const IconField = ({ icon: Icon, disabled, children }: any) => (
 
 const ENQUIRY_TABS = [
   { value: "2", label: "EXPORT", Icon: Send, iconCls: "", img: exporticon },
-  { value: "1", label: "IMPORT", Icon: Plane, iconCls: "rotate-90", img: importicon },
+  {
+    value: "1",
+    label: "IMPORT",
+    Icon: Plane,
+    iconCls: "rotate-90",
+    img: importicon,
+  },
   { value: "3", label: "THIRD COUNTRY", Icon: Globe, iconCls: "", img: null },
 ];
 
@@ -112,12 +122,13 @@ const intselecteddata3 = {
 };
 const intselectedthirdcountdata = {
   country_id: "",
-  country_name: ""
-}
+  country_name: "",
+};
 const SpotEnquirymain = () => {
   const navigate = useNavigate();
   const [iszipcode, setIszipcode] = useState<any>(false);
-  const [isthirdcountryzipcode, setIsthirdcountryzipcode] = useState<boolean>(false)
+  const [isthirdcountryzipcode, setIsthirdcountryzipcode] =
+    useState<boolean>(false);
   const [modal, setModal] = useState<boolean>(false);
   const [selectedoriginpincodedata, setSelectedoriginpincodedata] =
     useState<any>(intoriginpincodedata);
@@ -133,8 +144,8 @@ const SpotEnquirymain = () => {
   const location = useLocation();
   const { state } = location;
   const inputRef = useRef(null);
-  const inputRef2 = useRef(null)
-  const [currenydata, setCurrencyData] = useState([])
+  const inputRef2 = useRef(null);
+  const [currenydata, setCurrencyData] = useState([]);
   const [dimensionData, setDimensionData] = useState([
     {
       item_description: "",
@@ -150,9 +161,13 @@ const SpotEnquirymain = () => {
 
   const [spotbooking, setSpotBooking] = useState(initialState);
   const [enquiryType, setEnquiryType] = useState<any>(2);
-  const [thirdcountrydestdata, setThirdcountrydestdata] = useState<any>(intselectedthirdcountdata)
-  const [thirdcountrydestcitydata, setThirdcountrydestcitydata] = useState<any>(intselecteddata3)
-  const [thirdcountrydestpincodedata, setThirdcountrydestpincodedata] = useState<any>(intselecteddata2)
+  const [thirdcountrydestdata, setThirdcountrydestdata] = useState<any>(
+    intselectedthirdcountdata,
+  );
+  const [thirdcountrydestcitydata, setThirdcountrydestcitydata] =
+    useState<any>(intselecteddata3);
+  const [thirdcountrydestpincodedata, setThirdcountrydestpincodedata] =
+    useState<any>(intselecteddata2);
   const { showAlert } = useAlert();
   const getchweight = async (
     shipment_dimensions: any = [],
@@ -175,7 +190,7 @@ const SpotEnquirymain = () => {
                   (+item?.breadth || 0) *
                   (+item?.height || 0) *
                   (+item?.quantity || 0)) /
-                data[0]?.denom_fac,
+                  data[0]?.denom_fac,
                 +item?.weight || 0,
               ),
             0,
@@ -192,7 +207,7 @@ const SpotEnquirymain = () => {
                 (+item?.breadth || 0) *
                 (+item?.height || 0) *
                 (+item?.quantity || 0)) /
-              data[0]?.denom_fac,
+                data[0]?.denom_fac,
             0,
           );
           chargeable_weight = Math.max(gross_w, vol_w);
@@ -206,12 +221,14 @@ const SpotEnquirymain = () => {
   };
 
   const handleSubmit = () => {
-    const destPincodeAvail = enquiryType == 3
-      ? (spotbooking as any)?.dest_pincode_available
-      : spotbooking?.pincode_available;
-    const destCityAvail = enquiryType == 3
-      ? (spotbooking as any)?.dest_city_available
-      : spotbooking?.city_available;
+    const destPincodeAvail =
+      enquiryType == 3
+        ? (spotbooking as any)?.dest_pincode_available
+        : spotbooking?.pincode_available;
+    const destCityAvail =
+      enquiryType == 3
+        ? (spotbooking as any)?.dest_city_available
+        : spotbooking?.city_available;
 
     const errors = {
       ...(enquiryType == 1 || enquiryType == 3
@@ -239,7 +256,8 @@ const SpotEnquirymain = () => {
     }
     if (
       enquiryType == 3 &&
-      ((spotbooking as any)?.dest_pincode_available == 0 || isthirdcountryzipcode)
+      ((spotbooking as any)?.dest_pincode_available == 0 ||
+        isthirdcountryzipcode)
     ) {
       delete errors?.destination_pincode;
     }
@@ -273,10 +291,9 @@ const SpotEnquirymain = () => {
   };
 
   const fun1 = (a: any, forwhat?: any) => {
-
     if (enquiryType == 3 && a?.country_id == 97) {
       inputRef.current.value = null;
-      showAlert("Selected country is not allowed", "warning")
+      showAlert("Selected country is not allowed", "warning");
       if (forwhat == 1) {
         setSelecteddata({
           country_name: "",
@@ -288,7 +305,8 @@ const SpotEnquirymain = () => {
           origin_country: "",
           origin_country_code: "",
           origin_country_id: "",
-          city_available: 0, pincode_available: 0
+          city_available: 0,
+          pincode_available: 0,
           //  city_available: 0,
           //  pincode_available: 0,
         }));
@@ -296,11 +314,9 @@ const SpotEnquirymain = () => {
         setSelecteddata2(intselecteddata2);
         setSelecteddata3(intselecteddata3);
         setSpotBooking((pre: any) => ({ ...pre, origin_pincode: "" }));
-
-
       } else {
         if (a?.country_id == spotbooking?.origin_country_id) {
-          showAlert('Origin and Destination Can not be same', "warning")
+          showAlert("Origin and Destination Can not be same", "warning");
         }
         setSpotBooking((prev) => ({
           ...prev,
@@ -316,23 +332,20 @@ const SpotEnquirymain = () => {
         setThirdcountrydestdata(intselectedthirdcountdata);
         setThirdcountrydestcitydata(intselecteddata3);
         setIsthirdcountryzipcode(false);
-        inputRef2.current.value = null
+        inputRef2.current.value = null;
       }
-
-
-
-
-
-
 
       localStorage.removeItem("code");
 
-
-      return false
+      return false;
     }
 
     if (enquiryType == 3) {
-      if (forwhat == 1 && a?.country_id && a?.country_id == spotbooking?.destination_country_id) {
+      if (
+        forwhat == 1 &&
+        a?.country_id &&
+        a?.country_id == spotbooking?.destination_country_id
+      ) {
         showAlert("Origin and Destination cannot be the same", "warning");
         setSpotBooking((prev) => ({
           ...prev,
@@ -350,7 +363,11 @@ const SpotEnquirymain = () => {
         localStorage.removeItem("code");
         return false;
       }
-      if (forwhat == 3 && a?.country_id && a?.country_id == (spotbooking as any)?.origin_country_id) {
+      if (
+        forwhat == 3 &&
+        a?.country_id &&
+        a?.country_id == (spotbooking as any)?.origin_country_id
+      ) {
         showAlert("Origin and Destination cannot be the same", "warning");
         setSpotBooking((prev) => ({
           ...prev,
@@ -420,13 +437,13 @@ const SpotEnquirymain = () => {
         destination_country_id: a?.country_id || "",
         ...(forwhat == 2
           ? {
-            city_available: a?.city_avail == 1 ? 1 : 0,
-            pincode_available: a?.pincode_avail == 1 ? 1 : 0,
-          }
+              city_available: a?.city_avail == 1 ? 1 : 0,
+              pincode_available: a?.pincode_avail == 1 ? 1 : 0,
+            }
           : {
-            dest_city_available: a?.city_avail == 1 ? 1 : 0,
-            dest_pincode_available: a?.pincode_avail == 1 ? 1 : 0,
-          }),
+              dest_city_available: a?.city_avail == 1 ? 1 : 0,
+              dest_pincode_available: a?.pincode_avail == 1 ? 1 : 0,
+            }),
       }));
       if (a?.pincode_avail == 0) {
         setSpotBooking((pre: any) => ({ ...pre, destination_pincode: "0000" }));
@@ -482,7 +499,6 @@ const SpotEnquirymain = () => {
   };
 
   const funtoempty1 = (forwhat?: any) => {
-
     if (forwhat == 2 || forwhat == 3) {
       setSpotBooking((prev) => ({
         ...prev,
@@ -490,7 +506,12 @@ const SpotEnquirymain = () => {
         destination_country_code: "",
         destination_country_id: "",
         ...(forwhat == 3
-          ? { dest_city_available: 0, dest_pincode_available: 0, destination_pincode: "", city: "" }
+          ? {
+              dest_city_available: 0,
+              dest_pincode_available: 0,
+              destination_pincode: "",
+              city: "",
+            }
           : { city_available: 0, pincode_available: 0 }),
       }));
 
@@ -538,7 +559,10 @@ const SpotEnquirymain = () => {
         state_name: a?.state?.replaceAll(/[^a-zA-Z0-9 ]/g, ""),
       }));
       if (type == 3) {
-        setThirdcountrydestpincodedata({ zipcode: a?.zipcode || "", city: a?.city_area || "" });
+        setThirdcountrydestpincodedata({
+          zipcode: a?.zipcode || "",
+          city: a?.city_area || "",
+        });
       } else {
         setSelecteddata3((pre: any) => ({ ...pre, city_area: a?.city_area }));
       }
@@ -689,16 +713,23 @@ const SpotEnquirymain = () => {
   }, [allfdata?.length]);
 
   const getcurrencydata = async (currency?: any, spotprice?: any) => {
-
-    const res = await commongetrequest('booking/currency')
+    const res = await commongetrequest("booking/currency");
     if (res?.status == 200) {
+      const singledata = res?.data?.data?.find(
+        (item: any) => item?.id == currency,
+      );
 
-      const singledata = res?.data?.data?.find((item: any) => item?.id == currency)
-
-      setSpotBooking((pre: any) => ({ ...pre, ...spotprice ? { spot_price: Number(spotprice) / (Number(singledata?.exchange_rate) || 1) } : {} }))
-
+      setSpotBooking((pre: any) => ({
+        ...pre,
+        ...(spotprice
+          ? {
+              spot_price:
+                Number(spotprice) / (Number(singledata?.exchange_rate) || 1),
+            }
+          : {}),
+      }));
     }
-  }
+  };
   const getintdata = async () => {
     try {
       const res = await commongetrequest("admin/franchisee-settings");
@@ -724,15 +755,18 @@ const SpotEnquirymain = () => {
           if (datasingle?.courier_id) {
             chweight = await getchweight(dimensionData, datasingle?.courier_id);
             franchisee_data = await commongetrequest(
-              `admin/franchisee-settings?franchisee_id=${datasingle?.franchisee_id}`
-            ).then((res) => {
-              return res?.data?.data[0] || null;
-            }).catch((err) => { return null; });
+              `admin/franchisee-settings?franchisee_id=${datasingle?.franchisee_id}`,
+            )
+              .then((res) => {
+                return res?.data?.data[0] || null;
+              })
+              .catch((err) => {
+                return null;
+              });
           }
 
           if (franchisee_data?.is_active != 0) {
             setFranchiseeInactive(false);
-
 
             if (datasingle?.import_booking == 3) {
               // THIRD COUNTRY: both origin and destination are international
@@ -754,11 +788,13 @@ const SpotEnquirymain = () => {
                 });
 
                 const resOriginPincode = await commongetrequest(
-                  `admin/international-pincode?country_code=${originCountryCode}&zipcode=${datasingle?.org_zip != "0000" ? datasingle?.org_zip : ""
+                  `admin/international-pincode?country_code=${originCountryCode}&zipcode=${
+                    datasingle?.org_zip != "0000" ? datasingle?.org_zip : ""
                   }`,
                 );
                 const resOriginCity = await commongetrequest(
-                  `admin/international-pincode?country_code=${originCountryCode}&zipcode=${datasingle?.org_zip != "0000" ? datasingle?.org_zip : ""
+                  `admin/international-pincode?country_code=${originCountryCode}&zipcode=${
+                    datasingle?.org_zip != "0000" ? datasingle?.org_zip : ""
                   }&city=${datasingle?.org_city}`,
                 );
 
@@ -789,11 +825,13 @@ const SpotEnquirymain = () => {
                 });
 
                 const resDestPincode = await commongetrequest(
-                  `admin/international-pincode?country_code=${destCountryCode}&zipcode=${datasingle?.dest_zip != "0000" ? datasingle?.dest_zip : ""
+                  `admin/international-pincode?country_code=${destCountryCode}&zipcode=${
+                    datasingle?.dest_zip != "0000" ? datasingle?.dest_zip : ""
                   }`,
                 );
                 const resDestCity = await commongetrequest(
-                  `admin/international-pincode?country_code=${destCountryCode}&zipcode=${datasingle?.dest_zip != "0000" ? datasingle?.dest_zip : ""
+                  `admin/international-pincode?country_code=${destCountryCode}&zipcode=${
+                    datasingle?.dest_zip != "0000" ? datasingle?.dest_zip : ""
                   }&city=${datasingle?.dest_city}`,
                 );
 
@@ -804,7 +842,10 @@ const SpotEnquirymain = () => {
                   fun3(resDestPincode?.data?.data[0], "", 3);
                 }
 
-                if (resDestCity?.status == 200 && resDestCity?.data?.data?.[0]) {
+                if (
+                  resDestCity?.status == 200 &&
+                  resDestCity?.data?.data?.[0]
+                ) {
                   fun4(resDestCity?.data?.data[0], "", 3);
                   setThirdcountrydestcitydata({
                     city_area: resDestCity?.data?.data[0]?.city_area || "",
@@ -823,40 +864,46 @@ const SpotEnquirymain = () => {
             } else {
               // EXPORT (import_booking == 1) and IMPORT (import_booking == 2)
               const res2 = await commongetrequest(
-                `admin/domestic-pincode/${datasingle?.import_booking
-                  ? datasingle?.import_booking == 2
-                    ? datasingle?.dest_zip
+                `admin/domestic-pincode/${
+                  datasingle?.import_booking
+                    ? datasingle?.import_booking == 2
+                      ? datasingle?.dest_zip
+                      : datasingle?.org_zip
                     : datasingle?.org_zip
-                  : datasingle?.org_zip
                 }`,
               );
               const res3 = await commongetrequest(
-                `admin/country?id=${datasingle?.import_booking
-                  ? datasingle?.import_booking == 2
-                    ? datasingle?.org_country_id
+                `admin/country?id=${
+                  datasingle?.import_booking
+                    ? datasingle?.import_booking == 2
+                      ? datasingle?.org_country_id
+                      : datasingle?.dest_country_id
                     : datasingle?.dest_country_id
-                  : datasingle?.dest_country_id
                 }`,
               );
               if (res3?.status == 200) {
                 const res4 =
                   datasingle?.import_booking == 2
                     ? await commongetrequest(
-                      `admin/international-pincode?country_code=${res3?.data?.data[0]?.country_code}&zipcode=${datasingle?.org_zip}`,
-                    )
+                        `admin/international-pincode?country_code=${res3?.data?.data[0]?.country_code}&zipcode=${datasingle?.org_zip}`,
+                      )
                     : await commongetrequest(
-                      `admin/international-pincode?country_code=${res3?.data?.data[0]?.country_code}&zipcode=${datasingle?.dest_zip}`,
-                    );
+                        `admin/international-pincode?country_code=${res3?.data?.data[0]?.country_code}&zipcode=${datasingle?.dest_zip}`,
+                      );
                 const res5 =
                   datasingle?.import_booking == 2
                     ? await commongetrequest(
-                      `admin/international-pincode?country_code=${res3?.data?.data[0]?.country_code
-                      }&zipcode=${datasingle?.org_zip != "0000" ? datasingle?.org_zip : ""
-                      }&city=${datasingle?.org_city}`,
-                    )
+                        `admin/international-pincode?country_code=${
+                          res3?.data?.data[0]?.country_code
+                        }&zipcode=${
+                          datasingle?.org_zip != "0000"
+                            ? datasingle?.org_zip
+                            : ""
+                        }&city=${datasingle?.org_city}`,
+                      )
                     : await commongetrequest(
-                      `admin/international-pincode?country_code=${res3?.data?.data[0]?.country_code}&zipcode=${datasingle?.dest_zip}&city=${datasingle?.dest_city}`,
-                    );
+                        `admin/international-pincode?country_code=${res3?.data?.data[0]?.country_code}&zipcode=${datasingle?.dest_zip}&city=${datasingle?.dest_city}`,
+                      );
                 if (res4?.status == 200) {
                   const data = res4?.data?.data || [];
                   if (data?.length >= 1) {
@@ -896,7 +943,10 @@ const SpotEnquirymain = () => {
                   pincode: res2?.data?.data[0]?.pincode,
                   pincode_id: res2?.data?.data[0]?.pincode_id,
                 });
-                fun5(res2?.data?.data[0], datasingle?.import_booking == 1 ? 2 : 1);
+                fun5(
+                  res2?.data?.data[0],
+                  datasingle?.import_booking == 1 ? 2 : 1,
+                );
               }
             }
 
@@ -907,7 +957,8 @@ const SpotEnquirymain = () => {
               franchisee: datasingle?.franchisee_id || "",
               franchisee_name:
                 allfdata?.find(
-                  (item: any) => item?.franchisee_id == datasingle?.franchisee_id,
+                  (item: any) =>
+                    item?.franchisee_id == datasingle?.franchisee_id,
                 )?.franchisee_name || "",
               hub_id: datasingle?.hub_id || 0,
 
@@ -944,15 +995,15 @@ const SpotEnquirymain = () => {
                 : {}),
               ...(datasingle?.shipment_type == 8
                 ? {
-                  fair_id: datasingle?.fair_data?.fair_id,
-                  fair_venue: datasingle?.fair_data?.fair_venue,
-                  fair_start_date: datasingle?.fair_data?.fair_start_date,
-                  fair_end_date: datasingle?.fair_data?.fair_end_date,
-                  // fair_data: datasingle?.fair_data,
-                  is_returnable: datasingle?.is_returnable || 0,
-                  mode: datasingle?.fair_data?.mode || "",
-                  mode_value: datasingle?.fair_data?.mode_value || "",
-                }
+                    fair_id: datasingle?.fair_data?.fair_id,
+                    fair_venue: datasingle?.fair_data?.fair_venue,
+                    fair_start_date: datasingle?.fair_data?.fair_start_date,
+                    fair_end_date: datasingle?.fair_data?.fair_end_date,
+                    // fair_data: datasingle?.fair_data,
+                    is_returnable: datasingle?.is_returnable || 0,
+                    mode: datasingle?.fair_data?.mode || "",
+                    mode_value: datasingle?.fair_data?.mode_value || "",
+                  }
                 : {}),
               ...(datasingle?.import_booking == 2
                 ? { import_booking_type: datasingle?.import_booking_type }
@@ -962,9 +1013,9 @@ const SpotEnquirymain = () => {
                 : {}),
               ...(datasingle?.import_booking == 2
                 ? {
-                  import_booking_type: datasingle?.import_booking_type,
-                  import_service_type: datasingle?.import_service_type,
-                }
+                    import_booking_type: datasingle?.import_booking_type,
+                    import_service_type: datasingle?.import_service_type,
+                  }
                 : {}),
               forwhat: "enq",
               ...(datasingle?.org_zip == "0000"
@@ -975,7 +1026,13 @@ const SpotEnquirymain = () => {
               setIszipcode(true);
               setSelecteddata3({ city_area: datasingle?.org_city });
             }
-            setEnquiryType(datasingle?.import_booking == 1 ? 2 : datasingle?.import_booking == 3 ? 3 : 1);
+            setEnquiryType(
+              datasingle?.import_booking == 1
+                ? 2
+                : datasingle?.import_booking == 3
+                  ? 3
+                  : 1,
+            );
             if (datasingle?.shipment_dimensions?.length >= 1) {
               setSpotBooking((pre: any) => ({
                 ...pre,
@@ -984,7 +1041,7 @@ const SpotEnquirymain = () => {
             }
 
             if (datasingle?.currency_id) {
-              getcurrencydata(datasingle?.currency_id, datasingle?.spot_price)
+              getcurrencydata(datasingle?.currency_id, datasingle?.spot_price);
             }
             setModal(false);
           } else {
@@ -1101,14 +1158,16 @@ const SpotEnquirymain = () => {
           />
         </IconField>
         {franchiseeInactive && (
-          <p className="text-red-500 text-xs mt-0.5">This Franchisee is inactive.</p>
+          <p className="text-red-500 text-xs mt-0.5">
+            This Franchisee is inactive.
+          </p>
         )}
       </div>
     </>
   );
   const ModalTitle2 = (
     <>
-      <div>Check For Existing </div>
+      <div className="text-white font-bold">Check For Existing </div>
     </>
   );
 
@@ -1140,6 +1199,13 @@ const SpotEnquirymain = () => {
     </>
   );
 
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
+  }, []);
+
   return (
     <div className="mx-auto w-full max-w-3xl px-2 py-6 sm:px-4">
       <DocumentUploadModal
@@ -1147,9 +1213,15 @@ const SpotEnquirymain = () => {
         onClose={() => setDocUploadModalOpen(false)}
       />
 
-      <div className="rounded-2xl border border-slate-100 bg-white shadow-lg">
+      <div
+        className="rounded-2xl border border-slate-100 bg-white shadow-lg"
+        data-aos="fade-up"
+      >
         {/* ── Header ── */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-[#fdf9ef] px-4 py-4 sm:px-6">
+        <div
+          className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-[#fdf9ef] px-4 py-4 sm:px-6"
+          data-aos="fade-up"
+        >
           <div className="flex items-center gap-3">
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-mustard text-white shadow-sm">
               <Plane className="h-5 w-5" />
@@ -1183,13 +1255,16 @@ const SpotEnquirymain = () => {
           </div>
         </div>
 
-        <div className="px-4 py-5 sm:px-6">
+        <div className="px-4 py-5 sm:px-6" data-aos="fade-up">
           {state?.booking?.destination_country_id ? (
             <div className="mb-5 rounded-xl border border-slate-100 bg-slate-50/60 p-3 sm:p-4">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div className="flex items-center">
                   <i className="mr-1 h-[35px] w-[35px] rounded-full border border-yellow-100 bg-[#fdf7e4] p-[5px] text-center">
-                    <img src={franchiseeicon} className="inline-block w-[22px]" />
+                    <img
+                      src={franchiseeicon}
+                      className="inline-block w-[22px]"
+                    />
                   </i>
                   <aside className="ml-2 leading-[16px]">
                     <h5 className="font-bold">Franchisee:</h5>
@@ -1226,19 +1301,20 @@ const SpotEnquirymain = () => {
                   onClick={() => handleEnquiryTypeChange(value)}
                   className={`flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wide transition md:w-auto md:flex-none md:px-4 ${
                     value === "3" ? "col-span-2" : ""
-                  } ${enquiryType == value
-                    ? "bg-mustard text-white shadow "
-                    : "text-slate-500 hover:bg-white hover:text-slate-700 bg-slate-100 "
-                    }`}
+                  } ${
+                    enquiryType == value
+                      ? "bg-mustard text-white shadow "
+                      : "text-slate-500 hover:bg-white hover:text-slate-700 bg-slate-100 "
+                  }`}
                 >
                   {img ? (
-                    <img src={img}
-
-                           className={`h-[22px] w-[22px] shrink-0 object-contain ${enquiryType == value
-                    ? " group-hover:brightness-[5654%] brightness-[5654%]  "
-                    : " "
-                    }`}
-
+                    <img
+                      src={img}
+                      className={`h-[22px] w-[22px] shrink-0 object-contain ${
+                        enquiryType == value
+                          ? " group-hover:brightness-[5654%] brightness-[5654%]  "
+                          : " "
+                      }`}
                     />
                   ) : (
                     <Icon className={`h-4 w-4 shrink-0 ${iconCls}`} />
@@ -1299,7 +1375,7 @@ const SpotEnquirymain = () => {
                     id={selectedoriginpincodedata?.pincode}
                     forwhat={2}
                     leftIcon={<Search className="w-4 h-4" />}
-                  // border={error?.origin_pincode ? true : false}
+                    // border={error?.origin_pincode ? true : false}
                   />
                 </div>
 
@@ -1338,7 +1414,10 @@ const SpotEnquirymain = () => {
                   </div>
                 ) : (
                   <div>
-                    <label className={fieldLabelCls} htmlFor="destination-country">
+                    <label
+                      className={fieldLabelCls}
+                      htmlFor="destination-country"
+                    >
                       DESTINATION COUNTRY{" "}
                       <span className="text-red-500">*</span>
                     </label>
@@ -1401,13 +1480,17 @@ const SpotEnquirymain = () => {
               <div className="grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2">
                 {spotbooking?.pincode_available == 1 && !iszipcode && (
                   <div>
-                    <label className={fieldLabelCls} htmlFor="destinationZipcode">
+                    <label
+                      className={fieldLabelCls}
+                      htmlFor="destinationZipcode"
+                    >
                       DESTINATION PINCODE
                       {/* <span className="text-red-500">*</span> */}
                     </label>
                     <CommonSearchableAll
-                      apiEndpoint={`admin/international-pincode?country_code=${spotbooking?.destination_country_code || ""
-                        }`}
+                      apiEndpoint={`admin/international-pincode?country_code=${
+                        spotbooking?.destination_country_code || ""
+                      }`}
                       placeholder={"Search Destination Pincode"}
                       selecteddata={selecteddata2}
                       setSelecteddata={setSelecteddata2}
@@ -1437,8 +1520,9 @@ const SpotEnquirymain = () => {
                       CITY <span className="text-red-500">*</span>
                     </label>
                     <CommonSearchableAll
-                      apiEndpoint={`admin/international-pincode?country_code=${spotbooking?.destination_country_code || ""
-                        }&zipcode=${spotbooking?.destination_pincode || ""}`}
+                      apiEndpoint={`admin/international-pincode?country_code=${
+                        spotbooking?.destination_country_code || ""
+                      }&zipcode=${spotbooking?.destination_pincode || ""}`}
                       placeholder={"Search City"}
                       selecteddata={selecteddata3}
                       setSelecteddata={setSelecteddata3}
@@ -1557,8 +1641,9 @@ const SpotEnquirymain = () => {
                       ORIGIN PINCODE <span className="text-red-500">*</span>
                     </label>
                     <CommonSearchableAll
-                      apiEndpoint={`admin/international-pincode?country_code=${spotbooking?.origin_country_code || ""
-                        }`}
+                      apiEndpoint={`admin/international-pincode?country_code=${
+                        spotbooking?.origin_country_code || ""
+                      }`}
                       placeholder={"Search Origin Pincode"}
                       selecteddata={selecteddata2}
                       setSelecteddata={setSelecteddata2}
@@ -1588,8 +1673,9 @@ const SpotEnquirymain = () => {
                       ORIGIN CITY <span className="text-red-500">*</span>
                     </label>
                     <CommonSearchableAll
-                      apiEndpoint={`admin/international-pincode?country_code=${spotbooking?.origin_country_code || ""
-                        }&zipcode=${spotbooking?.origin_pincode || ""}`}
+                      apiEndpoint={`admin/international-pincode?country_code=${
+                        spotbooking?.origin_country_code || ""
+                      }&zipcode=${spotbooking?.origin_pincode || ""}`}
                       placeholder={"Search City"}
                       selecteddata={selecteddata3}
                       setSelecteddata={setSelecteddata3}
@@ -1608,7 +1694,11 @@ const SpotEnquirymain = () => {
                       enableZipcodeLookup={true}
                       lookupType="city"
                       countryName={spotbooking?.origin_country}
-                      lookupZipcode={spotbooking?.pincode_available == 1? spotbooking?.origin_pincode: "0000"}
+                      lookupZipcode={
+                        spotbooking?.pincode_available == 1
+                          ? spotbooking?.origin_pincode
+                          : "0000"
+                      }
                     />
                   </div>
                 )}
@@ -1630,7 +1720,10 @@ const SpotEnquirymain = () => {
                   </div>
                 ) : (
                   <div>
-                    <label className={fieldLabelCls} htmlFor="destination-country">
+                    <label
+                      className={fieldLabelCls}
+                      htmlFor="destination-country"
+                    >
                       DESTINATION COUNTRY{" "}
                       <span className="text-red-500">*</span>
                     </label>
@@ -1655,8 +1748,8 @@ const SpotEnquirymain = () => {
                 )}
 
                 {enquiryType == 3 &&
-                  spotbooking?.destination_country &&
-                  (spotbooking as any)?.dest_pincode_available == 1 ? (
+                spotbooking?.destination_country &&
+                (spotbooking as any)?.dest_pincode_available == 1 ? (
                   <div className="md:mt-[26px]">
                     <FormCheck className={checkRowCls}>
                       <FormCheck.Input
@@ -1695,13 +1788,14 @@ const SpotEnquirymain = () => {
                 )}
 
                 {(spotbooking as any)?.dest_pincode_available == 1 &&
-                  !isthirdcountryzipcode &&
-                  enquiryType == 3 ? (
+                !isthirdcountryzipcode &&
+                enquiryType == 3 ? (
                   <div>
                     <label className={fieldLabelCls}>DESTINATION PINCODE</label>
                     <CommonSearchableAll
-                      apiEndpoint={`admin/international-pincode?country_code=${spotbooking?.destination_country_code || ""
-                        }`}
+                      apiEndpoint={`admin/international-pincode?country_code=${
+                        spotbooking?.destination_country_code || ""
+                      }`}
                       placeholder={"Search Destination Pincode"}
                       selecteddata={thirdcountrydestpincodedata}
                       setSelecteddata={setThirdcountrydestpincodedata}
@@ -1752,12 +1846,12 @@ const SpotEnquirymain = () => {
                   enquiryType == 3 && (
                     <div>
                       <label className={fieldLabelCls}>
-                        DESTINATION CITY{" "}
-                        <span className="text-red-500">*</span>
+                        DESTINATION CITY <span className="text-red-500">*</span>
                       </label>
                       <CommonSearchableAll
-                        apiEndpoint={`admin/international-pincode?country_code=${spotbooking?.destination_country_code || ""
-                          }&zipcode=${spotbooking?.destination_pincode || ""}`}
+                        apiEndpoint={`admin/international-pincode?country_code=${
+                          spotbooking?.destination_country_code || ""
+                        }&zipcode=${spotbooking?.destination_pincode || ""}`}
                         placeholder={"Search City"}
                         selecteddata={thirdcountrydestcitydata}
                         setSelecteddata={setThirdcountrydestcitydata}

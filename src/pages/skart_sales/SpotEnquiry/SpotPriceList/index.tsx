@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from "react";
 import Table from "../../../../base-components/Table";
-import { ChevronDown, Copy, Edit, Plus, Search, XCircle, PlusCircle } from "lucide-react";
+import {
+  ChevronDown,
+  Copy,
+  Edit,
+  Plus,
+  Search,
+  XCircle,
+  PlusCircle,
+  User,
+  FileText,
+  Clipboard,
+} from "lucide-react";
 
 import { useAlert } from "../../../../ContextProvider/AlertContext";
 import LoadingIcon from "../../../../base-components/LoadingIcon";
@@ -40,6 +51,11 @@ import ReceiverDetails from "../../Dashboards/isDashboard/receiverDetails";
 import Tippy from "../../../../base-components/Tippy";
 import { Eye } from "lucide-react";
 import IsLoading from "../../commoncomponents/isLoading/isLoading";
+
+import AOS from "aos";
+import "aos/dist/aos.css";
+import { ClipboardList } from "lucide-react";
+
 const intfranchiseedata = {
   franchisee_name: "",
   franchisee_id: "",
@@ -118,17 +134,31 @@ const SpostenquiryList: React.FC = () => {
   const [mawbPresent, setMawbPresent] = useState<boolean>(false);
   const [tagOpen, setTagOpen] = useState<boolean>(false);
   const [tagSpinner, setTagSpinner] = useState<boolean>(false);
-  const [dimensionData, setDimensionData] = useState<any>([{
-    item_description: "", weight: "", value: "", quantity: "",
-    length: "", breadth: "", height: "", hsn_code: "",
-  }]);
-  const [emailData, setEmailData] = useState<any>({ to_email: "", cc_email: [] });
+  const [dimensionData, setDimensionData] = useState<any>([
+    {
+      item_description: "",
+      weight: "",
+      value: "",
+      quantity: "",
+      length: "",
+      breadth: "",
+      height: "",
+      hsn_code: "",
+    },
+  ]);
+  const [emailData, setEmailData] = useState<any>({
+    to_email: "",
+    cc_email: [],
+  });
   const [ccInput, setCcInput] = useState<string>("");
   const [errors, setErrors] = useState<any>({ to_email: "", cc_email: "" });
   const [importData, setImportData] = useState<any>(null);
   const [openImport, setOpenImport] = useState<boolean>(false);
   const [jobData, setJobData] = useState<any>({});
-  const [bookingLoading, setBookingLoading] = useState<any>({ status: false, forWhat: "" });
+  const [bookingLoading, setBookingLoading] = useState<any>({
+    status: false,
+    forWhat: "",
+  });
   const [emailOpen, setEmailOpen] = useState<boolean>(false);
   const [senderOpen, setSenderOpen] = useState<boolean>(false);
   const [receiverOpen, setReceiverOpen] = useState<boolean>(false);
@@ -179,9 +209,6 @@ const SpostenquiryList: React.FC = () => {
   //   return total || 0;
   // };
 
-
-
-
   const getchweight = async (
     shipment_dimensions: any = [],
     courier_id: any = "",
@@ -203,7 +230,7 @@ const SpostenquiryList: React.FC = () => {
                   (+item?.breadth || 0) *
                   (+item?.height || 0) *
                   (+item?.quantity || 0)) /
-                data[0]?.denom_fac,
+                  data[0]?.denom_fac,
                 +item?.weight || 0,
               ),
             0,
@@ -220,7 +247,7 @@ const SpostenquiryList: React.FC = () => {
                 (+item?.breadth || 0) *
                 (+item?.height || 0) *
                 (+item?.quantity || 0)) /
-              data[0]?.denom_fac,
+                data[0]?.denom_fac,
             0,
           );
           chargeable_weight = Math.max(gross_w, vol_w);
@@ -277,8 +304,10 @@ const SpostenquiryList: React.FC = () => {
     if (value == 1 || value == 2) {
       try {
         const response = await commonpostrequest(
-          `booking/get_spot_enquiry?sales_id=${userdata?.mapped_id
-          }&limit=20&page=${page - 1}${debouncedSearch ? `&key=${debouncedSearch.trim()}` : ""
+          `booking/get_spot_enquiry?sales_id=${
+            userdata?.mapped_id
+          }&limit=20&page=${page - 1}${
+            debouncedSearch ? `&key=${debouncedSearch.trim()}` : ""
           }`,
           //  franchiseId?[franchiseId || ""]:fids
           obj,
@@ -319,10 +348,10 @@ const SpostenquiryList: React.FC = () => {
             item?.org_country_id == "97" && item?.dest_country_id == "97"
               ? item?.dest_city
               : countryData?.find(
-                (item2: any) => item2.country_id == item?.dest_country_id,
-              )?.country_name ||
-              item?.dest_city ||
-              "N.A.",
+                  (item2: any) => item2.country_id == item?.dest_country_id,
+                )?.country_name ||
+                item?.dest_city ||
+                "N.A.",
           weight:
             Number(item?.weight) || "-" + item?.weight_unit
               ? `(${item.weight_unit})`
@@ -609,7 +638,7 @@ const SpostenquiryList: React.FC = () => {
       branch_id:
         value == "job"
           ? getrelateddata("franchisee", allfdata, data?.franchisee_id)
-            ?.branch || ""
+              ?.branch || ""
           : data?.branch_id || "",
       booking_id: data?.id || "",
       origin_pincode: data?.org_zip || "",
@@ -652,14 +681,14 @@ const SpostenquiryList: React.FC = () => {
       remarks: data?.franchisee_remarks || "",
       ...(data?.shipment_type == 8
         ? {
-          fair_id: data?.fair_data?.fair_id,
-          fair_venue: data?.fair_data?.fair_venue,
-          fair_start_date: data?.fair_data?.fair_start_date,
-          fair_end_date: data?.fair_data?.fair_end_date,
-          mode: data?.fair_data?.mode || "",
-          mode_value: data?.fair_data?.mode_value || "",
-          // fair_date: spotData?.fair_date,
-        }
+            fair_id: data?.fair_data?.fair_id,
+            fair_venue: data?.fair_data?.fair_venue,
+            fair_start_date: data?.fair_data?.fair_start_date,
+            fair_end_date: data?.fair_data?.fair_end_date,
+            mode: data?.fair_data?.mode || "",
+            mode_value: data?.fair_data?.mode_value || "",
+            // fair_date: spotData?.fair_date,
+          }
         : {}),
     };
     if (data?.shipment_dimensions && data?.shipment_dimensions?.length >= 1) {
@@ -841,8 +870,9 @@ const SpostenquiryList: React.FC = () => {
       <div className="min-[767px]:flex justify-between mb-2">
         <div className="flex">
           <Button
-            className={`p-2 mt-5 ${toggle == 1 ? "bg-mustard" : "bg-gray-400"
-              }  text-white`}
+            className={`p-2 mt-5 ${
+              toggle == 1 ? "bg-mustard" : "bg-gray-400"
+            }  text-white`}
             onClick={() => {
               setToggle(1);
             }}
@@ -856,8 +886,9 @@ const SpostenquiryList: React.FC = () => {
               setToggle(2);
               // setHasUpdated(true);
             }}
-            className={`p-2 mt-5   ml-2 ${toggle == 2 ? "bg-mustard" : "bg-gray-400"
-              }  text-white`}
+            className={`p-2 mt-5   ml-2 ${
+              toggle == 2 ? "bg-mustard" : "bg-gray-400"
+            }  text-white`}
           >
             {" "}
             Buying Charges{" "}
@@ -905,7 +936,7 @@ const SpostenquiryList: React.FC = () => {
                     </Table.Td>
                     <Table.Td className="px-1 py-1">
                       {chargesData?.find(
-                        (elem) => elem?.ref_sell_id == row?.charge_id
+                        (elem) => elem?.ref_sell_id == row?.charge_id,
                       )?.charge_name || "NA"}
                     </Table.Td>
                     <Table.Td className="px-1 py-1">{row.rate}</Table.Td>
@@ -977,7 +1008,7 @@ const SpostenquiryList: React.FC = () => {
                     </Table.Td>
                     <Table.Td className="px-1 py-1">
                       {chargesData?.find(
-                        (elem) => elem?.charge_id == row?.charge_id
+                        (elem) => elem?.charge_id == row?.charge_id,
                       )?.charge_name || "NA"}
                     </Table.Td>
                     <Table.Td className="px-1 py-1">{row.pp_cc}</Table.Td>
@@ -998,12 +1029,12 @@ const SpostenquiryList: React.FC = () => {
                     <Table.Td className="px-1 py-1">{row.inr_amount}</Table.Td>
                     <Table.Td className="px-1 py-1">
                       {partyTypeData?.find(
-                        (elem) => elem?.ctd_id == row?.party_type
+                        (elem) => elem?.ctd_id == row?.party_type,
                       )?.ctype_name || "N.A."}
                     </Table.Td>
                     <Table.Td className="px-1 py-1">
                       {partyNameData?.find(
-                        (elem) => elem?.franchisee_id == row?.party
+                        (elem) => elem?.franchisee_id == row?.party,
                       )?.franchisee_name || "N.A."}
                     </Table.Td>
                   </Table.Tr>
@@ -1096,13 +1127,21 @@ const SpostenquiryList: React.FC = () => {
 
   const handleImportLastMail = async (franchisee_id: any) => {
     try {
-      const res = await commongetrequest(`booking/import-last-mail/${franchisee_id}`);
+      const res = await commongetrequest(
+        `booking/import-last-mail/${franchisee_id}`,
+      );
       if (res?.status == 200) {
         if (res?.data?.data?.to_mail) {
-          setEmailData((prev: any) => ({ ...prev, to_email: res?.data?.data?.to_mail }));
+          setEmailData((prev: any) => ({
+            ...prev,
+            to_email: res?.data?.data?.to_mail,
+          }));
         }
         if (res?.data?.data?.cc_mail) {
-          setEmailData((prev: any) => ({ ...prev, cc_email: res?.data?.data?.cc_mail.split(",") }));
+          setEmailData((prev: any) => ({
+            ...prev,
+            cc_email: res?.data?.data?.cc_mail.split(","),
+          }));
         }
       }
     } catch (error) {
@@ -1126,7 +1165,10 @@ const SpostenquiryList: React.FC = () => {
         getData(hit);
         showAlert(res?.data?.message);
       } else {
-        showAlert(res?.data?.message || res?.response?.data?.message || res?.message, "error");
+        showAlert(
+          res?.data?.message || res?.response?.data?.message || res?.message,
+          "error",
+        );
       }
     } catch (error) {
       console.log(error);
@@ -1139,21 +1181,30 @@ const SpostenquiryList: React.FC = () => {
     if (!job_id) return showAlert("Job Id is required", "warning");
     setBookingLoading({ status: true, forWhat: is_draft });
     try {
-      const res = await commonpostrequest(`booking/generate-booking/${job_id}`, {
-        is_draft,
-        counter,
-      });
+      const res = await commonpostrequest(
+        `booking/generate-booking/${job_id}`,
+        {
+          is_draft,
+          counter,
+        },
+      );
       if (res?.status == 200) {
         setOpenImport(false);
         setCounter(0);
         getData(hit);
         showAlert(res?.data?.message);
       } else if (res?.status == 400) {
-        showAlert(res?.data?.message || res?.response?.data?.message || res?.message, "error");
+        showAlert(
+          res?.data?.message || res?.response?.data?.message || res?.message,
+          "error",
+        );
         setCounter(counter + 1);
         setOpenImport(false);
       } else {
-        showAlert(res?.data?.message || res?.response?.data?.message || res?.message, "error");
+        showAlert(
+          res?.data?.message || res?.response?.data?.message || res?.message,
+          "error",
+        );
         setCounter(counter + 1);
       }
     } catch (error) {
@@ -1165,14 +1216,22 @@ const SpostenquiryList: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    if (!emailData?.to_email) return showAlert("To Email is required", "warning");
-    if (!validateEmail(emailData?.to_email)) return showAlert("Invalid email format", "warning");
+    if (!emailData?.to_email)
+      return showAlert("To Email is required", "warning");
+    if (!validateEmail(emailData?.to_email))
+      return showAlert("Invalid email format", "warning");
     if (!importData?.job_id) return showAlert("Job Id is required", "warning");
     if (!dimensionData || dimensionData?.length === 0)
       return showAlert("Please enter shipment dimensions", "warning");
-    if (!jobData?.shipper_details || Object.keys(jobData.shipper_details).length === 0)
+    if (
+      !jobData?.shipper_details ||
+      Object.keys(jobData.shipper_details).length === 0
+    )
       return showAlert("Please enter sender details", "warning");
-    if (!jobData?.consignee_details || Object.keys(jobData.consignee_details).length === 0)
+    if (
+      !jobData?.consignee_details ||
+      Object.keys(jobData.consignee_details).length === 0
+    )
       return showAlert("Please enter receiver details", "warning");
     setSaveLoading(true);
     try {
@@ -1197,7 +1256,10 @@ const SpostenquiryList: React.FC = () => {
       } else if (res?.status == 406) {
         showAlert(res?.response?.data?.errors[0]?.msg, "warning");
       } else {
-        showAlert(res?.data?.message || res?.response?.data?.message || res?.message, "error");
+        showAlert(
+          res?.data?.message || res?.response?.data?.message || res?.message,
+          "error",
+        );
       }
     } catch (error) {
       console.log(error);
@@ -1209,16 +1271,23 @@ const SpostenquiryList: React.FC = () => {
     <>
       <div className="flex justify-between gap-4 mb-2">
         <div className="bg-gray-200 rounded p-2 max-w-1/2 overflow-hidden truncate">
-          <b>ENQUIRY No: </b>{tagData?.booking_no}
+          <b>ENQUIRY No: </b>
+          {tagData?.booking_no}
         </div>
         <div className="bg-gray-200 rounded p-2 overflow-hidden truncate max-w-1/2">
           <b>FRANCHISEE : </b>
-          {allfdata?.find((item: any) => item?.franchisee_id == tagData?.franchisee_id)?.franchisee_name}
+          {
+            allfdata?.find(
+              (item: any) => item?.franchisee_id == tagData?.franchisee_id,
+            )?.franchisee_name
+          }
         </div>
       </div>
       <div className="flex gap-4 flex-col">
         <div>
-          <FormLabel htmlFor="hawb-input">House Number <span className="text-red-500">*</span></FormLabel>
+          <FormLabel htmlFor="hawb-input">
+            House Number <span className="text-red-500">*</span>
+          </FormLabel>
           <FormInput
             id="hawb-input"
             type="text"
@@ -1237,7 +1306,12 @@ const SpostenquiryList: React.FC = () => {
             value={tagData?.mawb}
             maxLength={11}
             disabled={mawbPresent}
-            onChange={(e) => setTagData({ ...tagData, mawb: e.target.value.replace(/[^0-9.]/g, "") })}
+            onChange={(e) =>
+              setTagData({
+                ...tagData,
+                mawb: e.target.value.replace(/[^0-9.]/g, ""),
+              })
+            }
           />
         </div>
       </div>
@@ -1253,7 +1327,11 @@ const SpostenquiryList: React.FC = () => {
       >
         Submit
         {tagSpinner && (
-          <LoadingIcon icon="puff" color="white" className="w-5 h-5 ml-2 stroke-2.5 text-white" />
+          <LoadingIcon
+            icon="puff"
+            color="white"
+            className="w-5 h-5 ml-2 stroke-2.5 text-white"
+          />
         )}
       </Button>
     </div>
@@ -1261,7 +1339,32 @@ const SpostenquiryList: React.FC = () => {
 
   const ImportDescription = (
     <>
-      <div className="box col-span-12 px-4 py-2 intro-x font-medium cursor-pointer text-sm flex flex-row justify-between gap-4 rounded-lg bg-white h-auto">
+      <div className=" grid grid-cols-12 gap-x-2 ">
+        <div className=" col-span-12  md:col-span-6 mb-2 ">
+          <div className="bg-[#f2f7ff] rounded-lg p-[7px] flex w-full lg:w-[50%]">
+            <figure className="w-[35px] flex items-center justify-center">
+              <FileText className="w-[35px]  text-[#3b7dd8] " />
+            </figure>
+            <aside className="md:border-l md:border-[#d8e7ff] md:pl-2 w-[80%] leading-[18px]">
+              <p className="text-[12px] uppercase text-[#757575] w-full">
+                {" "}
+                ENQUIRY No
+              </p>
+              <h4 className="font-medium text-[14px] text-[#383838] w-full flex justify-between items-center">
+                <span className="capitalize font-bold cursor-pointer">
+                  {" "}
+                  {importData?.booking_no}
+                </span>
+              </h4>
+            </aside>
+          </div>
+        </div>
+      </div>
+
+      <div
+        className=" col-span-12 border border-[#ffecca]  px-4 py-2 mb-2 mt-1  intro-x font-medium cursor-pointer text-sm flex flex-row justify-between gap-4 rounded-lg bg-[#fffaf1] h-auto
+"
+      >
         <div>
           <span className="mt-2 text-lg font-bold">ORIGIN</span>
           <div className="flex gap-2">
@@ -1270,13 +1373,24 @@ const SpostenquiryList: React.FC = () => {
                 src={`https://flagsapi.com/${importData?.origin_country_code ? importData?.origin_country_code : "IN"}/flat/32.png`}
                 alt="origin-flag"
               />
-              <span className="text-sm">({importData?.origin_country_code ? importData?.origin_country_code : "IN"})</span>
+              <span className="text-sm">
+                (
+                {importData?.origin_country_code
+                  ? importData?.origin_country_code
+                  : "IN"}
+                )
+              </span>
             </div>
             <div className="p-1 pt-2 h-14 min-w-28 border-2 rounded hidden sm:flex flex-col justify-center">
               <h1 className="font-medium text-lg whitespace-nowrap overflow-hidden overflow-ellipsis">
-                {countryData?.find((item: any) => item?.country_code == importData?.origin_country_code)?.country_name || "INDIA"}
+                {countryData?.find(
+                  (item: any) =>
+                    item?.country_code == importData?.origin_country_code,
+                )?.country_name || "INDIA"}
               </h1>
-              <p className="whitespace-nowrap overflow-hidden overflow-ellipsis">({importData?.org_zip})</p>
+              <p className="whitespace-nowrap overflow-hidden overflow-ellipsis">
+                ({importData?.org_zip})
+              </p>
             </div>
           </div>
         </div>
@@ -1334,13 +1448,22 @@ const SpostenquiryList: React.FC = () => {
           <span className="mt-2 text-lg font-bold">DESTINATION</span>
           <div className="flex gap-2">
             <div className="text-center p-1 border-2 h-auto mx-6 sm:mx-0 sm:h-14 w-full sm:w-10 rounded flex flex-col items-center">
-              <img src="https://flagsapi.com/IN/flat/32.png" alt="destination-flag" />
+              <img
+                src="https://flagsapi.com/IN/flat/32.png"
+                alt="destination-flag"
+              />
               <span className="text-sm">(IN)</span>
             </div>
             <div className="p-1 pt-2 min-w-28 h-14 border-2 rounded hidden sm:flex flex-col justify-center">
-              <h1 className="font-medium text-lg whitespace-nowrap overflow-hidden overflow-ellipsis">INDIA</h1>
+              <h1 className="font-medium text-lg whitespace-nowrap overflow-hidden overflow-ellipsis">
+                INDIA
+              </h1>
               <p className="whitespace-nowrap overflow-hidden overflow-ellipsis">
-                ({importData?.dest_zip == "0000" ? importData?.dest_city : importData?.dest_zip || "0000"})
+                (
+                {importData?.dest_zip == "0000"
+                  ? importData?.dest_city
+                  : importData?.dest_zip || "0000"}
+                )
               </p>
             </div>
           </div>
@@ -1351,75 +1474,123 @@ const SpostenquiryList: React.FC = () => {
         <div className="space-y-4 px-2 py-1">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <div className="col-span-3 md:col-span-3 lg:col-span-1">
-              <FormLabel className="text-base text-slate-500">FRANCHISEE <span className="text-red-400">*</span></FormLabel>
-              <FormInput value={getrelateddata("franchisee", allfranchiseedata, importData?.franchisee_id)?.franchisee_name || ""} disabled />
+              <FormLabel className="text-base text-slate-500">
+                FRANCHISEE <span className="text-red-400">*</span>
+              </FormLabel>
+              <FormInput
+                value={
+                  getrelateddata(
+                    "franchisee",
+                    allfranchiseedata,
+                    importData?.franchisee_id,
+                  )?.franchisee_name || ""
+                }
+                disabled
+              />
             </div>
             <div className="col-span-3 md:col-span-3 lg:col-span-1">
-              <FormLabel className="text-base text-slate-500">SHIPMENT TYPE <span className="text-red-400">*</span></FormLabel>
+              <FormLabel className="text-base text-slate-500">
+                SHIPMENT TYPE <span className="text-red-400">*</span>
+              </FormLabel>
               <FormSelect value={importData?.shipment_type} disabled>
-                {shipmentTypedata?.map((type: any) =>
-                  type?.is_active == 1 && (
-                    <option key={type?.booking_shipment_type_id} value={type?.booking_shipment_type_id}>
-                      {type?.shipment_type}
-                    </option>
-                  ),
+                {shipmentTypedata?.map(
+                  (type: any) =>
+                    type?.is_active == 1 && (
+                      <option
+                        key={type?.booking_shipment_type_id}
+                        value={type?.booking_shipment_type_id}
+                      >
+                        {type?.shipment_type}
+                      </option>
+                    ),
                 )}
               </FormSelect>
             </div>
             <div className="col-span-3 md:col-span-3 lg:col-span-1">
-              <FormLabel className="text-base text-slate-500">QUOTED BY <span className="text-red-400">*</span></FormLabel>
+              <FormLabel className="text-base text-slate-500">
+                QUOTED BY <span className="text-red-400">*</span>
+              </FormLabel>
               <FormInput value={importData?.quoted_by} disabled />
             </div>
             <div className="col-span-3 md:col-span-3 lg:col-span-1">
-              <FormLabel className="text-base text-slate-500">COMMODITY <span className="text-red-400">*</span></FormLabel>
+              <FormLabel className="text-base text-slate-500">
+                COMMODITY <span className="text-red-400">*</span>
+              </FormLabel>
               <FormSelect disabled value={importData?.commodity}>
                 <option value="">Select</option>
-                {commoditytype?.filter((item: any) => item?.is_active == 1)?.map((item: any) => (
-                  <option key={item?.commodity_id} value={item?.commodity_id}>{item?.commodity}</option>
-                ))}
+                {commoditytype
+                  ?.filter((item: any) => item?.is_active == 1)
+                  ?.map((item: any) => (
+                    <option key={item?.commodity_id} value={item?.commodity_id}>
+                      {item?.commodity}
+                    </option>
+                  ))}
               </FormSelect>
             </div>
-            <div>
-              <FormLabel className="text-base text-slate-500">SHIPMENT CURRENCY</FormLabel>
+            <div className="col-span-3 md:col-span-3 lg:col-span-1">
+              <FormLabel className="text-base text-slate-500">
+                SHIPMENT CURRENCY
+              </FormLabel>
               <FormSelect disabled value={importData?.currency_id || "24"}>
                 <option value="">Select</option>
                 {currencydata?.map((item: any) => (
-                  <option key={item?.id} value={item?.id}>{item?.currency}</option>
+                  <option key={item?.id} value={item?.id}>
+                    {item?.currency}
+                  </option>
                 ))}
               </FormSelect>
             </div>
             <div className="col-span-3 md:col-span-3 lg:col-span-1">
-              <FormLabel className="text-base text-slate-500">INCOTERM <span className="text-red-400">*</span></FormLabel>
+              <FormLabel className="text-base text-slate-500">
+                INCOTERM <span className="text-red-400">*</span>
+              </FormLabel>
               <FormSelect value={importData?.incoterm} disabled>
                 <option value="">Select Incoterm</option>
                 {incotermType?.map((ele: any) => (
-                  <option key={ele?.id} value={ele?.id}>{ele?.name}</option>
+                  <option key={ele?.id} value={ele?.id}>
+                    {ele?.name}
+                  </option>
                 ))}
               </FormSelect>
             </div>
-            {(importData?.shipment_type == 4 || importData?.shipment_type == 5) && (
+            {(importData?.shipment_type == 4 ||
+              importData?.shipment_type == 5) && (
               <>
                 <div className="col-span-3 md:col-span-3 lg:col-span-1">
-                  <FormLabel className="text-base text-slate-500">CLEARANCE TYPE <span className="text-red-400">*</span></FormLabel>
+                  <FormLabel className="text-base text-slate-500">
+                    CLEARANCE TYPE <span className="text-red-400">*</span>
+                  </FormLabel>
                   <FormSelect disabled value={importData?.clearence_type}>
                     <option value="">Select Clearance Type</option>
                     {clearanceType?.map((ele: any, index: number) => (
-                      <option key={index} value={ele?.id}>{ele?.name}</option>
+                      <option key={index} value={ele?.id}>
+                        {ele?.name}
+                      </option>
                     ))}
                   </FormSelect>
                 </div>
                 <div className="col-span-3 md:col-span-3 lg:col-span-1">
-                  <FormLabel className="text-base text-slate-500">VENDOR NAME <span className="text-red-400">*</span></FormLabel>
+                  <FormLabel className="text-base text-slate-500">
+                    VENDOR NAME <span className="text-red-400">*</span>
+                  </FormLabel>
                   <FormSelect disabled value={importData?.courier_id}>
                     {productTypes?.map((item: any) => (
-                      <option key={item?.product_id} value={item?.product_id}>{item?.product_name}</option>
+                      <option key={item?.product_id} value={item?.product_id}>
+                        {item?.product_name}
+                      </option>
                     ))}
                   </FormSelect>
                 </div>
                 {importData?.import_booking == 2 && (
                   <div className="col-span-3 md:col-span-3 lg:col-span-1">
-                    <FormLabel className="text-base text-slate-500">IMPORT SERVICE TYPE <span className="text-red-400">*</span></FormLabel>
-                    <FormSelect disabled value={importData?.import_service_type}>
+                    <FormLabel className="text-base text-slate-500">
+                      IMPORT SERVICE TYPE{" "}
+                      <span className="text-red-400">*</span>
+                    </FormLabel>
+                    <FormSelect
+                      disabled
+                      value={importData?.import_service_type}
+                    >
                       <option value="">Select</option>
                       <option value={1}>Economy</option>
                       <option value={2}>Express (IP)</option>
@@ -1433,7 +1604,9 @@ const SpostenquiryList: React.FC = () => {
       </div>
 
       <div className="mb-4 col-span-12 overflow-x-auto">
-        <FormLabel className="text-base font-medium text-gray-900">Shipment Dimension</FormLabel>
+        <FormLabel className="text-base font-medium text-gray-900">
+          Shipment Dimension
+        </FormLabel>
         <ShipmentDimensions
           dimensionData={dimensionData}
           setDimensionData={setDimensionData}
@@ -1448,9 +1621,14 @@ const SpostenquiryList: React.FC = () => {
 
       <div className="grid grid-cols-2 col-span-12 p-2">
         <div className="flex gap-4 items-center">
-          <h1 className="font-bold text-sm md:text-lg whitespace-nowrap">Sender Details</h1>
+          <h1 className="font-bold text-sm md:text-lg whitespace-nowrap">
+            Sender Details
+          </h1>
           <Tippy content="Add Sender Details" options={{ placement: "right" }}>
-            <PlusCircle className="w-6 h-6 cursor-pointer text-mustard" onClick={() => setSenderOpen(true)} />
+            <PlusCircle
+              className="w-6 h-6 cursor-pointer text-mustard"
+              onClick={() => setSenderOpen(true)}
+            />
           </Tippy>
           {senderOpen && (
             <SenderDetails
@@ -1465,9 +1643,17 @@ const SpostenquiryList: React.FC = () => {
           )}
         </div>
         <div className="flex gap-4 items-center">
-          <h1 className="font-bold text-sm md:text-lg whitespace-nowrap">Receiver Details</h1>
-          <Tippy content="Add Receiver Details" options={{ placement: "right" }}>
-            <PlusCircle className="w-6 h-6 cursor-pointer text-mustard" onClick={() => setReceiverOpen(true)} />
+          <h1 className="font-bold text-sm md:text-lg whitespace-nowrap">
+            Receiver Details
+          </h1>
+          <Tippy
+            content="Add Receiver Details"
+            options={{ placement: "right" }}
+          >
+            <PlusCircle
+              className="w-6 h-6 cursor-pointer text-mustard"
+              onClick={() => setReceiverOpen(true)}
+            />
           </Tippy>
           {receiverOpen && (
             <ReceiverDetails
@@ -1483,16 +1669,32 @@ const SpostenquiryList: React.FC = () => {
           )}
         </div>
         <div>
-          <p className="font-semibold">{jobData?.shipper_details?.consigner_first_name}</p>
-          <p className="font-semibold">{jobData?.shipper_details?.consigner_address_1}</p>
-          <p className="font-semibold">{jobData?.shipper_details?.consigner_city}</p>
-          <p className="font-semibold">{jobData?.shipper_details?.consigner_pincode}</p>
+          <p className="font-semibold">
+            {jobData?.shipper_details?.consigner_first_name}
+          </p>
+          <p className="font-semibold">
+            {jobData?.shipper_details?.consigner_address_1}
+          </p>
+          <p className="font-semibold">
+            {jobData?.shipper_details?.consigner_city}
+          </p>
+          <p className="font-semibold">
+            {jobData?.shipper_details?.consigner_pincode}
+          </p>
         </div>
         <div>
-          <p className="font-semibold">{jobData?.consignee_details?.consignee_first_name}</p>
-          <p className="font-semibold">{jobData?.consignee_details?.consignee_address_1}</p>
-          <p className="font-semibold">{jobData?.consignee_details?.consignee_city}</p>
-          <p className="font-semibold">{jobData?.consignee_details?.consignee_pincode}</p>
+          <p className="font-semibold">
+            {jobData?.consignee_details?.consignee_first_name}
+          </p>
+          <p className="font-semibold">
+            {jobData?.consignee_details?.consignee_address_1}
+          </p>
+          <p className="font-semibold">
+            {jobData?.consignee_details?.consignee_city}
+          </p>
+          <p className="font-semibold">
+            {jobData?.consignee_details?.consignee_pincode}
+          </p>
         </div>
       </div>
     </>
@@ -1500,21 +1702,37 @@ const SpostenquiryList: React.FC = () => {
 
   const ImportFooter = (
     <>
-      <Button className="text-white bg-gray-500 p-2" onClick={() => { setOpenImport(false); setCounter(0); }}>
+      <Button
+        className="text-white bg-gray-500 p-2 border-none"
+        onClick={() => {
+          setOpenImport(false);
+          setCounter(0);
+        }}
+      >
         CLOSE
       </Button>
       {importData?.booking_status == "1" ||
-        importData?.booking_status == "8" ||
-        importData?.booking_status == "9" ||
-        importData?.booking_status == "10" ||
-        importData?.booking_status == "19" ? (
+      importData?.booking_status == "8" ||
+      importData?.booking_status == "9" ||
+      importData?.booking_status == "10" ||
+      importData?.booking_status == "19" ? (
         <Button
-          className="text-white bg-mustard p-2 ml-4"
+          className="text-white bg-mustard px-3 py-2 ml-3  border-none"
           onClick={() => {
-            if (!importData?.job_id) return showAlert("Job Id is required", "warning");
-            if (!dimensionData || dimensionData?.length == 0) return showAlert("Please enter shipment dimensions", "warning");
-            if (!jobData?.shipper_details || Object.keys(jobData.shipper_details).length == 0) return showAlert("Please enter sender details", "warning");
-            if (!jobData?.consignee_details || Object.keys(jobData.consignee_details).length == 0) return showAlert("Please enter receiver details", "warning");
+            if (!importData?.job_id)
+              return showAlert("Job Id is required", "warning");
+            if (!dimensionData || dimensionData?.length == 0)
+              return showAlert("Please enter shipment dimensions", "warning");
+            if (
+              !jobData?.shipper_details ||
+              Object.keys(jobData.shipper_details).length == 0
+            )
+              return showAlert("Please enter sender details", "warning");
+            if (
+              !jobData?.consignee_details ||
+              Object.keys(jobData.consignee_details).length == 0
+            )
+              return showAlert("Please enter receiver details", "warning");
             setOpenImport(false);
             setEmailOpen(true);
           }}
@@ -1523,13 +1741,17 @@ const SpostenquiryList: React.FC = () => {
         </Button>
       ) : (
         <Button
-          className="text-white bg-mustard p-2 ml-4"
+          className="text-white bg-mustard p-2 ml-4  border-none"
           onClick={() => handleBooking(importData?.job_id, 0)}
           disabled={bookingLoading?.status}
         >
           FINAL BOOKING
           {bookingLoading?.status && bookingLoading?.forWhat == 0 && (
-            <LoadingIcon icon="puff" color="white" className="w-5 h-5 ml-2 stroke-2.5 text-white" />
+            <LoadingIcon
+              icon="puff"
+              color="white"
+              className="w-5 h-5 ml-2 stroke-2.5 text-white"
+            />
           )}
         </Button>
       )}
@@ -1540,16 +1762,23 @@ const SpostenquiryList: React.FC = () => {
     <>
       <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-4 mb-2">
         <div className="bg-gray-200 rounded p-2 overflow-hidden truncate w-full min-w-0 sm:max-w-1/2">
-          <b>ENQUIRY No: </b>{emailData?.booking_no}
+          <b>ENQUIRY No: </b>
+          {emailData?.booking_no}
         </div>
         <div className="bg-gray-200 rounded p-2 overflow-hidden truncate w-full min-w-0 sm:max-w-1/2">
           <b>FRANCHISEE : </b>
-          {allfdata?.find((item: any) => item?.franchisee_id == emailData?.franchisee_id)?.franchisee_name}
+          {
+            allfdata?.find(
+              (item: any) => item?.franchisee_id == emailData?.franchisee_id,
+            )?.franchisee_name
+          }
         </div>
       </div>
       <div className="flex gap-4 flex-col">
         <div>
-          <FormLabel>To Email <span className="text-red-500">*</span></FormLabel>
+          <FormLabel>
+            To Email <span className="text-red-500">*</span>
+          </FormLabel>
           <FormInput
             type="email"
             placeholder="Enter To Email"
@@ -1559,22 +1788,39 @@ const SpostenquiryList: React.FC = () => {
               setEmailData({ ...emailData, to_email: value });
               setErrors({
                 ...errors,
-                to_email: value && !validateEmail(value) ? "Please enter a valid email address" : "",
+                to_email:
+                  value && !validateEmail(value)
+                    ? "Please enter a valid email address"
+                    : "",
               });
             }}
           />
-          {errors.to_email && <p className="text-red-500 text-sm mt-1">{errors.to_email}</p>}
+          {errors.to_email && (
+            <p className="text-red-500 text-sm mt-1">{errors.to_email}</p>
+          )}
         </div>
         <div>
           <FormLabel>CC Email</FormLabel>
           <div className="flex flex-wrap items-center gap-2 border border-[#efb847]/50 rounded-md px-2 py-1 focus-within:ring-1 focus-within:ring-[#efb847]">
             {emailData?.cc_email?.map((email: string, index: number) => (
-              <span key={index} className="flex items-center gap-1 max-w-full bg-[#efb847]/10 text-[#efb847] px-3 py-1 rounded-full text-sm font-medium">
-                <span className="truncate max-w-[45vw] sm:max-w-[200px]">{email}</span>
+              <span
+                key={index}
+                className="flex items-center gap-1 max-w-full bg-[#efb847]/10 text-[#efb847] px-3 py-1 rounded-full text-sm font-medium"
+              >
+                <span className="truncate max-w-[45vw] sm:max-w-[200px]">
+                  {email}
+                </span>
                 <button
                   type="button"
                   className="ml-1 text-red-400 hover:text-red-500 transition font-bold"
-                  onClick={() => setEmailData({ ...emailData, cc_email: emailData.cc_email.filter((_: any, i: number) => i !== index) })}
+                  onClick={() =>
+                    setEmailData({
+                      ...emailData,
+                      cc_email: emailData.cc_email.filter(
+                        (_: any, i: number) => i !== index,
+                      ),
+                    })
+                  }
                 >
                   ✕
                 </button>
@@ -1591,11 +1837,20 @@ const SpostenquiryList: React.FC = () => {
                   const value = ccInput.trim();
                   if (!value) return;
                   if (!validateEmail(value)) {
-                    setErrors({ ...errors, cc_email: "Please enter a valid email address" });
+                    setErrors({
+                      ...errors,
+                      cc_email: "Please enter a valid email address",
+                    });
                     return;
                   }
-                  if (emailData.cc_email.includes(value)) { setCcInput(""); return; }
-                  setEmailData({ ...emailData, cc_email: [...emailData.cc_email, value] });
+                  if (emailData.cc_email.includes(value)) {
+                    setCcInput("");
+                    return;
+                  }
+                  setEmailData({
+                    ...emailData,
+                    cc_email: [...emailData.cc_email, value],
+                  });
                   setCcInput("");
                   setErrors({ ...errors, cc_email: "" });
                 }
@@ -1603,7 +1858,9 @@ const SpostenquiryList: React.FC = () => {
               className="flex-1 min-w-0 sm:min-w-[180px] w-full sm:w-auto p-1 bg-transparent outline-none focus:outline-none focus:ring-0 placeholder:text-gray-400"
             />
           </div>
-          {errors.cc_email && <p className="text-red-500 text-sm mt-1">{errors.cc_email}</p>}
+          {errors.cc_email && (
+            <p className="text-red-500 text-sm mt-1">{errors.cc_email}</p>
+          )}
         </div>
       </div>
     </>
@@ -1611,132 +1868,204 @@ const SpostenquiryList: React.FC = () => {
 
   const emailFooter = (
     <>
-      <Button className="text-white bg-gray-500 p-2" onClick={() => { setEmailOpen(false); setOpenImport(true); }}>
+      <Button
+        className="text-white bg-gray-500 p-2"
+        onClick={() => {
+          setEmailOpen(false);
+          setOpenImport(true);
+        }}
+      >
         CLOSE
       </Button>
-      <Button className="text-white bg-mustard p-2 ml-4" onClick={handleSubmit} disabled={saveLoading}>
+      <Button
+        className="text-white bg-mustard p-2 ml-4"
+        onClick={handleSubmit}
+        disabled={saveLoading}
+      >
         SAVE DETAILS
-        {saveLoading && <LoadingIcon icon="puff" color="white" className="w-5 h-5 ml-2 stroke-2.5 text-white" />}
+        {saveLoading && (
+          <LoadingIcon
+            icon="puff"
+            color="white"
+            className="w-5 h-5 ml-2 stroke-2.5 text-white"
+          />
+        )}
       </Button>
     </>
   );
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
 
+    // The layout scrolls inside an inner container (not window), so AOS never
+    // sees scroll events and lower boxes stay hidden. Trigger them ourselves.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("aos-animate");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.05 },
+    );
+    document
+      .querySelectorAll("[data-aos]")
+      .forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
   return (
     <>
-      <div className="w-full border-b-2 mt-6 min-[583px]:flex justify-between ">
-        <div>
-          {" "}
-          <h1 className="text-2xl text-primary font-bold text-left whitespace-nowrap">
-            SPOT PRICING ENQUIRY LIST{" "}
-          </h1>
-        </div>
-        <div className="flex justify-between">
-          <div className="relative pb-2">
-            <Search
-              className="absolute left-3 top-5 transform -translate-y-1/2 text-gray-500"
-              size={20}
-            />
-            <FormInput
-              type="text"
-              placeholder="Enter Enquiry ID"
-              value={search}
-              className="w-full pl-10" // Added left padding for icon space
-              onChange={(e) => {
-                setSearch(e.target.value.replace(/\s/g, ""));
-                setPage(1);
-              }}
-            />
+      <div className="w-full mt-2 mb-4">
+        <div
+          className="mt-1 w-full bg-white rounded-[10px]  border border-white"
+          data-aos="fade-up"
+        >
+          <div className=" w-full py-2  px-3 border-b border-white commonGBackOffice  rounded-t-[10px]">
+            <div className="flex-wrap lg:flex-nowrap flex gap-2 items-center justify-between w-full commonGBackOfficeInner">
+              <div>
+                <div className="flex items-center gap-2" data-aos="fade-up">
+                  <i className=" w-[25px] h-[25px]  rounded-lg flex items-center justify-center bg-mustard">
+                    <ClipboardList className="w-[17px]  text-[#fff] " />
+                  </i>
+                  <h4 className="text-[16px] font-medium text-white">
+                    SPOT PRICING ENQUIRY LIST
+                  </h4>
+                </div>
+              </div>
+
+              <div
+                className="flex items-center w-full lg:w-auto"
+                data-aos="fade-up"
+              >
+                <div className="w-full ">
+                  <div className="flex gap-2 justify-between w-full lg:w-auto">
+                    <div className="relative w-full lg:w-[220px]">
+                      <Search
+                        className="absolute right-2 top-[16px] transform -translate-y-1/2 text-gray-500"
+                        size={18}
+                      />
+                      <FormInput
+                        type="text"
+                        placeholder="Enter Enquiry ID"
+                        value={search}
+                        className="w-full p-2 h-[35px] border-none" // Added left padding for icon space
+                        onChange={(e) => {
+                          setSearch(e.target.value.replace(/\s/g, ""));
+                          setPage(1);
+                        }}
+                      />
+                    </div>
+                    {spotData?.length >= 1 ? (
+                      <div className="">
+                        <Button
+                          className="px-3 py-2 bg-success border-none text-white"
+                          onClick={() => getdownloaddata()}
+                        >
+                          {downloadloading ? (
+                            <LoadingButtonCommon text="Downloading" />
+                          ) : (
+                            "Download"
+                          )}
+                        </Button>
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          {spotData?.length >= 1 ? (
-            <div className="ml-2">
-              <Button
-                className="p-2 bg-success w-[120px] text-white"
-                onClick={() => getdownloaddata()}
-              >
-                {downloadloading ? (
-                  <LoadingButtonCommon text="Downloading" />
-                ) : (
-                  "Download"
-                )}
-              </Button>
-            </div>
-          ) : (
-            ""
-          )}
-        </div>
-      </div>
-      <div className="w-full max-w-8xl p-6 px-10 bg-white rounded-lg shadow-lg  mt-8 mb-16 z-[0] relative">
-        <div className="flex justify-between w-full ">
-          <div className="grid min-[876px]:grid-cols-5 min-[500px]:grid-cols-2  gap-4 ">
-            <div>
-              <FormLabel>
-                SEARCH BY FRANCHISEE<span className="text-red-400">*</span>
-              </FormLabel>
-              <CommonSearchableAll
-                apiEndpoint={`admin/franchisee-settings?sales_id=${userdata?.mapped_id}`}
-                placeholder={"Search By Franchisee"}
-                selecteddata={selectedfranchisedata}
-                setSelecteddata={setSelectedfranchisedata}
-                fun1={fun1}
-                comingselectedname={"franchisee_name"}
-                comingselectedid={"franchisee_id"}
-                funtoempty={funtoempty}
-                key1={"key"}
-                questionmark={true}
-              />
-            </div>
-            <div>
-              <FormLabel>ENQUIRY DATE (From)</FormLabel>
-              <FormInput
-                name="from_date"
-                onChange={handlechange}
-                value={datatoget?.from_date}
-                max={datatoget?.to_date}
-                // min={today} // Prevent selecting past dates
-                type="date"
-              />
-            </div>
-            <div>
-              <FormLabel>ENQUIRY DATE (To)</FormLabel>
-              <FormInput
-                value={datatoget?.to_date}
-                onChange={handlechange}
-                name="to_date"
-                min={datatoget?.from_date} // Prevent selecting a date before "From Date"
-                type="date"
-              />
-            </div>
-            <div>
-              <FormLabel>PRICING STATUS</FormLabel>
-              <FormSelect
-                name="booking_status"
-                value={pricingStatus}
-                onChange={(e: any) => {
-                  setPricingStatus(e.target.value);
-                  setPage(1);
-                  setSpotData([]);
-                  setHit(3);
-                }}
-              >
-                <option value="">Select</option>
-                {statusdata.map((s: any) => (
-                  <option key={s.status_code} value={s.status_code}>
-                    {s.status_name}
-                  </option>
-                ))}
-              </FormSelect>
-            </div>
-            <div>
-              {" "}
-              <Button
-                className="bg-success p-2 text-white w-[120px] mt-7 "
-                onClick={() => getData(2)}
-                disabled={isLoading}
-              >
-                {isLoading && hit == 2 ? "Searcing.." : "Search"}
-              </Button>
-            </div>
-            {/* <div className="ml-2">
+
+          <div
+            className="w-full p-2 lg:p-3 border-b border-[#fffaef] bg-[#fffaef]   "
+            data-aos="fade-up"
+          >
+            <div className="grid grid-cols-12 gap-x-3 gap-y-3 lg:gap-4 items-end">
+              <div className="col-span-12 lg:col-span-3 ">
+                <FormLabel className="mb-1 text-xs lg:text-sm font-medium">
+                  SEARCH BY FRANCHISEE<span className="text-red-400">*</span>
+                </FormLabel>
+                <CommonSearchableAll
+                  apiEndpoint={`admin/franchisee-settings?sales_id=${userdata?.mapped_id}`}
+                  placeholder={"Search By Franchisee"}
+                  selecteddata={selectedfranchisedata}
+                  setSelecteddata={setSelectedfranchisedata}
+                  fun1={fun1}
+                  comingselectedname={"franchisee_name"}
+                  comingselectedid={"franchisee_id"}
+                  funtoempty={funtoempty}
+                  key1={"key"}
+                  questionmark={true}
+                  className="w-full"
+                />
+              </div>
+              <div className="col-span-6 lg:col-span-2 min-w-0">
+                <FormLabel className="mb-1 text-xs lg:text-sm font-medium">
+                  DATE FROM
+                </FormLabel>
+                <FormInput
+                  name="from_date"
+                  onChange={handlechange}
+                  value={datatoget?.from_date}
+                  max={datatoget?.to_date}
+                  // min={today} // Prevent selecting past dates
+                  type="date"
+                  className="w-full min-w-0 px-2 lg:px-3 text-xs lg:text-sm"
+                />
+              </div>
+              <div className="col-span-6 lg:col-span-2 min-w-0">
+                <FormLabel className="mb-1 text-xs lg:text-sm font-medium">
+                  DATE TO
+                </FormLabel>
+                <FormInput
+                  value={datatoget?.to_date}
+                  onChange={handlechange}
+                  name="to_date"
+                  min={datatoget?.from_date} // Prevent selecting a date before "From Date"
+                  type="date"
+                  className="w-full min-w-0 px-2 lg:px-3 text-xs lg:text-sm"
+                />
+              </div>
+              <div className="col-span-12 lg:col-span-3 ">
+                <FormLabel className="mb-1 text-xs lg:text-sm font-medium">
+                  PRICING STATUS
+                </FormLabel>
+                <FormSelect
+                  name="booking_status"
+                  value={pricingStatus}
+                  onChange={(e: any) => {
+                    setPricingStatus(e.target.value);
+                    setPage(1);
+                    setSpotData([]);
+                    setHit(3);
+                  }}
+                >
+                  <option value="">Select</option>
+                  {statusdata.map((s: any) => (
+                    <option key={s.status_code} value={s.status_code}>
+                      {s.status_name}
+                    </option>
+                  ))}
+                </FormSelect>
+              </div>
+              <div className="col-span-12 lg:col-span-2 ">
+                <div>
+                  <Button
+                    className="bg-mustard p-2 text-white w-full lg:w-[120px] border-none "
+                    onClick={() => getData(2)}
+                    disabled={isLoading}
+                  >
+                    {isLoading && hit == 2 ? "Searcing.." : "Search"}
+                  </Button>
+                </div>
+              </div>
+              {/* <div className="ml-2">
               <Button
                 className="bg-success p-2 text-white w-[120px] mt-7 "
                 onClick={() => getData()}
@@ -1745,347 +2074,355 @@ const SpostenquiryList: React.FC = () => {
                 Search
               </Button>
             </div> */}
+            </div>
           </div>
-        </div>
 
-        <div className="flex justify-center w-full my-4 border-t border-slate-200 dark:border-darkmode-400"></div>
-
-        {spotData?.length > 0 ? (
-          <div className="overflow-x-auto">
-            <Table sm className=" whitespace-nowrap">
-              <Table.Thead className="thead-primary table-sorting bg-mustard">
-                <Table.Tr className="text-center text-white">
-                  <Table.Th className="whitespace-nowrap border text-right">
-                    SR.NO.
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border">
-                    ACTION
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    STATUS
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    MAWB
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    FRANCHISEE NAME
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    ENQUIRY ID
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    ENQUIRY DATE
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    ORIGIN
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    DESTINATION
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    WEIGHT
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    VENDOR
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    SHIPMENT TYPE
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    QUOTED BY
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-right">
-                    QUOTED PRICE (₹)
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-right">
-                    DOC
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-right">
-                    OVERSEAS CURRENCY PRICE
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    RATE VALID TILL
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    AIRWAYBILL NO.
-                  </Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
-                {spotData?.map((data: any, index: number) => (
-                  <Table.Tr
-                    key={index}
-                  // className={`text-left ${
-                  //   data?.booking_status == 7 ? "bg-green-200" : ""
-                  // }`}
-                  >
-                    <Table.Td className="border whitespace-nowrap text-right">
-                      {search ? index + 1 : (page - 1) * 20 + (index + 1)}.
-                    </Table.Td>
-                    <Table.Td>
-                      {(data?.shipment_type == 5 ||
-                        data?.shipment_type == 1) &&
-                        data?.import_booking == 2 &&
-                        data?.booking_status != 3 &&
-                        data?.booking_status != 7 &&
-                        data?.booking_status != 18 ? (
-                        <Menu>
-                          <Menu.Button className="bg-blue-100 text-blue-500 border-blue-500 flex p-1 rounded-md border-2">
-                            <UserCog className="w-5 stroke-2.5" />
-                            <ChevronDown className="w-4 stroke-2.5 mt-1" />
-                          </Menu.Button>
-                          <Menu.Items
-                            className="w-44 mt-px border-2 border-slate-200"
-                            placement="right-start"
-                          >
-                            <Menu.Item
-                              className="hover:bg-mustard hover:text-white"
-                              onClick={() => {
-                                navigate(
-                                  "/backoffice/sales_operations/spot_price_enquiry",
-                                  {
-                                    state: { ...data, is_duplicate: 1 },
-                                  },
-                                );
-                              }}
-                            >
-                              <Copy className="w-4 mr-2" /> Duplicate
-                            </Menu.Item>
-                            {data?.booking_status == "1" && (
-                              <Menu.Item
-                                className="hover:bg-mustard hover:text-white"
-                                onClick={() => {
-                                  handleEdit(data, "credit");
-                                }}
-                              >
-                                REQUEST CREDIT
-                              </Menu.Item>
-                            )}
-
-                            {data?.booking_status == "5" &&
-                              data?.airwaybilno ? (
-                              <>
-                                <Menu.Divider />
-                                <Menu.Item
-                                  className="hover:bg-mustard hover:text-white"
-                                  onClick={() => {
-                                    setTagData({
-                                      job_id: data?.job_id,
-                                      booking_no: data?.booking_no,
-                                      franchisee_id: data?.franchisee_id,
-                                      mawb: data?.master || "",
-                                      hawb: data?.airwaybilno || "",
-                                    });
-                                    setMawbPresent(!!data?.master);
-                                    setTagOpen(true);
-                                  }}
+          <div className="p-2  lg:p-6">
+            <div className="w-full" data-aos="fade-up">
+              {spotData?.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <Table sm className=" whitespace-nowrap">
+                    <Table.Thead className="thead-primary table-sorting bg-mustard">
+                      <Table.Tr className="text-center text-white">
+                        <Table.Th className="whitespace-nowrap border text-right">
+                          SR.NO.
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border">
+                          ACTION
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          STATUS
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          MAWB
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          FRANCHISEE NAME
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          ENQUIRY ID
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          ENQUIRY DATE
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          ORIGIN
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          DESTINATION
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          WEIGHT
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          VENDOR
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          SHIPMENT TYPE
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          QUOTED BY
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-right">
+                          QUOTED PRICE (₹)
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-right">
+                          DOC
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-right">
+                          OVERSEAS CURRENCY PRICE
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          RATE VALID TILL
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          AIRWAYBILL NO.
+                        </Table.Th>
+                      </Table.Tr>
+                    </Table.Thead>
+                    <Table.Tbody>
+                      {spotData?.map((data: any, index: number) => (
+                        <Table.Tr
+                          key={index}
+                          // className={`text-left ${
+                          //   data?.booking_status == 7 ? "bg-green-200" : ""
+                          // }`}
+                        >
+                          <Table.Td className="border whitespace-nowrap text-right">
+                            {search ? index + 1 : (page - 1) * 20 + (index + 1)}
+                            .
+                          </Table.Td>
+                          <Table.Td>
+                            {(data?.shipment_type == 5 ||
+                              data?.shipment_type == 1) &&
+                            data?.import_booking == 2 &&
+                            data?.booking_status != 3 &&
+                            data?.booking_status != 7 &&
+                            data?.booking_status != 18 ? (
+                              <Menu>
+                                <Menu.Button className="bg-blue-100 text-blue-500 border-blue-500 flex p-1 rounded-md border-2">
+                                  <UserCog className="w-4 stroke-2.5" />
+                                  <ChevronDown className="w-4 stroke-2.5 mt-0" />
+                                </Menu.Button>
+                                <Menu.Items
+                                  className="w-44 mt-px border-2 border-slate-200"
+                                  placement="right-start"
                                 >
-                                  TAG HOUSE/MASTER
-                                </Menu.Item>
-                              </>
-                            ) : (
-                              <>
-                                <Menu.Divider />
-                                {((data?.booking_status == "1" ||
-                                  data?.booking_status == "8" ||
-                                  data?.booking_status == "9" ||
-                                  data?.booking_status == "10" ||
-                                  data?.booking_status == "19") &&
-                                  data?.is_draft == null &&
-                                  data?.is_import_reject_approve == 0) ||
-                                  data?.booking_status == "15" ||
-                                  (data?.booking_status == "18" &&
-                                    data?.is_draft == null &&
-                                    data?.is_import_reject_approve == 0) ||
-                                  data?.booking_status == "15" ||
-                                  (data?.booking_status == "18" &&
-                                    data?.is_draft == 1 &&
-                                    data?.is_import_reject_approve == 1) ? (
                                   <Menu.Item
                                     className="hover:bg-mustard hover:text-white"
-                                    onClick={async () => {
-                                      setDimensionData(
-                                        data?.shipment_dimensions || [
-                                          {
-                                            item_description: "",
-                                            weight: "",
-                                            value: "",
-                                            quantity: "",
-                                            length: "",
-                                            breadth: "",
-                                            height: "",
-                                            hsn_code: "",
-                                          },
-                                        ],
-                                      );
-                                      setEmailData({
-                                        job_id: data?.job_id,
-                                        booking_no: data?.booking_no,
-                                        franchisee_id: data?.franchisee_id,
-                                        cc_email: allfdata?.find(
-                                          (item: any) =>
-                                            item?.franchisee_id ==
-                                            data?.franchisee_id,
-                                        )?.email_id
-                                          ? [
-                                            allfdata.find(
-                                              (item: any) =>
-                                                item?.franchisee_id ==
-                                                data?.franchisee_id,
-                                            )!.email_id,
-                                          ]
-                                          : [],
-                                      });
-                                      setImportData(data);
-                                      getJobData(data?.job_id);
-                                      setOpenImport(true);
-                                      handleImportLastMail(
-                                        data?.franchisee_id,
+                                    onClick={() => {
+                                      navigate(
+                                        "/backoffice/sales_operations/spot_price_enquiry",
+                                        {
+                                          state: { ...data, is_duplicate: 1 },
+                                        },
                                       );
                                     }}
                                   >
-                                    {data?.booking_status == "1" ||
-                                      data?.booking_status == "8" ||
-                                      data?.booking_status == "9" ||
-                                      data?.booking_status == "10"
-                                      ? "ADD DETAILS"
-                                      : "COMPLETE BOOKING"}
+                                    <Copy className="w-4 mr-2" /> Duplicate
                                   </Menu.Item>
-                                ) : null}
-                              </>
+                                  {data?.booking_status == "1" && (
+                                    <Menu.Item
+                                      className="hover:bg-mustard hover:text-white"
+                                      onClick={() => {
+                                        handleEdit(data, "credit");
+                                      }}
+                                    >
+                                      REQUEST CREDIT
+                                    </Menu.Item>
+                                  )}
+
+                                  {data?.booking_status == "5" &&
+                                  data?.airwaybilno ? (
+                                    <>
+                                      <Menu.Divider />
+                                      <Menu.Item
+                                        className="hover:bg-mustard hover:text-white"
+                                        onClick={() => {
+                                          setTagData({
+                                            job_id: data?.job_id,
+                                            booking_no: data?.booking_no,
+                                            franchisee_id: data?.franchisee_id,
+                                            mawb: data?.master || "",
+                                            hawb: data?.airwaybilno || "",
+                                          });
+                                          setMawbPresent(!!data?.master);
+                                          setTagOpen(true);
+                                        }}
+                                      >
+                                        TAG HOUSE/MASTER
+                                      </Menu.Item>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Menu.Divider />
+                                      {((data?.booking_status == "1" ||
+                                        data?.booking_status == "8" ||
+                                        data?.booking_status == "9" ||
+                                        data?.booking_status == "10" ||
+                                        data?.booking_status == "19") &&
+                                        data?.is_draft == null &&
+                                        data?.is_import_reject_approve == 0) ||
+                                      data?.booking_status == "15" ||
+                                      (data?.booking_status == "18" &&
+                                        data?.is_draft == null &&
+                                        data?.is_import_reject_approve == 0) ||
+                                      data?.booking_status == "15" ||
+                                      (data?.booking_status == "18" &&
+                                        data?.is_draft == 1 &&
+                                        data?.is_import_reject_approve == 1) ? (
+                                        <Menu.Item
+                                          className="hover:bg-mustard hover:text-white"
+                                          onClick={async () => {
+                                            setDimensionData(
+                                              data?.shipment_dimensions || [
+                                                {
+                                                  item_description: "",
+                                                  weight: "",
+                                                  value: "",
+                                                  quantity: "",
+                                                  length: "",
+                                                  breadth: "",
+                                                  height: "",
+                                                  hsn_code: "",
+                                                },
+                                              ],
+                                            );
+                                            setEmailData({
+                                              job_id: data?.job_id,
+                                              booking_no: data?.booking_no,
+                                              franchisee_id:
+                                                data?.franchisee_id,
+                                              cc_email: allfdata?.find(
+                                                (item: any) =>
+                                                  item?.franchisee_id ==
+                                                  data?.franchisee_id,
+                                              )?.email_id
+                                                ? [
+                                                    allfdata.find(
+                                                      (item: any) =>
+                                                        item?.franchisee_id ==
+                                                        data?.franchisee_id,
+                                                    )!.email_id,
+                                                  ]
+                                                : [],
+                                            });
+                                            setImportData(data);
+                                            getJobData(data?.job_id);
+                                            setOpenImport(true);
+                                            handleImportLastMail(
+                                              data?.franchisee_id,
+                                            );
+                                          }}
+                                        >
+                                          {data?.booking_status == "1" ||
+                                          data?.booking_status == "8" ||
+                                          data?.booking_status == "9" ||
+                                          data?.booking_status == "10"
+                                            ? "ADD DETAILS"
+                                            : "COMPLETE BOOKING"}
+                                        </Menu.Item>
+                                      ) : null}
+                                    </>
+                                  )}
+                                </Menu.Items>
+                              </Menu>
+                            ) : (
+                              <div className="flex justify-center items-center">
+                                <Button
+                                  className="p-1 bg-mustard text-white border-none"
+                                  onClick={() => {
+                                    handleEdit(data, "credit");
+                                  }}
+                                >
+                                  Action
+                                </Button>
+                              </div>
                             )}
-                          </Menu.Items>
-                        </Menu>
-                      ) : (
-                        <div className="flex justify-center items-center">
-                          <Button
-                            className="p-1 bg-mustard text-white"
-                            onClick={() => {
-                              handleEdit(data, "credit");
-                            }}
+                          </Table.Td>
+                          <Table.Td
+                            className={`whitespace-nowrap ${
+                              data?.booking_status == 15
+                                ? data?.import_booking == 2
+                                  ? "text-green-400"
+                                  : data?.is_checklist == 1
+                                    ? "text-green-400"
+                                    : "text-red-400"
+                                : statusdata?.find(
+                                    (s: any) =>
+                                      s.status_code == data?.booking_status,
+                                  )?.css_class
+                            } px-8 text-left border`}
                           >
-                            Action
-                          </Button>
-                        </div>
-                      )}
-                    </Table.Td>
-                    <Table.Td
-                      className={`whitespace-nowrap ${data?.booking_status == 15
-                          ? data?.import_booking == 2
-                            ? "text-green-400"
-                            : data?.is_checklist == 1
-                              ? "text-green-400"
-                              : "text-red-400"
-                          : statusdata?.find(
-                            (s: any) => s.status_code == data?.booking_status
-                          )?.css_class
-                        } px-8 text-left border`}
-                    >
-                      {data?.booking_status == 15
-                        ? data?.import_booking == 2
-                          ? "Customer Approval Pending"
-                          : data?.is_checklist == 1
-                            ? "CheckList Done"
-                            : "CheckList Pending"
-                        : statusdata?.find(
-                          (s: any) => s.status_code == data?.booking_status
-                        )?.status_name}
-                    </Table.Td>
-                    <Table.Td>{data?.master ? data?.master : "-"}</Table.Td>
+                            {data?.booking_status == 15
+                              ? data?.import_booking == 2
+                                ? "Customer Approval Pending"
+                                : data?.is_checklist == 1
+                                  ? "CheckList Done"
+                                  : "CheckList Pending"
+                              : statusdata?.find(
+                                  (s: any) =>
+                                    s.status_code == data?.booking_status,
+                                )?.status_name}
+                          </Table.Td>
+                          <Table.Td>
+                            {data?.master ? data?.master : "-"}
+                          </Table.Td>
 
-                    <Table.Td>
-                      {getrelateddata(
-                        "franchisee",
-                        allfranchiseedata,
-                        data?.franchisee_id,
-                      )?.franchisee_name || ""}
-                    </Table.Td>
-                    <Table.Td className="border whitespace-nowrap">
-                      {data?.booking_no || "-"}
-                    </Table.Td>
-                    <Table.Td className="border whitespace-nowrap">
-                      {formatDate(data?.created_date) || "-"}
-                    </Table.Td>
-                    <Table.Td className="border whitespace-nowrap">
-                      {data?.org_city || "-"}
-                    </Table.Td>
-                    <Table.Td className="border whitespace-nowrap">
-                      {data?.org_country_id == "97" &&
-                        data?.dest_country_id == "97"
-                        ? data?.dest_city
-                        : countryData?.find(
-                          (item) => item.country_id == data?.dest_country_id,
-                        )?.country_name ||
-                        data?.dest_city ||
-                        "N.A."}
-                    </Table.Td>
-                    <Table.Td className="border whitespace-nowrap text-right">
-                      {Number(data?.weight) || "-"}{" "}
-                      {data?.weight_unit ? `(${data.weight_unit})` : ""}
-                    </Table.Td>
-                    <Table.Td className="border whitespace-nowrap">
-                      {productTypes?.find(
-                        (item) => item.product_id == data?.courier_id,
-                      )?.product_name || "-"}
-                    </Table.Td>
-                    <Table.Td>
-                      {shipmentTypedata?.find(
-                        (item2: any) =>
-                          item2?.booking_shipment_type_id ==
-                          data?.shipment_type,
-                      )?.shipment_type || "-"}
-                    </Table.Td>
-                    <Table.Td className="border whitespace-nowrap">
-                      {data?.quoted_by || "-"}
-                    </Table.Td>
+                          <Table.Td>
+                            {getrelateddata(
+                              "franchisee",
+                              allfranchiseedata,
+                              data?.franchisee_id,
+                            )?.franchisee_name || ""}
+                          </Table.Td>
+                          <Table.Td className="border whitespace-nowrap">
+                            {data?.booking_no || "-"}
+                          </Table.Td>
+                          <Table.Td className="border whitespace-nowrap">
+                            {formatDate(data?.created_date) || "-"}
+                          </Table.Td>
+                          <Table.Td className="border whitespace-nowrap">
+                            {data?.org_city || "-"}
+                          </Table.Td>
+                          <Table.Td className="border whitespace-nowrap">
+                            {data?.org_country_id == "97" &&
+                            data?.dest_country_id == "97"
+                              ? data?.dest_city
+                              : countryData?.find(
+                                  (item) =>
+                                    item.country_id == data?.dest_country_id,
+                                )?.country_name ||
+                                data?.dest_city ||
+                                "N.A."}
+                          </Table.Td>
+                          <Table.Td className="border whitespace-nowrap text-right">
+                            {Number(data?.weight) || "-"}{" "}
+                            {data?.weight_unit ? `(${data.weight_unit})` : ""}
+                          </Table.Td>
+                          <Table.Td className="border whitespace-nowrap">
+                            {productTypes?.find(
+                              (item) => item.product_id == data?.courier_id,
+                            )?.product_name || "-"}
+                          </Table.Td>
+                          <Table.Td>
+                            {shipmentTypedata?.find(
+                              (item2: any) =>
+                                item2?.booking_shipment_type_id ==
+                                data?.shipment_type,
+                            )?.shipment_type || "-"}
+                          </Table.Td>
+                          <Table.Td className="border whitespace-nowrap">
+                            {data?.quoted_by || "-"}
+                          </Table.Td>
 
-                    <Table.Td className="border whitespace-nowrap lowercase text-right">
-                      {indianFormat(data?.spot_price) || "-"}{" "}
-                      {data?.price_type == "1"
-                        ? "(a)"
-                        : data?.price_type == "2"
-                          ? "(k)"
-                          : ""}
-                    </Table.Td>
-                    <Table.Td className="border whitespace-nowrap">
-                      {data?.house_pdf ||
-                        data?.house_draft ||
-                        data?.proforma_url ? (
-                        <Eye
-                          className="cursor-pointer text-mustard stroke-2.5"
-                          onClick={() => {
-                            setRowData(data);
-                            setOpen2(true);
-                          }}
-                        />
-                      ) : (
-                        "N.A."
-                      )}
-                    </Table.Td>
-                    <Table.Td className="border whitespace-nowrap lowercase text-right">
-                      {data?.franchisee_currency || ""}
-                      {"  "}
-                      {foreignFormat(data?.spot_price_foreign_currency) ||
-                        "0.00"}
-                    </Table.Td>
-                    <Table.Td className="border whitespace-nowrap">
-                      {formatDate(data?.valid_till) || "N.A."}
-                    </Table.Td>
-                    <Table.Td className="border whitespace-nowrap">
-                      {data?.airwaybilno || "N.A."}
-                    </Table.Td>
-                  </Table.Tr>
-                ))}
-              </Table.Tbody>
-            </Table>
-          </div>
-        ) : isLoading && hit == 1 ? (
-          <IsLoading />
-        ) : (
-          <Nodatafound />
-        )}
+                          <Table.Td className="border whitespace-nowrap lowercase text-right">
+                            {indianFormat(data?.spot_price) || "-"}{" "}
+                            {data?.price_type == "1"
+                              ? "(a)"
+                              : data?.price_type == "2"
+                                ? "(k)"
+                                : ""}
+                          </Table.Td>
+                          <Table.Td className="border whitespace-nowrap">
+                            {data?.house_pdf ||
+                            data?.house_draft ||
+                            data?.proforma_url ? (
+                              <Eye
+                                className="cursor-pointer text-mustard stroke-2.5"
+                                onClick={() => {
+                                  setRowData(data);
+                                  setOpen2(true);
+                                }}
+                              />
+                            ) : (
+                              "N.A."
+                            )}
+                          </Table.Td>
+                          <Table.Td className="border whitespace-nowrap lowercase text-right">
+                            {data?.franchisee_currency || ""}
+                            {"  "}
+                            {foreignFormat(data?.spot_price_foreign_currency) ||
+                              "0.00"}
+                          </Table.Td>
+                          <Table.Td className="border whitespace-nowrap">
+                            {formatDate(data?.valid_till) || "N.A."}
+                          </Table.Td>
+                          <Table.Td className="border whitespace-nowrap">
+                            {data?.airwaybilno || "N.A."}
+                          </Table.Td>
+                        </Table.Tr>
+                      ))}
+                    </Table.Tbody>
+                  </Table>
+                </div>
+              ) : isLoading && hit == 1 ? (
+                <IsLoading />
+              ) : (
+                <Nodatafound />
+              )}
 
-        {/* <Modal
+              {/* <Modal
           open={open}
           setOpen={setOpen}
           title="Confirm"
@@ -2094,140 +2431,147 @@ const SpostenquiryList: React.FC = () => {
           footer={footer}
         /> */}
 
-        <Modal
-          open={open1}
-          setOpen={setOpen1}
-          title=""
-          size="lg"
-          description={description1}
-          footer=""
-        />
+              <Modal
+                open={open1}
+                setOpen={setOpen1}
+                title=""
+                size="lg"
+                description={description1}
+                footer=""
+              />
 
-        <Modal
-          open={open2}
-          setOpen={setOpen2}
-          title="Documents"
-          size="md"
-          description={description2}
-        />
+              <Modal
+                open={open2}
+                setOpen={setOpen2}
+                title="Documents"
+                size="md"
+                description={description2}
+              />
 
-        {spotData?.length > 0 && (
-          <CommonPagination
-            totalpages={totalpages}
-            onPageChange={handlePagechange}
-            page={page}
-          />
-        )}
-        {enquiryModal ? (
-          <SpotpriceModal
-            setOpenModal={setEnquiryModal}
-            openmodal={enquiryModal}
-            spotData={{
-              ...editdata,
-              ...(editdata?.shipment_type == 8
-                ? {
-                  fair_id: editdata?.fair_data?.fair_id,
-                  fair_venue: editdata?.fair_data?.fair_venue,
-                  fair_start_date: editdata?.fair_data?.fair_start_date,
-                  fair_end_date: editdata?.fair_data?.fair_end_date,
-                  // fair_date: spotData?.fair_date,
-                }
-                : {}),
-            }}
-            setSpotData={setEditData}
-            allfdata={allfranchiseedata}
-            handleCancel={handleCancel}
-            getchweight={getchweight}
-            chargehead={chargesdata}
-            setChargehead={setChargesdata}
-          />
-        ) : (
-          ""
-        )}
-        {emailModal && (
-          <CommonemailModal
-            setEmailModal={setEmailModal}
-            emailModal={emailModal}
-            spotData={editdata}
-            setSpotData={setEditData}
-            allfdata={allfdata}
-            handleCancel={handleCancel}
-            branchdata={branchData}
-            hubData={hubdata}
-            exposureData={exposureData}
-            setExposureData={setExposureData}
-            forwhat={forwhat}
-            setForwhat={setForwhat}
-          />
-        )}
-
-        {tagOpen && (
-          <CommonModal
-            open={tagOpen}
-            setOpen={setTagOpen}
-            title={
-              <div className="flex justify-between w-full">
-                <p className="text-base font-medium">TAG HOUSE / MASTER</p>
-                <XCircle
-                  className="w-5 h-5 cursor-pointer hover:text-red-500"
-                  onClick={() => setTagOpen(false)}
+              {spotData?.length > 0 && (
+                <CommonPagination
+                  totalpages={totalpages}
+                  onPageChange={handlePagechange}
+                  page={page}
                 />
-              </div>
-            }
-            description={tagDescription}
-            footer={tagFooter}
-            size="lg"
-          />
-        )}
-
-        {openImport && (
-          <CommonModal
-            open={openImport}
-            setOpen={setOpenImport}
-            title={
-              <div className="flex justify-between w-full">
-                <p className="text-base font-medium">
-                  {importData?.booking_status == "1" ||
-                    importData?.booking_status == "8" ||
-                    importData?.booking_status == "9" ||
-                    importData?.booking_status == "19"
-                    ? "ADD IMPORT DETAILS"
-                    : "COMPLETE BOOKING"}
-                </p>
-                <div className="bg-gray-200 rounded p-2 ml-2">
-                  <span className="font-bold">ENQUIRY No: </span>
-                  <span>{importData?.booking_no}</span>
-                </div>
-                <XCircle
-                  className="w-5 h-5 cursor-pointer hover:text-red-500"
-                  onClick={() => setOpenImport(false)}
+              )}
+              {enquiryModal ? (
+                <SpotpriceModal
+                  setOpenModal={setEnquiryModal}
+                  openmodal={enquiryModal}
+                  spotData={{
+                    ...editdata,
+                    ...(editdata?.shipment_type == 8
+                      ? {
+                          fair_id: editdata?.fair_data?.fair_id,
+                          fair_venue: editdata?.fair_data?.fair_venue,
+                          fair_start_date: editdata?.fair_data?.fair_start_date,
+                          fair_end_date: editdata?.fair_data?.fair_end_date,
+                          // fair_date: spotData?.fair_date,
+                        }
+                      : {}),
+                  }}
+                  setSpotData={setEditData}
+                  allfdata={allfranchiseedata}
+                  handleCancel={handleCancel}
+                  getchweight={getchweight}
+                  chargehead={chargesdata}
+                  setChargehead={setChargesdata}
                 />
-              </div>
-            }
-            description={ImportDescription}
-            footer={ImportFooter}
-            size="2xl"
-          />
-        )}
-
-        {emailOpen && (
-          <CommonModal
-            open={emailOpen}
-            setOpen={setEmailOpen}
-            title={
-              <div className="flex justify-between w-full">
-                <p className="text-base font-medium">Email Confirmation</p>
-                <XCircle
-                  className="w-5 h-5 cursor-pointer hover:text-red-500"
-                  onClick={() => { setOpenImport(true); setEmailOpen(false); }}
+              ) : (
+                ""
+              )}
+              {emailModal && (
+                <CommonemailModal
+                  setEmailModal={setEmailModal}
+                  emailModal={emailModal}
+                  spotData={editdata}
+                  setSpotData={setEditData}
+                  allfdata={allfdata}
+                  handleCancel={handleCancel}
+                  branchdata={branchData}
+                  hubData={hubdata}
+                  exposureData={exposureData}
+                  setExposureData={setExposureData}
+                  forwhat={forwhat}
+                  setForwhat={setForwhat}
                 />
-              </div>
-            }
-            description={emailDescription}
-            footer={emailFooter}
-            size="xl"
-          />
-        )}
+              )}
+
+              {tagOpen && (
+                <CommonModal
+                  open={tagOpen}
+                  setOpen={setTagOpen}
+                  title={
+                    <div className="flex justify-between w-full">
+                      <p className="text-base font-medium">
+                        TAG HOUSE / MASTER
+                      </p>
+                      <XCircle
+                        className="w-5 h-5 cursor-pointer hover:text-red-500"
+                        onClick={() => setTagOpen(false)}
+                      />
+                    </div>
+                  }
+                  description={tagDescription}
+                  footer={tagFooter}
+                  size="lg"
+                />
+              )}
+
+              {openImport && (
+                <CommonModal
+                  open={openImport}
+                  setOpen={setOpenImport}
+                  title={
+                    <div className="flex justify-between w-full">
+                      <p className="text-base font-medium text-white">
+                        {importData?.booking_status == "1" ||
+                        importData?.booking_status == "8" ||
+                        importData?.booking_status == "9" ||
+                        importData?.booking_status == "19"
+                          ? "ADD IMPORT DETAILS"
+                          : "COMPLETE BOOKING"}
+                      </p>
+
+                      <XCircle
+                        className="w-5 h-5 cursor-pointer hover:text-red-500"
+                        onClick={() => setOpenImport(false)}
+                      />
+                    </div>
+                  }
+                  description={ImportDescription}
+                  footer={ImportFooter}
+                  size="2xl"
+                />
+              )}
+
+              {emailOpen && (
+                <CommonModal
+                  open={emailOpen}
+                  setOpen={setEmailOpen}
+                  title={
+                    <div className="flex justify-between w-full">
+                      <p className="text-base font-medium">
+                        Email Confirmation
+                      </p>
+                      <XCircle
+                        className="w-5 h-5 cursor-pointer hover:text-red-500"
+                        onClick={() => {
+                          setOpenImport(true);
+                          setEmailOpen(false);
+                        }}
+                      />
+                    </div>
+                  }
+                  description={emailDescription}
+                  footer={emailFooter}
+                  size="xl"
+                />
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );

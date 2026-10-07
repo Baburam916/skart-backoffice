@@ -17,7 +17,7 @@ import {
 } from "../../../AllServices/services";
 import Nodatafound from "../commoncomponents/Nodatafound/Nodatafound";
 import { useLogin } from "../commoncomponents/LoginContextProvider/LoginContextProvider";
-import { Eye, Settings } from "lucide-react";
+import { Eye, Settings, User } from "lucide-react";
 import CommonModal from "../commoncomponents/CommonModal/CommonModal";
 import styles from "./importbooking.module.css";
 
@@ -26,6 +26,10 @@ import { getCurrentDate } from "../../../utils";
 import { formatDate } from "../commoncomponents/commondateformat/datetoreqformat";
 import ReceiverModal from "./consigneeDetails";
 import IsLoading from "../commoncomponents/isLoading/isLoading";
+
+import AOS from "aos";
+import "aos/dist/aos.css";
+
 const intdatatoget = {
   from_date: "",
 
@@ -98,7 +102,7 @@ export default function UpdatePickup() {
       setIsLoading(true);
       const response: any = await commonpostrequest(
         `booking/get_booking_import?page=${page - 1}&limit=20`,
-        datatoget
+        datatoget,
       );
       if (response?.status == 200) {
         setAllData(response?.data?.data);
@@ -140,7 +144,7 @@ export default function UpdatePickup() {
 
     // Create UTC date
     const date = new Date(
-      Date?.UTC(year, month - 1, day, hours, minutes, seconds || 0)
+      Date?.UTC(year, month - 1, day, hours, minutes, seconds || 0),
     );
 
     return date.toISOString();
@@ -160,7 +164,7 @@ export default function UpdatePickup() {
       consigner_date_timestamp:
         mergeDateOnlyWithTime(
           pickupdata?.pickupDate,
-          item?.consigner_close_time2
+          item?.consigner_close_time2,
         ) || "",
       consigner_close_time: item.consigner_close_time || "",
       consigner_close_time2: item.consigner_close_time2 || "",
@@ -168,47 +172,46 @@ export default function UpdatePickup() {
       product_description: item.product_description || "",
       consigner_email_id: item.email_id || "",
       number_of_pieces: item?.number_of_pieces || "",
-      courier_code:item?.courier_code||""
+      courier_code: item?.courier_code || "",
     };
   };
-  const handleUpdate = async (value: any,type?:any) => {
+  const handleUpdate = async (value: any, type?: any) => {
     let data;
     if (value == 1) {
-      if(type=="aramex"){
-       data = {
-         consigner_country_code: pickupdata?.extra_data?.origin_country_code,
-         consigner_pincode: pickupdata?.extra_data?.origin_pincode,
-         airwaybilno: pickupdata?.airwaybilno,
-         consigner_address_1: pickupdata?.gst_registered_address || "",
-         consigner_address_2: pickupdata?.street_address || "",
-         consigner_first_name: pickupdata?.shipper_name || "",
-         consigner_company_name: pickupdata?.company_name||'',
-         consigner_mobile_number: pickupdata?.mobile_no||'',
-         consigner_email_id: pickupdata?.email_id||"",
-         consigner_city: pickupdata?.extra_data?.origin_city,
-         actual_weight: pickupdata?.actual_weight,
-         courier_code: "aramex",
-         PickupDate: pickupdata?.PickupDate,
-         ReadyTime: pickupdata?.ReadyTime,
-         LastPickupTime: pickupdata?.LastPickupTime,
-         ClosingTime: pickupdata?.ClosingTime,
-       };
+      if (type == "aramex") {
+        data = {
+          consigner_country_code: pickupdata?.extra_data?.origin_country_code,
+          consigner_pincode: pickupdata?.extra_data?.origin_pincode,
+          airwaybilno: pickupdata?.airwaybilno,
+          consigner_address_1: pickupdata?.gst_registered_address || "",
+          consigner_address_2: pickupdata?.street_address || "",
+          consigner_first_name: pickupdata?.shipper_name || "",
+          consigner_company_name: pickupdata?.company_name || "",
+          consigner_mobile_number: pickupdata?.mobile_no || "",
+          consigner_email_id: pickupdata?.email_id || "",
+          consigner_city: pickupdata?.extra_data?.origin_city,
+          actual_weight: pickupdata?.actual_weight,
+          courier_code: "aramex",
+          PickupDate: pickupdata?.PickupDate,
+          ReadyTime: pickupdata?.ReadyTime,
+          LastPickupTime: pickupdata?.LastPickupTime,
+          ClosingTime: pickupdata?.ClosingTime,
+        };
+      } else {
+        data = extractdata(pickupdata);
+        if (
+          (!data?.consigner_close_time && value == 1) ||
+          !data?.consigner_date_timestamp ||
+          !data?.consigner_close_time2
+        ) {
+          showAlert("Please provide Required Details", "warning");
+          return;
+        }
       }
-      else{
-
-      data = extractdata(pickupdata);
-      if (
-        (!data?.consigner_close_time && value == 1) ||
-        !data?.consigner_date_timestamp ||
-        !data?.consigner_close_time2
-      ) {
-        showAlert("Please provide Required Details", "warning");
-        return;
+      if (value == 1) {
+        delete data["consigner_close_time2"];
       }
     }
-    if (value == 1) {
-      delete data["consigner_close_time2"];
-    }}
     try {
       value == 1 ? setUpdateLoading(true) : setCancelLoading(true);
       const res =
@@ -229,7 +232,7 @@ export default function UpdatePickup() {
             res?.data?.message ||
               res?.data?.errors[0]?.message ||
               res?.data?.message ||
-              "Updated Successfully"
+              "Updated Successfully",
           );
           setOpenModal(false);
           setPickupdata({});
@@ -242,7 +245,7 @@ export default function UpdatePickup() {
               res?.data?.errors[0]?.message ||
               res?.data?.message ||
               "Updated Successfully",
-            "error"
+            "error",
           );
         }
       } else {
@@ -250,7 +253,7 @@ export default function UpdatePickup() {
           res?.response?.data?.message ||
             res?.response?.data?.errors[0]?.message ||
             "Something went wrong please try after some time ",
-          "error"
+          "error",
         );
       }
     } catch (err: any) {
@@ -271,7 +274,7 @@ export default function UpdatePickup() {
   const getpincodedata = async (value: any) => {
     try {
       const res = await commongetrequest(
-        `admin/domestic-pincode/${value?.extra_data["destination_pincode"]}`
+        `admin/domestic-pincode/${value?.extra_data["destination_pincode"]}`,
       );
       if (res?.status == 200) {
         const data = res?.data?.data[0];
@@ -280,7 +283,7 @@ export default function UpdatePickup() {
             pickup_id: value?.pickup_id,
             state: data?.state || "",
             city: data?.city,
-          } || { ...intpincodedata, pickup_id: value["pickup_id"] }
+          } || { ...intpincodedata, pickup_id: value["pickup_id"] },
         );
       } else {
         setPincodedata({ ...intpincodedata, pickup_id: value["pickup_id"] });
@@ -310,7 +313,7 @@ export default function UpdatePickup() {
                 from_date: datatoget?.from_date || "",
 
                 to_date: datatoget?.to_date || "",
-              }
+              },
             );
       if (res?.status == 200) {
         const data = res?.data;
@@ -339,7 +342,12 @@ export default function UpdatePickup() {
       setCancelLoading(false);
     }
   };
-console.log(pickupdata,pickupdata?.courier_code, pickupdata?.courier_code?.toLowerCase(),"testing")
+  console.log(
+    pickupdata,
+    pickupdata?.courier_code,
+    pickupdata?.courier_code?.toLowerCase(),
+    "testing",
+  );
   const modaldescription = (
     <div>
       {" "}
@@ -570,11 +578,18 @@ console.log(pickupdata,pickupdata?.courier_code, pickupdata?.courier_code?.toLow
         <Button
           className="bg-mustard text-white p-2"
           disabled={
-           pickupdata?.courier_code?.toLowerCase() == "aramex"?(!pickupdata?.ClosingTime||!pickupdata?.LastPickupTime||!pickupdata?.ReadyTime||!pickupdata?.PickupDate) :  !pickupdata?.pickupDate ||
-            !pickupdata?.consigner_close_time ||
-            !pickupdata?.consigner_close_time2
+            pickupdata?.courier_code?.toLowerCase() == "aramex"
+              ? !pickupdata?.ClosingTime ||
+                !pickupdata?.LastPickupTime ||
+                !pickupdata?.ReadyTime ||
+                !pickupdata?.PickupDate
+              : !pickupdata?.pickupDate ||
+                !pickupdata?.consigner_close_time ||
+                !pickupdata?.consigner_close_time2
           }
-          onClick={() => handleUpdate(1,pickupdata?.courier_code?.toLowerCase())}
+          onClick={() =>
+            handleUpdate(1, pickupdata?.courier_code?.toLowerCase())
+          }
         >
           {updateloading ? "Processing.." : "Schedule"}
         </Button>
@@ -611,345 +626,391 @@ console.log(pickupdata,pickupdata?.courier_code, pickupdata?.courier_code?.toLow
       </Button>
     </>
   );
+
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
+  }, []);
+
   return (
     <>
-      <div className="w-full max-w-8xl p-6 px-10 bg-white rounded-lg shadow-lg  mt-8 mb-2 z-[0] relative">
-        <div className="w-full">
-          <div className="w-full">
-            <h1 className="text-2xl font-bold text-left whitespace-nowrap">
-              Schedule Pickup (Import Booking)
-            </h1>
+      <div className="w-full mt-2 mb-4" data-aos="fade-up">
+        <div className="mt-1 w-full bg-white rounded-[10px]  border border-white">
+          <div className=" w-full py-2  px-3 border-b border-white commonGBackOffice  rounded-t-[10px]">
+            <div className="flex-wrap lg:flex-nowrap flex gap-2 items-center justify-between w-full commonGBackOfficeInner">
+              <div>
+                <div className="flex items-center gap-2" data-aos="fade-up">
+                  <i className=" w-[25px] h-[25px]  rounded-lg flex items-center justify-center bg-mustard">
+                    <Settings className="w-[17px]  text-[#fff] " />
+                  </i>
+                  <h4 className="text-[16px] font-medium text-white">
+                    Schedule Pickup (Import Booking)
+                  </h4>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div className="flex justify-center w-full my-4 border-t border-slate-200 dark:border-darkmode-400"></div>
-        <div className="grid  sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5  xl:grid-cols-5  items-end gap-8">
-          <div>
-            <FormLabel>FRANCHISEE NAME:</FormLabel>
-            <div className="bg-white">
-              {/* <SingleSelect
+          <div
+            className="w-full p-2 lg:p-3 border-b border-[#fffaef] bg-[#fffaef] "
+            data-aos="fade-up"
+          >
+            <div className="grid  grid-cols-12 gap-2">
+              <div className="col-span-12 lg:col-span-3 ">
+                <FormLabel className="!mb-0">FRANCHISEE NAME:</FormLabel>
+                <div className="bg-white">
+                  {/* <SingleSelect
                   data={frenhdata}
                   singlevalue={selectvalue}
                   setSingleValue={setSelectvalue}
                   fun1={fun1}
                 /> */}
-              <CommonSearchableAll
-                apiEndpoint="
+                  <CommonSearchableAll
+                    apiEndpoint="
 admin/franchisee-settings"
-                placeholder="Search items..."
-                zIndex="50"
-                comingselectedname="franchisee_name"
-                comingselectedid={"franchisee_id"}
-                key1={"key"}
-                selecteddata={selectedfranchisedata}
-                setSelecteddata={setSelectedfranchisedata}
-                fun1={fun1}
-                fun2={funtoempty}
-              />
+                    placeholder="Search items..."
+                    zIndex="50"
+                    comingselectedname="franchisee_name"
+                    comingselectedid={"franchisee_id"}
+                    key1={"key"}
+                    selecteddata={selectedfranchisedata}
+                    setSelecteddata={setSelectedfranchisedata}
+                    fun1={fun1}
+                    fun2={funtoempty}
+                  />
+                </div>
+              </div>
+
+              <div className="col-span-6 lg:col-span-2">
+                <FormLabel className="!mb-0">
+                  FROM DATE <span className="text-red-500">*</span>
+                </FormLabel>
+                <FormInput
+                  type="date"
+                  value={datatoget?.from_date}
+                  max={datatoget?.to_date}
+                  name="from_date"
+                  onChange={handlechange}
+                />
+              </div>
+              <div className="col-span-6 lg:col-span-2">
+                <FormLabel className="!mb-0">
+                  TO DATE <span className="text-red-500">*</span>
+                </FormLabel>
+                <FormInput
+                  type="date"
+                  name="to_date"
+                  value={datatoget?.to_date}
+                  min={datatoget?.from_date}
+                  onChange={handlechange}
+                />
+              </div>
+              <div className="col-span-12 lg:col-span-3">
+                <FormLabel className="!mb-0">AIRWAYBILL NO.</FormLabel>
+                <FormInput
+                  name="airwaybill_no"
+                  placeholder={"Enter AWB No."}
+                  value={datatoget?.airwaybill_no}
+                  onChange={handlechange}
+                />
+              </div>
+              <div className="col-span-12 lg:col-span-2 ">
+                <div className="flex gap-2 mt-[11px lg:mt-[21px]">
+                  <Button
+                    className="px-3 py-2 bg-mustard text-white border-none"
+                    disabled={
+                      !datatoget?.from_date || !datatoget?.to_date || isLoading
+                    }
+                    onClick={() => {
+                      getData();
+                    }}
+                  >
+                    SEARCH
+                  </Button>
+                  <Button
+                    className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white  border-none"
+                    onClick={() => {
+                      handlereset();
+                    }}
+                  >
+                    RESET
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="">
-            <FormLabel>
-              FROM DATE <span className="text-red-500">*</span>
-            </FormLabel>
-            <FormInput
-              type="date"
-              value={datatoget?.from_date}
-              max={datatoget?.to_date}
-              name="from_date"
-              onChange={handlechange}
-            />
-          </div>
-          <div className="">
-            <FormLabel>
-              TO DATE <span className="text-red-500">*</span>
-            </FormLabel>
-            <FormInput
-              type="date"
-              name="to_date"
-              value={datatoget?.to_date}
-              min={datatoget?.from_date}
-              onChange={handlechange}
-            />
-          </div>
-          <div className="">
-            <FormLabel>AIRWAYBILL NO.</FormLabel>
-            <FormInput
-              name="airwaybill_no"
-              placeholder={"Enter AWB No."}
-              value={datatoget?.airwaybill_no}
-              onChange={handlechange}
-            />
-          </div>
-          <div className="flex ">
-            <Button
-              className="p-2 bg-success text-white ml-4"
-              disabled={
-                !datatoget?.from_date || !datatoget?.to_date || isLoading
-              }
-              onClick={() => {
-                getData();
-              }}
-            >
-              SEARCH
-            </Button>
-            <Button
-              className=" p-2 rounded-lg bg-red-500 hover:bg-red-600 text-white ml-4"
-              onClick={() => {
-                handlereset();
-              }}
-            >
-              RESET
-            </Button>
+
+          <div className="p-2  lg:p-6">
+            <div className=" w-full " data-aos="fade-up">
+              {alldata?.length > 0 && !isLoading ? (
+                <div className="overflow-x-auto h-[100vh]">
+                  <Table className="table table-text-small mb-0 border">
+                    <Table.Thead
+                      variant="dark"
+                      className="thead-primary table-sorting bg-mustard"
+                    >
+                      <Table.Tr className="text-center ">
+                        <Table.Th className="whitespace-nowrap border">
+                          SR.NO.
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border">
+                          ACTION
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          STATUS
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border">
+                          PICKUP DETAILS
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          AIRWAYBILL NO.
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          PICKUP NO.
+                        </Table.Th>
+
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          ORIGIN COUNTRY
+                        </Table.Th>
+
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          DESTINATION PINCODE
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          SHIPPER NAME
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          CHARGEABLE WEIGHT
+                        </Table.Th>
+                        <Table.Th className="whitespace-nowrap border text-left">
+                          NO. OF PIECES
+                        </Table.Th>
+                      </Table.Tr>
+                    </Table.Thead>
+                    <Table.Tbody>
+                      {alldata?.map((data: any, index: number) => (
+                        <Table.Tr key={index}>
+                          <Table.Td className="border whitespace-nowrap text-right">
+                            {(page - 1) * 20 + (index + 1)}.
+                          </Table.Td>
+                          <Table.Td className="border whitespace-nowrap text-center ">
+                            <div
+                              className={`flex text-center ${
+                                data?.pickup_transaction_id
+                                  ? "justify-between"
+                                  : "justify-center"
+                              }  items-between`}
+                            >
+                              {Number(data?.pickup_transaction_flag) &&
+                              !Number(data?.cancel_transaction_flag) &&
+                              data?.courier_code?.toLowerCase() != "aramex" ? (
+                                <div>
+                                  <Button
+                                    className="p-2 bg-red-400 text-white"
+                                    onClick={() => {
+                                      setPickupdata(data);
+                                      getpickupdetails(data, 2);
+                                      setPincodedata(data);
+                                    }}
+                                  >
+                                    {cancelloading &&
+                                    pickupdata?.pickup_id == data?.pickup_id
+                                      ? " Loading..."
+                                      : " Cancel Pickup"}
+                                  </Button>
+                                </div>
+                              ) : (!Number(data?.pickup_transaction_flag) &&
+                                  !Number(data?.cancel_transaction_flag)) ||
+                                (Number(data?.pickup_transaction_flag) &&
+                                  Number(data?.cancel_transaction_flag)) ? (
+                                <Button
+                                  className="p-2 bg-success text-white w-[100px]"
+                                  onClick={() => {
+                                    const { courier_code } = data;
+                                    if (
+                                      courier_code?.toLowerCase() == "fedex"
+                                    ) {
+                                      setPickupdata(data);
+                                      getpickupdetails(data, 1);
+                                      setPincodedata(data);
+                                    } else {
+                                      setPickupdata(data);
+                                      setOpenModal(true);
+                                      //  setOpenModal2(true)
+                                    }
+                                  }}
+                                >
+                                  {updateloading &&
+                                  pickupdata?.pickup_id == data?.pickup_id
+                                    ? " Loading..."
+                                    : "Schedule"}
+                                </Button>
+                              ) : (
+                                <p className="text-center">No-Action</p>
+                              )}
+                              <div></div>
+                            </div>
+                          </Table.Td>
+                          <Table.Td className="border whitespace-nowrap text-left uppercase ">
+                            <p
+                              className={`${
+                                Number(data?.pickup_transaction_flag) &&
+                                !Number(data?.cancel_transaction_flag)
+                                  ? "text-success"
+                                  : Number(data?.cancel_transaction_flag)
+                                    ? "text-red-500"
+                                    : (!Number(data?.pickup_transaction_flag) &&
+                                          !Number(
+                                            data?.cancel_transaction_flag,
+                                          )) ||
+                                        (Number(
+                                          data?.pickup_transaction_flag,
+                                        ) &&
+                                          Number(data?.cancel_transaction_flag))
+                                      ? "text-mustard"
+                                      : "N.A"
+                              }`}
+                            >
+                              {" "}
+                              {Number(data?.pickup_transaction_flag) &&
+                              !Number(data?.cancel_transaction_flag)
+                                ? "Pickup Scheduled"
+                                : Number(data?.cancel_transaction_flag)
+                                  ? "Cancelled"
+                                  : (!Number(data?.pickup_transaction_flag) &&
+                                        !Number(
+                                          data?.cancel_transaction_flag,
+                                        )) ||
+                                      (Number(data?.pickup_transaction_flag) &&
+                                        Number(data?.cancel_transaction_flag))
+                                    ? "Not Scheduled"
+                                    : "N.A"}
+                            </p>
+                          </Table.Td>
+                          <Table.Td className="border whitespace-nowrap">
+                            <div
+                              className={`flex text-center justify-center  items-between`}
+                            >
+                              {data?.pickup_transaction_date ? (
+                                <Eye
+                                  className="text-mustard"
+                                  onClick={() => {
+                                    setOpenModal(true);
+                                    setForwhat(2);
+                                    setPickupdata(data);
+                                    if (
+                                      data?.courier_code?.toLowerCase() ==
+                                      "aramex"
+                                    ) {
+                                      setPickupdata((pre: any) => ({
+                                        ...pre,
+                                        pickupDate:
+                                          data?.pickup_transaction_date || "",
+                                        ReadyTime:
+                                          data?.pickup_transaction_ready_slot ||
+                                          "",
+
+                                        ClosingTime:
+                                          data?.pickup_transaction_close_slot ||
+                                          "",
+                                        LastPickupTime:
+                                          data?.pickup_transaction_close_time ||
+                                          "",
+                                      }));
+                                    }
+                                  }}
+                                />
+                              ) : (
+                                "N.A"
+                              )}
+                            </div>
+                          </Table.Td>
+                          <Table.Td className="border whitespace-nowrap">
+                            {data?.airwaybilno || "N.A"}
+                          </Table.Td>
+                          <Table.Td className="border whitespace-nowrap">
+                            {data?.pickup_transaction_id || "N.A"}
+                          </Table.Td>
+                          <Table.Td className="border whitespace-nowrap text-left">
+                            {data?.extra_data?.origin_country || "-"}
+                          </Table.Td>
+
+                          <Table.Td className="border whitespace-nowrap text-left">
+                            <div className=" relative ">
+                              <div>
+                                <strong
+                                  onMouseLeave={() => {
+                                    setPincodedata(intpincodedata);
+                                    setTippyState(false);
+                                  }}
+                                  onMouseEnter={async () => {
+                                    await getpincodedata(data);
+                                    setTippyState(true);
+                                  }}
+                                  className="text-success cursor-pointer"
+                                >
+                                  {" "}
+                                  {data?.extra_data["destination_pincode"]}
+                                  {/* <div className="border border-gray-400"></div> */}
+                                </strong>
+
+                                {pincodedata?.pickup_id == data?.pickup_id &&
+                                tippystate ? (
+                                  <div className="absolute p-2 border rounded-lg shadow-lg bg-gray-400 bottom-6  ">
+                                    <p>
+                                      City: <strong>{pincodedata?.city}</strong>
+                                    </p>
+                                    <p>
+                                      State:{" "}
+                                      <strong>{pincodedata?.state}</strong>
+                                    </p>
+                                  </div>
+                                ) : (
+                                  ""
+                                )}
+                              </div>
+                            </div>
+                          </Table.Td>
+                          <Table.Td
+                            className={`border whitespace-nowrap text-left `}
+                          >
+                            {data?.shipper_name || "-"}
+                          </Table.Td>
+                          <Table.Td
+                            className={`border whitespace-nowrap text-left `}
+                          >
+                            {data?.chargeable_weight} {data["weight_unit"]}
+                          </Table.Td>
+                          <Table.Td
+                            className={`border whitespace-nowrap text-right `}
+                          >
+                            {data["number_of_pieces"] || "-"}
+                          </Table.Td>
+                        </Table.Tr>
+                      ))}
+                    </Table.Tbody>
+                  </Table>
+                </div>
+              ) : isLoading ? (
+                <IsLoading />
+              ) : (
+                <Nodatafound />
+              )}
+
+              {alldata?.length > 0 && totalpages > 1 && (
+                <CommonPagination
+                  totalpages={totalpages}
+                  onPageChange={handlePagechange}
+                  page={page}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>
-      <div className=" rounded-lg shadow-lg bg-white ">
-        {alldata?.length > 0 && !isLoading ? (
-          <div className="overflow-x-auto h-[100vh]">
-            <Table className="table table-text-small mb-0 border">
-              <Table.Thead
-                variant="dark"
-                className="thead-primary table-sorting bg-mustard"
-              >
-                <Table.Tr className="text-center ">
-                  <Table.Th className="whitespace-nowrap border">
-                    SR.NO.
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border">
-                    ACTION
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    STATUS
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border">
-                    PICKUP DETAILS
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    AIRWAYBILL NO.
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    PICKUP NO.
-                  </Table.Th>
 
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    ORIGIN COUNTRY
-                  </Table.Th>
-
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    DESTINATION PINCODE
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    SHIPPER NAME
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    CHARGEABLE WEIGHT
-                  </Table.Th>
-                  <Table.Th className="whitespace-nowrap border text-left">
-                    NO. OF PIECES
-                  </Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
-                {alldata?.map((data: any, index: number) => (
-                  <Table.Tr key={index}>
-                    <Table.Td className="border whitespace-nowrap text-right">
-                      {(page - 1) * 20 + (index + 1)}.
-                    </Table.Td>
-                    <Table.Td className="border whitespace-nowrap text-center ">
-                      <div
-                        className={`flex text-center ${
-                          data?.pickup_transaction_id
-                            ? "justify-between"
-                            : "justify-center"
-                        }  items-between`}
-                      >
-                        {Number(data?.pickup_transaction_flag) &&
-                        !Number(data?.cancel_transaction_flag) &&
-                        data?.courier_code?.toLowerCase() != "aramex" ? (
-                          <div>
-                            <Button
-                              className="p-2 bg-red-400 text-white"
-                              onClick={() => {
-                                setPickupdata(data);
-                                getpickupdetails(data, 2);
-                                setPincodedata(data);
-                              }}
-                            >
-                              {cancelloading &&
-                              pickupdata?.pickup_id == data?.pickup_id
-                                ? " Loading..."
-                                : " Cancel Pickup"}
-                            </Button>
-                          </div>
-                        ) : (!Number(data?.pickup_transaction_flag) &&
-                            !Number(data?.cancel_transaction_flag)) ||
-                          (Number(data?.pickup_transaction_flag) &&
-                            Number(data?.cancel_transaction_flag)) ? (
-                          <Button
-                            className="p-2 bg-success text-white w-[100px]"
-                            onClick={() => {
-                              const { courier_code } = data;
-                              if (courier_code?.toLowerCase() == "fedex") {
-                                setPickupdata(data);
-                                getpickupdetails(data, 1);
-                                setPincodedata(data);
-                              } else {
-                                setPickupdata(data);
-                                setOpenModal(true);
-                                //  setOpenModal2(true)
-                              }
-                            }}
-                          >
-                            {updateloading &&
-                            pickupdata?.pickup_id == data?.pickup_id
-                              ? " Loading..."
-                              : "Schedule"}
-                          </Button>
-                        ) : (
-                          <p className="text-center">No-Action</p>
-                        )}
-                        <div></div>
-                      </div>
-                    </Table.Td>
-                    <Table.Td className="border whitespace-nowrap text-left uppercase ">
-                      <p
-                        className={`${
-                          Number(data?.pickup_transaction_flag) &&
-                          !Number(data?.cancel_transaction_flag)
-                            ? "text-success"
-                            : Number(data?.cancel_transaction_flag)
-                              ? "text-red-500"
-                              : (!Number(data?.pickup_transaction_flag) &&
-                                    !Number(data?.cancel_transaction_flag)) ||
-                                  (Number(data?.pickup_transaction_flag) &&
-                                    Number(data?.cancel_transaction_flag))
-                                ? "text-mustard"
-                                : "N.A"
-                        }`}
-                      >
-                        {" "}
-                        {Number(data?.pickup_transaction_flag) &&
-                        !Number(data?.cancel_transaction_flag)
-                          ? "Pickup Scheduled"
-                          : Number(data?.cancel_transaction_flag)
-                            ? "Cancelled"
-                            : (!Number(data?.pickup_transaction_flag) &&
-                                  !Number(data?.cancel_transaction_flag)) ||
-                                (Number(data?.pickup_transaction_flag) &&
-                                  Number(data?.cancel_transaction_flag))
-                              ? "Not Scheduled"
-                              : "N.A"}
-                      </p>
-                    </Table.Td>
-                    <Table.Td className="border whitespace-nowrap">
-                      <div
-                        className={`flex text-center justify-center  items-between`}
-                      >
-                        {data?.pickup_transaction_date ? (
-                          <Eye
-                            className="text-mustard"
-                            onClick={() => {
-                              setOpenModal(true);
-                              setForwhat(2);
-                              setPickupdata(data);
-                              if(  data?.courier_code?.toLowerCase() == "aramex" ){
-                                setPickupdata((pre: any) => ({
-                                  ...pre,
-                                  pickupDate:
-                                    data?.pickup_transaction_date || "",
-                                  ReadyTime:
-                                    data?.pickup_transaction_ready_slot || "",
-
-                                  ClosingTime:
-                                    data?.pickup_transaction_close_slot || "",
-                                  LastPickupTime:
-                                    data?.pickup_transaction_close_time || "",
-                                 
-                                }));
-                              }
-                            }}
-                          />
-                        ) : (
-                          "N.A"
-                        )}
-                      </div>
-                    </Table.Td>
-                    <Table.Td className="border whitespace-nowrap">
-                      {data?.airwaybilno || "N.A"}
-                    </Table.Td>
-                    <Table.Td className="border whitespace-nowrap">
-                      {data?.pickup_transaction_id || "N.A"}
-                    </Table.Td>
-                    <Table.Td className="border whitespace-nowrap text-left">
-                      {data?.extra_data?.origin_country || "-"}
-                    </Table.Td>
-
-                    <Table.Td className="border whitespace-nowrap text-left">
-                      <div className=" relative ">
-                        <div>
-                          <strong
-                            onMouseLeave={() => {
-                              setPincodedata(intpincodedata);
-                              setTippyState(false);
-                            }}
-                            onMouseEnter={async () => {
-                              await getpincodedata(data);
-                              setTippyState(true);
-                            }}
-                            className="text-success cursor-pointer"
-                          >
-                            {" "}
-                            {data?.extra_data["destination_pincode"]}
-                            {/* <div className="border border-gray-400"></div> */}
-                          </strong>
-
-                          {pincodedata?.pickup_id == data?.pickup_id &&
-                          tippystate ? (
-                            <div className="absolute p-2 border rounded-lg shadow-lg bg-gray-400 bottom-6  ">
-                              <p>
-                                City: <strong>{pincodedata?.city}</strong>
-                              </p>
-                              <p>
-                                State: <strong>{pincodedata?.state}</strong>
-                              </p>
-                            </div>
-                          ) : (
-                            ""
-                          )}
-                        </div>
-                      </div>
-                    </Table.Td>
-                    <Table.Td className={`border whitespace-nowrap text-left `}>
-                      {data?.shipper_name || "-"}
-                    </Table.Td>
-                    <Table.Td className={`border whitespace-nowrap text-left `}>
-                      {data?.chargeable_weight} {data["weight_unit"]}
-                    </Table.Td>
-                    <Table.Td
-                      className={`border whitespace-nowrap text-right `}
-                    >
-                      {data["number_of_pieces"] || "-"}
-                    </Table.Td>
-                  </Table.Tr>
-                ))}
-              </Table.Tbody>
-            </Table>
-          </div>
-        ) : isLoading ? (
-          <IsLoading />
-        ) : (
-          <Nodatafound />
-        )}
-
-        {alldata?.length > 0 && totalpages > 1 && (
-          <CommonPagination
-            totalpages={totalpages}
-            onPageChange={handlePagechange}
-            page={page}
-          />
-        )}
-      </div>
       {openModal && (
         <CommonModal
           open={openModal}
@@ -958,9 +1019,7 @@ admin/franchisee-settings"
           description={modaldescription}
           footer={ModalFooter}
           sticky={true}
-          size={
-          "xl"
-          }
+          size={"xl"}
           handlecancel={handleCancel}
         />
       )}

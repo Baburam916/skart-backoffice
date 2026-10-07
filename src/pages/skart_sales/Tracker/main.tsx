@@ -38,10 +38,8 @@ import inchesTabIcon from "../../../../public/images/inchesTab.png";
 import calendartrucking_new from "../../../../public/images/calendartrucking_new.png";
 import aramex_weight_unit from "../../../../public/images/aramex_weight_unit.png";
 import aramex_package_weight from "../../../../public/images/aramex_package_weight.png";
-
-
-
-
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 import { ClipboardList, Search } from "lucide-react";
 import {
@@ -88,7 +86,7 @@ const intpostremarkdata = {
   remarks: "",
 };
 function Main() {
-   const [forWhat, setForwhat] = useState<number>(0);
+  const [forWhat, setForwhat] = useState<number>(0);
   const [remarks, setRemarks] = useState<string>("");
   const [salesperson, setSalesperson] = useState<any>("");
   const [postremarkdata, setPostRemarkdata] = useState<any>(intpostremarkdata);
@@ -420,7 +418,7 @@ function Main() {
     <div className=" flex justify-between w-full">
       <div>
         {" "}
-        <h2 className="mr-auto text-base font-medium">
+        <h2 className="mr-auto text-base font-medium text-white">
           {forWhat == 1 ? (
             "Consignee Details"
           ) : forWhat == 2 ? (
@@ -1123,7 +1121,7 @@ function Main() {
           <>
             <div className="border border-[#ffdf5a] relative overflow-hidden  rounded-[9px] pl-3 pr-4 py-2 bg-gradient-to-r from-[#FFF5E1] via-[#FDFDFD] to-[#FFF3D8]    hover:bg-gradient-to-r hover:from-[#fffaef] hover:via-[#fffaef] hover:to-[#fffaef]">
               <div className="flex items-center p-1 ">
-                <figure className="flex items-center justify-center  relative mr-1  block bg-[linear-gradient(to_bottom,#ffd675_0%,#f9cf51_50%,#f2be42_100%)] rounded-full border border-[#cda329] w-[50px] h-[50px] ">
+                <figure className="flex items-center justify-center  relative mr-1   bg-[linear-gradient(to_bottom,#ffd675_0%,#f9cf51_50%,#f2be42_100%)] rounded-full border border-[#cda329] w-[50px] h-[50px] ">
                   <User className="w-[30px] h-[30px] text-[#8a6a0c]" />
                 </figure>
                 <aside className="ml-2">
@@ -1315,94 +1313,128 @@ function Main() {
     </>
   );
 
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
+  }, []);
+
   return (
     <>
       <div className="w-full lg:w-[810px] xl:w-[100%] 2xl:w-[970px]  m-auto ">
-        <div className="mt-3  w-full p-3 lg:p-6 bg-white rounded-lg shadow-lg ">
-          <div className="w-full">
-            <div className="w-full scan bg-[#FFFAEE] border border-[#EEE3C9] rounded-lg py-3 px-3 md:py-3 md:px-5  min-h-[113px] ">
-              <div className="flex">
-                <figure className="hidden lg:flex items-center justify-center  relative top-[5px] mr-1  block bg-[#fff] rounded-full border border-[#F8E0AA] w-[80px] h-[80px] ">
-                  <img src={trackingIocn} alt="" className="w-[42px] " />
-                </figure>
-
-                <div className="md:border-l md:border-yellow-200 md:pl-3 md:ml-4 mb-2 md:mb-0 w-full lg:w-[90%]">
-                  <h2 className="text-xl font-medium mb-2"> AIRWAYBILL NO</h2>
-                  <div className="scanBox md:flex block">
-                    <div className="scanBoxInput relative p-[1px] overflow-hidden w-full rounded rounded-[10px]">
-                      <div className="inputIcon relative">
-                        <FormInput
-                          id="airwaybill"
-                          placeholder="Enter Airwaybill No."
-                          required
-                          value={searchvalue}
-                          onChange={(e) => setSearchvalue(e.target.value)}
-                          className="rounded rounded-[10px] w-full z-4 relative border border-[#DECDA3] h-[49px] pl-[54px] text-[17px]"
-                        />
-
-                        <i className="absolute top-[0px] left-[0px] bottom-[-1px] flex items-center w-[42px] h-[49px] border-r border-[#E8E8E8] justify-center">
-                          <ClipboardList className="text-[#BFAB7A]" />
-                        </i>
-                      </div>
-                    </div>
-
-                    <div className="scanBoxbutton relative flex md:ml-5 mt-3 md:mt-0">
-                      <Button
-                        className="btnAnimation overflow-hidden  duration-200  inline-flex items-center justify-center cursor-pointer  bg-yellow-300 text-white  text-xl py-2 px-7 rounded-lg hover:bg-yellow-250 transition uppercase"
-                        onClick={fetchData}
-                        disabled={searchLoading}
-                      >
-                        <Lucide
-                          icon="Search"
-                          className="w-4 h-4  stroke-2.5 mr-1"
-                        />{" "}
-                        {searchLoading ? "Tracking" : "Track"}
-                        {searchLoading ? (
-                          <LoadingIcon
-                            icon="three-dots"
-                            color="white"
-                            className="block m-auto ml-2 w-[20%] "
-                          />
-                        ) : (
-                          ""
-                        )}
-                      </Button>
-                    </div>
+        <div className="w-full mt-2 mb-4">
+          <div
+            className="mt-1 w-full bg-white rounded-[10px]  border border-white"
+            data-aos="fade-up"
+          >
+            <div className=" w-full py-3  px-3 border-b border-white commonGBackOffice  rounded-t-[10px]">
+              <div className="flex-wrap lg:flex-nowrap flex gap-2 items-center justify-between w-full commonGBackOfficeInner">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <i className=" w-[25px] h-[25px]  rounded-lg flex items-center justify-center bg-mustard">
+                      <Truck className="w-[17px]  text-[#fff] " />
+                    </i>
+                    <h4 className="text-[16px] font-medium text-white">
+                      Tracker
+                    </h4>
                   </div>
                 </div>
               </div>
             </div>
+
+            <div className="p-2  lg:p-6">
+              <div className="  w-full  " data-aos="fade-up">
+                <div className="w-full">
+                  <div
+                    className="w-full scan bg-[#FFFAEE] border border-[#EEE3C9] rounded-lg py-3 px-3 md:py-3 md:px-5  min-h-[113px] "
+                    data-aos="fade-up"
+                  >
+                    <div className="flex">
+                      <figure className="hidden lg:flex items-center justify-center  relative top-[5px] mr-1   bg-[#fff] rounded-full border border-[#F8E0AA] w-[80px] h-[80px] ">
+                        <img src={trackingIocn} alt="" className="w-[42px] " />
+                      </figure>
+
+                      <div className="md:border-l md:border-yellow-200 md:pl-3 md:ml-4 mb-2 md:mb-0 w-full lg:w-[90%]">
+                        <h2 className="text-xl font-medium mb-2">
+                          {" "}
+                          AIRWAYBILL NO
+                        </h2>
+                        <div className="scanBox md:flex block">
+                          <div className="scanBoxInput relative p-[1px] overflow-hidden w-full  rounded-[10px]">
+                            <div className="inputIcon relative">
+                              <FormInput
+                                id="airwaybill"
+                                placeholder="Enter Airwaybill No."
+                                required
+                                value={searchvalue}
+                                onChange={(e) => setSearchvalue(e.target.value)}
+                                className="rounded rounded-[10px] w-full z-4 relative border border-[#DECDA3] h-[49px] pl-[54px] text-[17px]"
+                              />
+
+                              <i className="absolute top-[0px] left-[0px] bottom-[-1px] flex items-center w-[42px] h-[49px] border-r border-[#E8E8E8] justify-center">
+                                <ClipboardList className="text-[#BFAB7A]" />
+                              </i>
+                            </div>
+                          </div>
+
+                          <div
+                            className="scanBoxbutton relative flex md:ml-5 mt-3 md:mt-0"
+                            data-aos="fade-up"
+                          >
+                            <Button
+                              className="btnAnimation overflow-hidden border-none  duration-200  inline-flex items-center justify-center cursor-pointer  bg-mustard text-white  text-xl py-2 px-7 rounded-lg hover:bg-yellow-250 transition uppercase"
+                              onClick={fetchData}
+                              disabled={searchLoading}
+                            >
+                              <Lucide
+                                icon="Search"
+                                className="w-4 h-4  stroke-2.5 mr-1"
+                              />{" "}
+                              {searchLoading ? "Tracking" : "Track"}
+                              {searchLoading ? (
+                                <LoadingIcon
+                                  icon="three-dots"
+                                  color="white"
+                                  className="block m-auto ml-2 w-[20%] "
+                                />
+                              ) : (
+                                ""
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {searchLoading ? (
+                  <IsLoading />
+                ) : isObjectEmpty(alldata) ? (
+                  <div
+                    className="w-full flex justify-center"
+                    data-aos="fade-up"
+                  >
+                    <div className="waeNodata m-auto lg:mt-[80px] mb-[60px] mt-[80px]">
+                      <h3 className="lg:text-[16px] text-[15px] text-[#888888] mb-6 text-center">
+                        Enter your Airwaybill No. above to search
+                      </h3>
+                      <figure className="opacity-30 w-full flex justify-center">
+                        <img
+                          src={tracking_awb}
+                          alt="No Data"
+                          className="w-[230px]"
+                        />
+                      </figure>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            </div>
           </div>
-
-
-
-
-{searchLoading ? (
-  <IsLoading />
-) : isObjectEmpty(alldata) ? (
-  <div className="w-full flex justify-center">
-    <div className="waeNodata m-auto lg:mt-[80px] mb-[60px] mt-[80px]">
-      <h3 className="lg:text-[16px] text-[15px] text-[#888888] mb-6 text-center">Enter your Airwaybill No. above to search</h3>
-      <figure className="opacity-30 w-full flex justify-center"><img src={tracking_awb} alt="No Data" /></figure>
-    </div>
-  </div>
-) : null}
-
-
-
-
-
-
         </div>
       </div>
-
-
-
-
-
-
-
-
 
       {answer && !searchLoading && trackerdata?.length < 1 && (
         <div className=" mt-6 bg-white shadow-lg rounded">
@@ -1411,7 +1443,10 @@ function Main() {
       )}
       {!searchLoading && !isObjectEmpty(alldata) ? (
         <>
-          <div className="w-full lg:w-[810px] xl:w-[100%] 2xl:w-[970px]  m-auto ">
+          <div
+            className="w-full lg:w-[810px] xl:w-[100%] 2xl:w-[970px]  m-auto "
+            data-aos="fade-up"
+          >
             <div className="w-full ">
               <div className=" grid grid-cols-12 gap-x-3 ">
                 <div className=" col-span-12  md:col-span-3 mb-2 ">
@@ -1429,7 +1464,12 @@ function Main() {
                           ORIGIN
                         </span>
                         <p className="text-[13px] font-medium mt-1 leading-[15px] uppercase ">
-                          {allCountrydata?.find((c: any) => c?.country_code === (alldata?.pickup_data?.extra_data?.origin_country_code || "IN"))?.country_name || "INDIA"}
+                          {allCountrydata?.find(
+                            (c: any) =>
+                              c?.country_code ===
+                              (alldata?.pickup_data?.extra_data
+                                ?.origin_country_code || "IN"),
+                          )?.country_name || "INDIA"}
                         </p>
                       </aside>
                     </div>
@@ -1480,7 +1520,11 @@ function Main() {
                           DESTINATION
                         </span>
                         <p className="text-[13px] font-medium mt-1 leading-[15px] uppercase ">
-                          {getparticulardatacommon("country", allCountrydata, alldata?.pickup_data?.delivery_country_id)?.country_name || "N.A."}
+                          {getparticulardatacommon(
+                            "country",
+                            allCountrydata,
+                            alldata?.pickup_data?.delivery_country_id,
+                          )?.country_name || "N.A."}
                         </p>
                       </aside>
                     </div>
@@ -1490,7 +1534,10 @@ function Main() {
             </div>
           </div>
 
-          <div className="w-full lg:w-[810px] xl:w-[100%] 2xl:w-[970px]  m-auto ">
+          <div
+            className="w-full lg:w-[810px] xl:w-[100%] 2xl:w-[970px]  m-auto "
+            data-aos="fade-up"
+          >
             <div className="w-full bg-white  rounded-[10px] overflow-hidden relative p-[1px] border border-[#d8def0] mb-3">
               <div className="w-full bg-[#f7f8fb] border-b border-[#d8def0] rounded-t-[10px] p-[10px] flex items-center justify-between">
                 <h2 className="text-lg font-bold uppercase text-left text-[#303030] ml-2">
@@ -1520,7 +1567,10 @@ function Main() {
                 )}
               </div>
 
-              <div className="bg-white  rounded-[20px] overflow-hidden relative">
+              <div
+                className="bg-white  rounded-[20px] overflow-hidden relative"
+                data-aos="fade-up"
+              >
                 <div className=" p-[6px] lg:p-[20px] w-full">
                   <div className="w-full max-w-6xl mx-auto  ">
                     <div className=" grid grid-cols-12 gap-x-[14px]  lg:gap-x-[24px]">
@@ -1693,7 +1743,10 @@ function Main() {
                                     </div>
                                   </div>
 
-                                  <div className=" flex justify-center w-full  mb-3">
+                                  <div
+                                    className=" flex justify-center w-full  mb-3"
+                                    data-aos="fade-up"
+                                  >
                                     <figure className=" w-[35px] h-[35px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
                                       <Truck className="w-[21px]  text-[#949DA6] " />
                                     </figure>
@@ -1737,7 +1790,10 @@ function Main() {
                                   </div>
                                 </div>
 
-                                <div className=" col-span-12  md:col-span-6 mb-2 ">
+                                <div
+                                  className=" col-span-12  md:col-span-6 mb-2 "
+                                  data-aos="fade-up"
+                                >
                                   <div className="w-full">
                                     <div className="flex items-center mb-3 w-full">
                                       <i className="mr-1 ">
@@ -1859,7 +1915,10 @@ function Main() {
                         </div>
                       </div>
 
-                      <div className=" col-span-12  md:col-span-6 lg:col-span-4 mb-2 ">
+                      <div
+                        className=" col-span-12  md:col-span-6 lg:col-span-4 mb-2 "
+                        data-aos="fade-up"
+                      >
                         <div className="flex items-center mb-3">
                           <i className="mr-1 ">
                             <Boxes className="w-[18px]  text-[#DD9F0F] " />
@@ -2043,7 +2102,10 @@ function Main() {
             </div>
           </div>
 
-          <div className="w-full lg:w-[810px] xl:w-[100%] 2xl:w-[970px]  m-auto ">
+          <div
+            className="w-full lg:w-[810px] xl:w-[100%] 2xl:w-[970px]  m-auto "
+            data-aos="fade-up"
+          >
             <div className="w-full bg-white  rounded-[10px] overflow-hidden relative p-[1px] border border-[#d8def0] mb-3">
               <div className="w-full bg-[#f7f8fb] border-b border-[#d8def0] rounded-t-[10px] p-[10px] flex items-center justify-between">
                 <h2 className="text-lg font-bold uppercase text-left text-[#303030] ml-2">

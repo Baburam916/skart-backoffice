@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Disclosure } from "@headlessui/react";
 import Lucide from "../../../base-components/Lucide";
-import Button from "../../../base-components/Button";
 
 import { Tab } from "../../../base-components/Headless";
 import {
@@ -24,6 +23,76 @@ import {
 } from "../../../AllServices/services";
 import CommonSearchableAll from "../commoncomponents/CommonSearchableall/CommonSearchableall";
 import SearchableComp from "../commoncomponents/Commonsearchablebasedcom/commonsearchablecom";
+import {
+  ArrowRight,
+  Box,
+  Building,
+  Building2,
+  Flag,
+  Globe,
+  Home,
+  Layers,
+  MapPin,
+  RotateCcw,
+  Ruler,
+  Scale,
+  User,
+} from "lucide-react";
+
+const fieldControlClass =
+  "w-full h-full border-0 shadow-none rounded-none bg-transparent py-2.5 focus:ring-0";
+
+const FieldLabel = ({ children, required = false }: any) => (
+  <label className="text-[11px] font-semibold uppercase tracking-wide text-slate-700">
+    {children}
+    {required && <span className="ml-1 text-red-500">*</span>}
+  </label>
+);
+
+// Matches the leftIcon layout of CommonSearchableAll so selects/inputs line up with search fields
+const IconField = ({ icon, error, suffix, children }: any) => (
+  <div
+    className={`flex items-stretch overflow-hidden rounded-lg border bg-white transition focus-within:border-mustard focus-within:ring-2 focus-within:ring-mustard/20 ${
+      error ? "border-red-400" : "border-slate-200"
+    }`}
+  >
+    <span className="flex w-10 shrink-0 items-center justify-center border-r border-slate-200 bg-slate-50 text-slate-400">
+      {icon}
+    </span>
+    <div className="min-w-0 flex-1">{children}</div>
+    {suffix && (
+      <span className="flex items-center pr-3 text-xs font-semibold text-slate-400">
+        {suffix}
+      </span>
+    )}
+  </div>
+);
+
+const FormActions = ({ spinner, onReset, onSubmit }: any) => (
+  <div className="mt-6 flex items-center justify-between gap-3 border-t border-slate-200 pt-5">
+    <button
+      type="button"
+      onClick={onReset}
+      className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+    >
+      <RotateCcw className="h-4 w-4" />
+      Reset
+    </button>
+    <button
+      type="button"
+      onClick={onSubmit}
+      disabled={spinner}
+      className="inline-flex items-center gap-2 rounded-lg bg-mustard px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-mustard/30 transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-70"
+    >
+      Get Quotation
+      {spinner ? (
+        <LoadingIcon icon="puff" color="white" className="h-4 w-4" />
+      ) : (
+        <ArrowRight className="h-4 w-4" />
+      )}
+    </button>
+  </div>
+);
 const intselecteddata = {
   pincode_id: "",
   pincode: "",
@@ -147,7 +216,6 @@ const RateCalculator = ({ forwhat }) => {
   };
 
   const fun5 = (value: any) => {
-
     setError((prev) => ({
       ...prev,
       franchisee: "",
@@ -248,9 +316,8 @@ const RateCalculator = ({ forwhat }) => {
   };
 
   const handleSubmit = async () => {
-
     const errors = {};
-    
+
     Object.keys(rateFormData).forEach((item) => {
       if (!rateFormData[item] && item !== "is_kawach")
         errors[item] = "This field is required";
@@ -272,7 +339,6 @@ const RateCalculator = ({ forwhat }) => {
     delete errors?.origin_state;
     delete errors?.origin_state_name;
     setError(errors);
-
 
     if (Object.keys(errors).length > 0) {
       return false;
@@ -424,7 +490,7 @@ const RateCalculator = ({ forwhat }) => {
   const getData = async () => {
     try {
       const response: any = await commongetrequest(
-        `admin/booking-shipment-type`
+        `admin/booking-shipment-type`,
       );
       // console.log(response, "response");
       if (response?.status == 200) {
@@ -473,643 +539,623 @@ const RateCalculator = ({ forwhat }) => {
         <div className="h-auto grid grid-cols-1 lg:grid-cols-2 gap-4 pb-8 mb-8">
           <Disclosure as="div" className=" mt-8 w-full">
             {({ open }) => (
-              <div className="bg-white rounded-lg">
-                <Disclosure.Button
-                  onClick={() => {
-                    handleSetInitial();
-                    setClicked("");
-                  }}
-                  className="flex items-center w-full justify-between rounded-lg bg-white px-5 py-3 text-left text-sm font-medium"
-                >
-                  <div className="grid grid-cols-1 md:grid-cols-[60%_40%] w-full">
-                    <div className="w-full">
-                      <h1 className="text-xl font-bold ">Rate Calculator</h1>
+              <>
+                <div className="w-full mt-2 mb-4">
+                  <div className="mt-1 w-full bg-white rounded-[10px]  border border-white">
+                    <div className=" w-full py-2  px-3 border-b border-white commonGBackOffice  rounded-t-[10px]">
+                      <div className="flex-wrap lg:flex-nowrap flex gap-2 items-center justify-between w-full commonGBackOfficeInner">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <i className=" w-[25px] h-[25px]  rounded-lg flex items-center justify-center bg-mustard">
+                              <Building className="w-[17px]  text-[#fff] " />
+                            </i>
+                            <h4 className="text-[16px] font-medium text-white">
+                              Rate Calculator
+                            </h4>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    {/* <div className="flex justify-end">
-                      <Button
-                        rounded
-                        className="bg-mustard text-white"
-                        // onClick={() => {
-                        //   setOpenModal(true);
-                        // }}
-                        onClick={() => {
-                          setToggleUI(true);
-                        }}
-                      >
-                        Click here to find ODA
-                        <Lucide
-                          icon="Search"
-                          className="w-4 h-4 ml-2 stroke-2.5"
-                        />
-                      </Button>
-                    </div> */}
+
+                    <div className="p-2  lg:p-3">
+                      <div className="bg-white rounded-lg">
+                        <Disclosure.Button
+                          onClick={() => {
+                            handleSetInitial();
+                            setClicked("");
+                          }}
+                          className="flex items-center w-full justify-between rounded-lg bg-white px-5 py-3 text-left text-sm font-medium"
+                        ></Disclosure.Button>
+                        {currentStep >= 1 && (
+                          <Disclosure.Panel
+                            static={true}
+                            className="px-1 pb-2 pt-0 text-sm text-gray-500 w-full"
+                          >
+                            <Tab.Group className="w-full">
+                              <Tab.List
+                                variant="pills"
+                                className="gap-1 rounded-xl border border-slate-200 bg-slate-100 p-1"
+                              >
+                                <Tab>
+                                  <Tab.Button
+                                    className={`uppercase flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition ${
+                                      rateFormData?.booking_type == 2
+                                        ? "bg-mustard text-white shadow-sm"
+                                        : "bg-[#fff] text-slate-600 hover:bg-white/60"
+                                    }`}
+                                    as="button"
+                                    onClick={() => {
+                                      handlintdata(1);
+                                    }}
+                                  >
+                                    <Home className="h-4 w-4" />
+                                    Domestic
+                                  </Tab.Button>
+                                </Tab>
+                                <Tab>
+                                  <Tab.Button
+                                    className={`uppercase flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition ${
+                                      rateFormData?.booking_type == 1
+                                        ? "bg-mustard text-white shadow-sm"
+                                        : "bg-[#fff] text-slate-600 hover:bg-white/60"
+                                    }`}
+                                    as="button"
+                                    onClick={() => {
+                                      handlintdata(2);
+                                    }}
+                                  >
+                                    <Globe className="h-4 w-4" />
+                                    International
+                                  </Tab.Button>
+                                </Tab>
+                              </Tab.List>
+                              <Tab.Panels className="mt-6">
+                                <Tab.Panel className="leading-relaxed">
+                                  <div className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
+                                    <div className="flex flex-col gap-0">
+                                      <FieldLabel required>
+                                        Customer Name
+                                      </FieldLabel>
+                                      <CommonSearchableAll
+                                        apiEndpoint={`admin/franchisee-settings${
+                                          forwhat == 1
+                                            ? `?sales_id=${userdata?.mapped_id}`
+                                            : ""
+                                        }`}
+                                        placeholder={"Search for customer"}
+                                        selecteddata={selectedfranchisedata}
+                                        setSelecteddata={
+                                          setSelectedfranchisedata
+                                        }
+                                        fun1={fun5}
+                                        comingselectedname={"franchisee_name"}
+                                        comingselectedid={"franchisee_id"}
+                                        funtoempty={fun5toempty}
+                                        questionmark={
+                                          forwhat == 1 ? true : false
+                                        }
+                                        key1={"key"}
+                                        border={
+                                          error?.franchisee ? true : false
+                                        }
+                                        zIndex={20}
+                                        leftIcon={<User className="h-4 w-4" />}
+                                      />
+                                    </div>
+                                    <div className="flex flex-col gap-0">
+                                      <FieldLabel required>
+                                        Origin Pincode
+                                      </FieldLabel>
+                                      <CommonSearchableAll
+                                        apiEndpoint={`admin/domestic-pincode/`}
+                                        placeholder={"Search for pincode"}
+                                        selecteddata={selecteddata}
+                                        setSelecteddata={setSelecteddata}
+                                        fun1={fun3}
+                                        comingselectedname={"pincode"}
+                                        comingselectedid={"pincode_id"}
+                                        funtoempty={funtoempty2}
+                                        directapply={true}
+                                        border={
+                                          error?.origin_pincode ? true : false
+                                        }
+                                        zIndex={20}
+                                        leftIcon={
+                                          <MapPin className="h-4 w-4" />
+                                        }
+                                      />
+                                    </div>
+                                    <div className="flex flex-col gap-0">
+                                      <FieldLabel required>
+                                        Destination Pincode
+                                      </FieldLabel>
+                                      <CommonSearchableAll
+                                        apiEndpoint={`admin/domestic-pincode/`}
+                                        placeholder={"Search for pincode"}
+                                        selecteddata={selecteddata2}
+                                        setSelecteddata={setSelecteddata2}
+                                        fun1={fun4}
+                                        comingselectedname={"pincode"}
+                                        comingselectedid={"pincode_id"}
+                                        funtoempty={funtoempty4}
+                                        directapply={true}
+                                        border={
+                                          error?.destination_pincode
+                                            ? true
+                                            : false
+                                        }
+                                        zIndex={20}
+                                        leftIcon={<Flag className="h-4 w-4" />}
+                                      />
+                                    </div>
+                                    <div className="flex flex-col gap-0">
+                                      <FieldLabel required>
+                                        Shipment Type
+                                      </FieldLabel>
+                                      <IconField
+                                        icon={<Box className="h-4 w-4" />}
+                                        error={error?.shipment_type}
+                                      >
+                                        <FormSelect
+                                          className={fieldControlClass}
+                                          value={rateFormData?.shipment_type}
+                                          onChange={(e) => {
+                                            setError((prev) => ({
+                                              ...prev,
+                                              shipment_type: "",
+                                            }));
+                                            setRateFormData((prev) => ({
+                                              ...prev,
+                                              shipment_type: e.target.value,
+                                            }));
+                                          }}
+                                        >
+                                          <option value="">
+                                            Select Shipment Type
+                                          </option>
+                                          {shipmentTypeData?.map(
+                                            (type) =>
+                                              type?.is_active == 1 &&
+                                              type?.booking_shipment_type_id !=
+                                                4 &&
+                                              type?.booking_shipment_type_id !=
+                                                5 && (
+                                                <option
+                                                  key={
+                                                    type?.booking_shipment_type_id
+                                                  }
+                                                  value={
+                                                    type?.booking_shipment_type_id
+                                                  }
+                                                >
+                                                  {type?.shipment_type}
+                                                </option>
+                                              ),
+                                          )}
+                                        </FormSelect>
+                                      </IconField>
+                                    </div>
+                                    <div className="flex flex-col gap-0">
+                                      <FieldLabel required>
+                                        Weight (In Kgs)
+                                      </FieldLabel>
+                                      <IconField
+                                        icon={<Scale className="h-4 w-4" />}
+                                        error={error?.weight}
+                                        suffix="KG"
+                                      >
+                                        <FormInput
+                                          id="weight"
+                                          placeholder="Enter weight"
+                                          value={rateFormData?.weight}
+                                          className={fieldControlClass}
+                                          onChange={(e) => {
+                                            setError((prev) => ({
+                                              ...prev,
+                                              weight: "",
+                                            }));
+                                            setRateFormData((prev) => ({
+                                              ...prev,
+                                              weight: e.target.value.replace(
+                                                /[^0-9.]/g,
+                                                "",
+                                              ),
+                                            }));
+                                          }}
+                                        />
+                                      </IconField>
+                                    </div>
+                                    {rateFormData?.shipment_type &&
+                                      rateFormData?.shipment_type != 2 && (
+                                        <>
+                                          <div className="flex flex-col gap-0">
+                                            <FieldLabel>
+                                              Max Length (In Cms)
+                                            </FieldLabel>
+                                            <IconField
+                                              icon={
+                                                <Ruler className="h-4 w-4" />
+                                              }
+                                              suffix="CM"
+                                            >
+                                              <FormInput
+                                                id="length"
+                                                placeholder="Enter max length"
+                                                value={rateFormData?.length}
+                                                className={fieldControlClass}
+                                                onChange={(e) => {
+                                                  setRateFormData((prev) => ({
+                                                    ...prev,
+                                                    length:
+                                                      e.target.value.replace(
+                                                        /[^0-9.]/g,
+                                                        "",
+                                                      ),
+                                                  }));
+                                                }}
+                                              />
+                                            </IconField>
+                                          </div>
+                                          <div className="flex flex-col gap-0">
+                                            <FieldLabel>
+                                              Quantity (In Pcs)
+                                            </FieldLabel>
+                                            <IconField
+                                              icon={
+                                                <Layers className="h-4 w-4" />
+                                              }
+                                              suffix="PCS"
+                                            >
+                                              <FormInput
+                                                id="quantity"
+                                                placeholder="Enter quantity"
+                                                value={rateFormData?.quantity}
+                                                className={fieldControlClass}
+                                                onChange={(e) => {
+                                                  setRateFormData((prev) => ({
+                                                    ...prev,
+                                                    quantity:
+                                                      e.target.value.replace(
+                                                        /[^0-9.]/g,
+                                                        "",
+                                                      ),
+                                                  }));
+                                                }}
+                                              />
+                                            </IconField>
+                                          </div>
+                                        </>
+                                      )}
+                                  </div>
+                                  <FormActions
+                                    spinner={spinner}
+                                    onSubmit={handleSubmit}
+                                    onReset={() => {
+                                      setRateFormData(initialState);
+                                      setCurrentStep(1);
+                                      setCurrentFaq(1);
+                                      setSelecteddata(intselecteddata);
+                                      setSelecteddata2(intselecteddata2);
+                                      setSelecteddata3(intselecteddata3);
+                                      setSelectedfranchisedata(
+                                        intfranchiseedata,
+                                      );
+                                      setPincodeAvailable(false);
+                                      setSpinner(false);
+                                      setError({});
+                                    }}
+                                  />
+                                </Tab.Panel>
+                                <Tab.Panel className="leading-relaxed">
+                                  <div className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
+                                    <div className="flex flex-col gap-0">
+                                      <FieldLabel required>
+                                        Customer Name
+                                      </FieldLabel>
+                                      <CommonSearchableAll
+                                        apiEndpoint={`admin/franchisee-settings${
+                                          forwhat == 1
+                                            ? `?sales_id=${userdata?.mapped_id}`
+                                            : ""
+                                        }`}
+                                        placeholder={"Search for customer"}
+                                        selecteddata={selectedfranchisedata}
+                                        setSelecteddata={
+                                          setSelectedfranchisedata
+                                        }
+                                        fun1={fun5}
+                                        comingselectedname={"franchisee_name"}
+                                        comingselectedid={"franchisee_id"}
+                                        funtoempty={fun5toempty}
+                                        questionmark={
+                                          forwhat == 1 ? true : false
+                                        }
+                                        key1={"key"}
+                                        border={
+                                          error?.franchisee ? true : false
+                                        }
+                                        zIndex={20}
+                                        leftIcon={<User className="h-4 w-4" />}
+                                      />
+                                    </div>
+                                    <div className="flex flex-col gap-0">
+                                      <FieldLabel required>
+                                        Origin Pincode
+                                      </FieldLabel>
+                                      <CommonSearchableAll
+                                        apiEndpoint={`admin/domestic-pincode/`}
+                                        placeholder={"Search for pincode"}
+                                        selecteddata={selecteddata}
+                                        setSelecteddata={setSelecteddata}
+                                        fun1={fun3}
+                                        comingselectedname={"pincode"}
+                                        comingselectedid={"pincode_id"}
+                                        funtoempty={funtoempty2}
+                                        directapply={true}
+                                        border={
+                                          error?.origin_pincode ? true : false
+                                        }
+                                        zIndex={20}
+                                        leftIcon={
+                                          <MapPin className="h-4 w-4" />
+                                        }
+                                      />
+                                    </div>
+                                    <div className="flex flex-col gap-0">
+                                      <FieldLabel required>
+                                        Destination Country
+                                      </FieldLabel>
+                                      <CommonSearchableAll
+                                        apiEndpoint={`admin/country`}
+                                        placeholder={"Search for country"}
+                                        selecteddata={selectedcountrydata}
+                                        setSelecteddata={setSelectedCountrydata}
+                                        fun1={fun6}
+                                        comingselectedname={"country_name"}
+                                        comingselectedid={"country_id"}
+                                        funtoempty={fun6toempty}
+                                        key1={"country"}
+                                        border={
+                                          error?.destination_country
+                                            ? true
+                                            : false
+                                        }
+                                        leftIcon={<Globe className="h-4 w-4" />}
+                                      />
+                                    </div>
+                                    {pincodeAvailable && (
+                                      <div className="flex flex-col gap-0">
+                                        <FieldLabel>
+                                          Destination Zipcode
+                                        </FieldLabel>
+                                        <CommonSearchableAll
+                                          apiEndpoint={`admin/international-pincode?country_code=${rateFormData?.destination_country_code}`}
+                                          placeholder={"Search for zipcode"}
+                                          questionmark={true}
+                                          selecteddata={selecteddestzipcodedata}
+                                          setSelecteddata={
+                                            setSelecteddestzipcodedata
+                                          }
+                                          fun1={fun7}
+                                          key1={"zipcode"}
+                                          comingselectedname={"zipcode"}
+                                          comingselectedid={"city_area"}
+                                          funtoempty={funtoempty7}
+                                          border={
+                                            error?.destination_pincode
+                                              ? true
+                                              : false
+                                          }
+                                          zIndex={20}
+                                          enableZipcodeLookup={true}
+                                          countryName={
+                                            selectedcountrydata?.country_name
+                                          }
+                                          leftIcon={
+                                            <Flag className="h-4 w-4" />
+                                          }
+                                        />
+                                      </div>
+                                    )}
+                                    {rateFormData?.destination_country && (
+                                      <div className="flex flex-col gap-0">
+                                        <FieldLabel>
+                                          Destination City
+                                        </FieldLabel>
+                                        <CommonSearchableAll
+                                          apiEndpoint={`admin/international-pincode?country_code=${
+                                            rateFormData?.destination_country_code ||
+                                            ""
+                                          }`}
+                                          placeholder={"Search for city"}
+                                          questionmark={true}
+                                          selecteddata={selecteddata3}
+                                          setSelecteddata={setSelecteddata3}
+                                          fun1={fun8}
+                                          key1={"city"}
+                                          comingselectedname={"city_area"}
+                                          comingselectedid={"city_area"}
+                                          funtoempty={funtoempty8}
+                                          zIndex={20}
+                                          enableZipcodeLookup={true}
+                                          lookupType="city"
+                                          countryName={
+                                            selectedcountrydata?.country_name
+                                          }
+                                          lookupZipcode={
+                                            rateFormData?.destination_pincode ||
+                                            "0000"
+                                          }
+                                          leftIcon={
+                                            <Building2 className="h-4 w-4" />
+                                          }
+                                        />
+                                      </div>
+                                    )}
+                                    <div className="flex flex-col gap-0">
+                                      <FieldLabel required>
+                                        Shipment Type
+                                      </FieldLabel>
+                                      <IconField
+                                        icon={<Box className="h-4 w-4" />}
+                                        error={error?.shipment_type}
+                                      >
+                                        <FormSelect
+                                          className={fieldControlClass}
+                                          value={rateFormData?.shipment_type}
+                                          onChange={(e) => {
+                                            setError((prev) => ({
+                                              ...prev,
+                                              shipment_type: "",
+                                            }));
+                                            setRateFormData((prev) => ({
+                                              ...prev,
+                                              shipment_type: e.target.value,
+                                            }));
+                                          }}
+                                        >
+                                          <option value="">
+                                            Select Shipment Type
+                                          </option>
+                                          {shipmentTypeData?.map(
+                                            (type) =>
+                                              type?.is_active == 1 && (
+                                                <option
+                                                  key={
+                                                    type?.booking_shipment_type_id
+                                                  }
+                                                  value={
+                                                    type?.booking_shipment_type_id
+                                                  }
+                                                >
+                                                  {type?.shipment_type}
+                                                </option>
+                                              ),
+                                          )}
+                                        </FormSelect>
+                                      </IconField>
+                                    </div>
+                                    <div className="flex flex-col gap-0">
+                                      <FieldLabel required>
+                                        Weight (In Kgs)
+                                      </FieldLabel>
+                                      <IconField
+                                        icon={<Scale className="h-4 w-4" />}
+                                        error={error?.weight}
+                                        suffix="KG"
+                                      >
+                                        <FormInput
+                                          id="weight"
+                                          placeholder="Enter weight"
+                                          value={rateFormData?.weight}
+                                          className={fieldControlClass}
+                                          onChange={(e) => {
+                                            setError((prev) => ({
+                                              ...prev,
+                                              weight: "",
+                                            }));
+                                            setRateFormData((prev) => ({
+                                              ...prev,
+                                              weight: e.target.value.replace(
+                                                /[^0-9.]/g,
+                                                "",
+                                              ),
+                                            }));
+                                          }}
+                                        />
+                                      </IconField>
+                                    </div>
+                                    {rateFormData?.shipment_type &&
+                                      rateFormData?.shipment_type != 2 && (
+                                        <>
+                                          <div className="flex flex-col gap-0">
+                                            <FieldLabel>
+                                              Max Length (In Cms)
+                                            </FieldLabel>
+                                            <IconField
+                                              icon={
+                                                <Ruler className="h-4 w-4" />
+                                              }
+                                              suffix="CM"
+                                            >
+                                              <FormInput
+                                                id="length"
+                                                placeholder="Enter max length"
+                                                value={rateFormData?.length}
+                                                className={fieldControlClass}
+                                                onChange={(e) => {
+                                                  setRateFormData((prev) => ({
+                                                    ...prev,
+                                                    length:
+                                                      e.target.value.replace(
+                                                        /[^0-9.]/g,
+                                                        "",
+                                                      ),
+                                                  }));
+                                                }}
+                                              />
+                                            </IconField>
+                                          </div>
+                                          <div className="flex flex-col gap-0">
+                                            <FieldLabel>
+                                              Quantity (In Pcs)
+                                            </FieldLabel>
+                                            <IconField
+                                              icon={
+                                                <Layers className="h-4 w-4" />
+                                              }
+                                              suffix="PCS"
+                                            >
+                                              <FormInput
+                                                id="quantity"
+                                                placeholder="Enter quantity"
+                                                value={rateFormData?.quantity}
+                                                className={fieldControlClass}
+                                                onChange={(e) => {
+                                                  setRateFormData((prev) => ({
+                                                    ...prev,
+                                                    quantity:
+                                                      e.target.value.replace(
+                                                        /[^0-9.]/g,
+                                                        "",
+                                                      ),
+                                                  }));
+                                                }}
+                                              />
+                                            </IconField>
+                                          </div>
+                                        </>
+                                      )}
+                                  </div>
+                                  <FormActions
+                                    spinner={spinner}
+                                    onSubmit={handleSubmit}
+                                    onReset={() => {
+                                      setRateFormData(initialState);
+                                      setSelecteddestzipcodedata(
+                                        intdestzipcode,
+                                      );
+                                      setSelectedCountrydata(intcountrydata);
+                                      setSelecteddata(intselecteddata);
+                                      setSelecteddata3(intselecteddata3);
+                                      setCurrentStep(1);
+                                      setCurrentFaq(1);
+
+                                      setPincodeAvailable(false);
+                                      setSpinner(false);
+                                      setError({});
+                                    }}
+                                  />
+                                </Tab.Panel>
+                              </Tab.Panels>
+                            </Tab.Group>
+                          </Disclosure.Panel>
+                        )}
+                      </div>
+                    </div>
                   </div>
-
-                  {/* <Lucide
-                    icon="ChevronUp"
-                    onClick={() => {
-                      handleSetInitial();
-                      setClicked("");
-                    }}
-                    className={`w-1/3 ${
-                      currentStep == 1 ? "" : "rotate-180 transform stroke-2.5"
-                    } h-8 w-8 text-mustard`}
-                  /> */}
-                </Disclosure.Button>
-                {currentStep >= 1 && (
-                  <Disclosure.Panel
-                    static={true}
-                    className="px-8 pb-2 pt-4 text-sm text-gray-500 border-t w-full"
-                  >
-                    <Tab.Group className="w-full">
-                      <Tab.List variant="boxed-tabs">
-                        <Tab>
-                          <Tab.Button
-                            className={`w-full py-2 text-lg font-bold shadow-md ${
-                              rateFormData?.booking_type == 2
-                                ? "bg-mustard tex-white"
-                                : ""
-                            } `}
-                            as="button"
-                            // bg="mustard"
-                            onClick={() => {
-                              handlintdata(1);
-                            }}
-                          >
-                            Domestic
-                          </Tab.Button>
-                        </Tab>
-                        <Tab>
-                          <Tab.Button
-                            className={`w-full py-2 text-lg font-bold shadow-md  ${
-                              rateFormData?.booking_type == 1
-                                ? "bg-mustard tex-white"
-                                : ""
-                            }`}
-                            as="button"
-                            // bg="mustard"
-                            onClick={() => {
-                              handlintdata(2);
-                            }}
-                          >
-                            International
-                          </Tab.Button>
-                        </Tab>
-                      </Tab.List>
-                      <Tab.Panels className="my-5">
-                        <Tab.Panel className="leading-relaxed">
-                          <div className="grid gap-5 grid-cols-1 md:grid-cols-2 px-1">
-                            <div className="grid col-span-1">
-                              <div>
-                                <FormLabel
-                                  htmlFor="origin"
-                                  className="text-sm pb-1 mt-0 text-black"
-                                >
-                                  CUSTOMER NAME
-                                  <span className="text-red-500">*</span>
-                                </FormLabel>
-                                <CommonSearchableAll
-                                  apiEndpoint={`admin/franchisee-settings${
-                                    forwhat == 1
-                                      ? `?sales_id=${userdata?.mapped_id}`
-                                      : ""
-                                  }`}
-                                  // ?sales_id=${userdata?.mapped_id}`}
-                                  placeholder={"Search For  Customer"}
-                                  selecteddata={selectedfranchisedata}
-                                  setSelecteddata={setSelectedfranchisedata}
-                                  fun1={fun5}
-                                  comingselectedname={"franchisee_name"}
-                                  comingselectedid={"franchisee_id"}
-                                  funtoempty={fun5toempty}
-                                  questionmark={forwhat == 1 ? true : false}
-                                  key1={"key"}
-                                  border={error?.franchisee ? true : false}
-                                  zIndex={20}
-                                />
-                              </div>
-                            </div>
-                            <div className="grid gap-2">
-                              <FormLabel
-                                htmlFor="origin"
-                                className="text-sm mb-[-2] text-black"
-                              >
-                                ORIGIN PINCODE{" "}
-                                <span className="text-red-500">*</span>
-                              </FormLabel>
-
-                              <CommonSearchableAll
-                                apiEndpoint={`admin/domestic-pincode/`}
-                                placeholder={"Search For  Pincode"}
-                                selecteddata={selecteddata}
-                                setSelecteddata={setSelecteddata}
-                                fun1={fun3}
-                                comingselectedname={"pincode"}
-                                comingselectedid={"pincode_id"}
-                                funtoempty={funtoempty2}
-                                directapply={true}
-                                border={error?.origin_pincode ? true : false}
-                                zIndex={20}
-                              />
-                            </div>
-                            <div className="grid gap-2">
-                              <FormLabel
-                                htmlFor="destination"
-                                className="text-sm mb-[-2] text-black"
-                              >
-                                DESTINATION PINCODE{" "}
-                                <span className="text-red-500">*</span>
-                              </FormLabel>
-                              <CommonSearchableAll
-                                apiEndpoint={`admin/domestic-pincode/`}
-                                placeholder={"Search For  Pincode"}
-                                selecteddata={selecteddata2}
-                                setSelecteddata={setSelecteddata2}
-                                fun1={fun4}
-                                comingselectedname={"pincode"}
-                                comingselectedid={"pincode_id"}
-                                funtoempty={funtoempty4}
-                                directapply={true}
-                                border={
-                                  error?.destination_pincode ? true : false
-                                }
-                                zIndex={20}
-                              />
-                            </div>
-                            <div className="grid gap-2">
-                              <FormLabel
-                                htmlFor="dimensions"
-                                className="text-sm mb-[-2]  text-black"
-                              >
-                                SHIPMENT TYPE{" "}
-                                <span className="text-red-500">*</span>
-                              </FormLabel>
-                              <FormSelect
-                                className={`w-[100%] mb-1  sm:mr-2 p-1 ${
-                                  error?.shipment_type ? "border-red-500" : ""
-                                }`}
-                                formSelectSize="lg"
-                                value={rateFormData?.shipment_type}
-                                onChange={(e) => {
-                                  setError((prev) => ({
-                                    ...prev,
-                                    shipment_type: "",
-                                  }));
-                                  setRateFormData((prev) => ({
-                                    ...prev,
-                                    shipment_type: e.target.value,
-                                  }));
-                                }}
-                              >
-                                <option value="">Select Shipment Type</option>
-                                {shipmentTypeData?.map(
-                                  (type) =>
-                                    type?.is_active == 1 &&
-                                    type?.booking_shipment_type_id != 4 &&
-                                    type?.booking_shipment_type_id != 5 && (
-                                      <option
-                                        key={type?.booking_shipment_type_id}
-                                        value={type?.booking_shipment_type_id}
-                                      >
-                                        {type?.shipment_type}
-                                      </option>
-                                    )
-                                )}
-                              </FormSelect>
-                            </div>
-                            <div className="grid gap-2">
-                              <FormLabel
-                                htmlFor="weight"
-                                className="text-sm mb-[-2] text-black"
-                              >
-                                WEIGHT (IN KGS){" "}
-                                <span className="text-red-500">*</span>
-                              </FormLabel>
-                              <FormInput
-                                id="weight"
-                                placeholder="Enter weight"
-                                formInputSize="lg"
-                                value={rateFormData?.weight}
-                                className={`w-[100%] ${
-                                  error?.weight ? "border-red-500" : ""
-                                }`}
-                                onChange={(e) => {
-                                  setError((prev) => ({
-                                    ...prev,
-                                    weight: "",
-                                  }));
-                                  setRateFormData((prev) => ({
-                                    ...prev,
-                                    weight: e.target.value.replace(
-                                      /[^0-9.]/g,
-                                      ""
-                                    ),
-                                  }));
-                                }}
-                              />
-                            </div>
-                            {rateFormData?.shipment_type &&
-                              rateFormData?.shipment_type != 2 && (
-                                <>
-                                  <div className="grid gap-2">
-                                    <FormLabel
-                                      htmlFor="length"
-                                      className="text-sm mb-[-2] text-black"
-                                    >
-                                      MAX LENGTH (IN CMS){" "}
-                                    </FormLabel>
-                                    <FormInput
-                                      id="length"
-                                      placeholder="Enter Max Length"
-                                      formInputSize="lg"
-                                      value={rateFormData?.length}
-                                      className="w-[100%]"
-                                      onChange={(e) => {
-                                        setRateFormData((prev) => ({
-                                          ...prev,
-                                          length: e.target.value.replace(
-                                            /[^0-9.]/g,
-                                            ""
-                                          ),
-                                        }));
-                                      }}
-                                    />
-                                  </div>
-                                  <div className="grid gap-2">
-                                    <FormLabel
-                                      htmlFor="quantity"
-                                      className="text-sm mb-[-2] text-black"
-                                    >
-                                      QUANTITY (IN PCS)
-                                    </FormLabel>
-                                    <FormInput
-                                      id="quantity"
-                                      placeholder="Enter Quantity"
-                                      formInputSize="lg"
-                                      value={rateFormData?.quantity}
-                                      className="w-[100%]"
-                                      onChange={(e) => {
-                                        setRateFormData((prev) => ({
-                                          ...prev,
-                                          quantity: e.target.value.replace(
-                                            /[^0-9.]/g,
-                                            ""
-                                          ),
-                                        }));
-                                      }}
-                                    />
-                                  </div>
-                                </>
-                              )}
-                          </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
-                            <div className="w-full md:w-auto">
-                              <Button
-                                rounded
-                                className="px-2 w-full md:w-24 mr-1 text-white bg-mustard  text-base font-bold p-2"
-                                onClick={() => {
-                                  setRateFormData(initialState);
-                                  setCurrentStep(1);
-                                  setCurrentFaq(1);
-                                  setSelecteddata(intselecteddata);
-                                  setSelecteddata2(intselecteddata2);
-                                  setSelecteddata3(intselecteddata3);
-                                  setSelectedfranchisedata(intfranchiseedata);
-                                  setPincodeAvailable(false);
-                                  setSpinner(false);
-                                  setError({});
-                                }}
-                              >
-                                Reset
-                              </Button>
-                            </div>
-                            <div className="flex justify-end w-full md:w-auto">
-                              <Button
-                                rounded
-                                className="p-2 w-full md:w-auto  mr-1 text-white bg-mustard  text-base font-bold"
-                                onClick={handleSubmit}
-                                disabled={spinner}
-                              >
-                                Get Quotation
-                                {spinner && (
-                                  <LoadingIcon
-                                    icon="puff"
-                                    color="white"
-                                    className="w-5 h-5 ml-2 stroke-2.5 text-white"
-                                  />
-                                )}
-                              </Button>
-                            </div>
-                          </div>
-                        </Tab.Panel>
-                        <Tab.Panel className="leading-relaxed">
-                          <div className="grid gap-5 grid-cols-1 md:grid-cols-2 px-1">
-                            <div className="grid col-span-1">
-                              <div>
-                                <FormLabel
-                                  htmlFor="origin"
-                                  className="text-sm mb-[-2] pb-2  text-black"
-                                >
-                                  CUSTOMER NAME
-                                  <span className="text-red-500">*</span>
-                                </FormLabel>
-                                <CommonSearchableAll
-                                  apiEndpoint={`admin/franchisee-settings${
-                                    forwhat == 1
-                                      ? `?sales_id=${userdata?.mapped_id}`
-                                      : ""
-                                  }`}
-                                  placeholder={"Search For  Customer"}
-                                  selecteddata={selectedfranchisedata}
-                                  setSelecteddata={setSelectedfranchisedata}
-                                  fun1={fun5}
-                                  comingselectedname={"franchisee_name"}
-                                  comingselectedid={"franchisee_id"}
-                                  funtoempty={fun5toempty}
-                                  questionmark={forwhat == 1 ? true : false}
-                                  key1={"key"}
-                                  border={error?.franchisee ? true : false}
-                                  zIndex={20}
-                                />
-                              </div>
-                            </div>
-                            <div className="grid gap-2">
-                              <FormLabel
-                                htmlFor="origin"
-                                className="text-sm mb-[-2] text-black"
-                              >
-                                ORIGIN PINCODE{" "}
-                                <span className="text-red-500">*</span>
-                              </FormLabel>
-
-                              <CommonSearchableAll
-                                apiEndpoint={`admin/domestic-pincode/`}
-                                placeholder={"Search For  Pincode"}
-                                selecteddata={selecteddata}
-                                setSelecteddata={setSelecteddata}
-                                fun1={fun3}
-                                comingselectedname={"pincode"}
-                                comingselectedid={"pincode_id"}
-                                funtoempty={funtoempty2}
-                                directapply={true}
-                                border={error?.origin_pincode ? true : false}
-                                zIndex={20}
-                              />
-                            </div>
-                            <div className="grid gap-2">
-                              <FormLabel
-                                htmlFor="destination"
-                                className="text-sm mb-[-2] text-black"
-                              >
-                                DESTINATION COUNTRY{" "}
-                                <span className="text-red-500">*</span>
-                              </FormLabel>
-
-                              <CommonSearchableAll
-                                apiEndpoint={`admin/country`}
-                                placeholder={"Search For Country"}
-                                selecteddata={selectedcountrydata}
-                                setSelecteddata={setSelectedCountrydata}
-                                fun1={fun6}
-                                comingselectedname={"country_name"}
-                                comingselectedid={"country_id"}
-                                funtoempty={fun6toempty}
-                                key1={"country"}
-                                border={
-                                  error?.destination_country ? true : false
-                                }
-                              />
-                            </div>
-                            {pincodeAvailable && (
-                              <div className="grid gap-2">
-                                <FormLabel
-                                  htmlFor="destination"
-                                  className="text-sm mb-[-2] text-black"
-                                >
-                                  DESTINATION ZIPCODE{" "}
-                                </FormLabel>
-                                <CommonSearchableAll
-                                  apiEndpoint={`admin/international-pincode?country_code=${rateFormData?.destination_country_code}`}
-                                  placeholder={"Search For  zipcode"}
-                                  questionmark={true}
-                                  selecteddata={selecteddestzipcodedata}
-                                  setSelecteddata={setSelecteddestzipcodedata}
-                                  fun1={fun7}
-                                  key1={"zipcode"}
-                                  comingselectedname={"zipcode"}
-                                  comingselectedid={"city_area"}
-                                  funtoempty={funtoempty7}
-                                  border={
-                                    error?.destination_pincode ? true : false
-                                  }
-                                  zIndex={20}
-                                  enableZipcodeLookup={true}
-                                  countryName={selectedcountrydata?.country_name}
-                                />
-                              </div>
-                            )}
-                            {rateFormData?.destination_country && (
-                              <div className="grid gap-2">
-                                <FormLabel
-                                  htmlFor="destinationCity"
-                                  className="text-sm mb-[-2] text-black"
-                                >
-                                  DESTINATION CITY{" "}
-                                </FormLabel>
-                                <CommonSearchableAll
-                                  apiEndpoint={`admin/international-pincode?country_code=${
-                                    rateFormData?.destination_country_code || ""
-                                  }`}
-                                  placeholder={"Search For  City"}
-                                  questionmark={true}
-                                  selecteddata={selecteddata3}
-                                  setSelecteddata={setSelecteddata3}
-                                  fun1={fun8}
-                                  key1={"city"}
-                                  comingselectedname={"city_area"}
-                                  comingselectedid={"city_area"}
-                                  funtoempty={funtoempty8}
-                                  zIndex={20}
-                                  enableZipcodeLookup={true}
-                                  lookupType="city"
-                                  countryName={selectedcountrydata?.country_name}
-                                  lookupZipcode={
-                                    rateFormData?.destination_pincode || "0000"
-                                  }
-                                />
-                              </div>
-                            )}
-                            <div className="grid gap-2">
-                              <FormLabel
-                                htmlFor="dimensions"
-                                className="text-sm mb-[-2] text-black"
-                              >
-                                SHIPMENT TYPE{" "}
-                                <span className="text-red-500">*</span>
-                              </FormLabel>
-                              <FormSelect
-                                // className="mt-2 sm:mr-2"
-                                className={`w-[100%] mb-1  sm:mr-2 p-1 ${
-                                  error?.shipment_type ? "border-red-500" : ""
-                                }`}
-                                formSelectSize="lg"
-                                value={rateFormData?.shipment_type}
-                                onChange={(e) => {
-                                  setError((prev) => ({
-                                    ...prev,
-                                    shipment_type: "",
-                                  }));
-                                  setRateFormData((prev) => ({
-                                    ...prev,
-                                    shipment_type: e.target.value,
-                                  }));
-                                }}
-                              >
-                                <option value="">Select Shipment Type</option>
-                                {shipmentTypeData?.map(
-                                  (type) =>
-                                    type?.is_active == 1 && (
-                                      <option
-                                        key={type?.booking_shipment_type_id}
-                                        value={type?.booking_shipment_type_id}
-                                      >
-                                        {type?.shipment_type}
-                                      </option>
-                                    )
-                                )}
-                              </FormSelect>
-                            </div>
-                            <div className="grid gap-2">
-                              <FormLabel
-                                htmlFor="weight"
-                                className="text-sm mb-[-2] text-black"
-                              >
-                                WEIGHT (IN KGS){" "}
-                                <span className="text-red-500">*</span>
-                              </FormLabel>
-                              <FormInput
-                                id="weight"
-                                placeholder="Enter weight"
-                                value={rateFormData?.weight}
-                                formInputSize="lg"
-                                className={`w-[100%] ${
-                                  error?.weight ? "border-red-500" : ""
-                                }`}
-                                onChange={(e) => {
-                                  setError((prev) => ({
-                                    ...prev,
-                                    weight: "",
-                                  }));
-                                  setRateFormData((prev) => ({
-                                    ...prev,
-                                    weight: e.target.value.replace(
-                                      /[^0-9.]/g,
-                                      ""
-                                    ),
-                                  }));
-                                }}
-                              />
-                            </div>
-                            {rateFormData?.shipment_type &&
-                              rateFormData?.shipment_type != 2 && (
-                                <>
-                                  <div className="grid gap-2">
-                                    <FormLabel
-                                      htmlFor="length"
-                                      className="text-sm mb-[-2] text-black"
-                                    >
-                                      MAX LENGTH (IN CMS){" "}
-                                    </FormLabel>
-                                    <FormInput
-                                      id="weight"
-                                      placeholder="Enter Max Length"
-                                      formInputSize="lg"
-                                      value={rateFormData?.length}
-                                      className="w-[100%]"
-                                      onChange={(e) => {
-                                        setRateFormData((prev) => ({
-                                          ...prev,
-                                          length: e.target.value.replace(
-                                            /[^0-9.]/g,
-                                            ""
-                                          ),
-                                        }));
-                                      }}
-                                    />
-                                  </div>
-                                  <div className="grid gap-2">
-                                    <FormLabel
-                                      htmlFor="quantity"
-                                      className="text-sm mb-[-2] text-black"
-                                    >
-                                      QUANTITY (IN PCS)
-                                    </FormLabel>
-                                    <FormInput
-                                      id="quantity"
-                                      placeholder="Enter Quantity"
-                                      formInputSize="lg"
-                                      value={rateFormData?.quantity}
-                                      className="w-[100%]"
-                                      onChange={(e) => {
-                                        setRateFormData((prev) => ({
-                                          ...prev,
-                                          quantity: e.target.value.replace(
-                                            /[^0-9.]/g,
-                                            ""
-                                          ),
-                                        }));
-                                      }}
-                                    />
-                                  </div>
-                                </>
-                              )}
-                          </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
-                            <div className="w-full md:w-auto">
-                              <Button
-                                rounded
-                                className="px-2 w-full md:w-24  mr-1 text-white bg-mustard  text-base font-bold p-2"
-                                onClick={() => {
-                                  setRateFormData(initialState);
-                                  setSelecteddestzipcodedata(intdestzipcode);
-                                  setSelectedCountrydata(intcountrydata);
-                                  setSelecteddata(intselecteddata);
-                                  setSelecteddata3(intselecteddata3);
-                                  setCurrentStep(1);
-                                  setCurrentFaq(1);
-
-                                  setPincodeAvailable(false);
-                                  setSpinner(false);
-                                  setError({});
-                                }}
-                              >
-                                Reset
-                              </Button>
-                            </div>
-                            <div className="flex justify-end w-full md:w-auto">
-                              <Button
-                                rounded
-                                className="p-2  w-full md:w-auto mr-1 text-white bg-mustard  text-base font-bold"
-                                onClick={handleSubmit}
-                                disabled={spinner}
-                              >
-                                Get Quotation
-                                {spinner && (
-                                  <LoadingIcon
-                                    icon="puff"
-                                    color="white"
-                                    className="w-5 h-5 ml-2 stroke-2.5 text-white"
-                                  />
-                                )}
-                              </Button>
-                            </div>
-                          </div>
-                        </Tab.Panel>
-                      </Tab.Panels>
-                    </Tab.Group>
-                  </Disclosure.Panel>
-                )}
-              </div>
+                </div>
+              </>
             )}
           </Disclosure>
           {currentFaq >= 2 ? (
@@ -1124,168 +1170,195 @@ const RateCalculator = ({ forwhat }) => {
             ) : ratesData.length > 0 ? (
               <Disclosure as="div" className=" mt-8 w-full pb-4">
                 {({ open }) => (
-                  <div className="bg-white rounded-lg">
-                    <Disclosure.Button
-                      onClick={() => setCurrentStep(2)}
-                      className="flex items-center w-full justify-between rounded-lg bg-white px-5 py-3 text-left text-sm font-medium "
-                    >
-                      <div>
-                        <h1 className="text-xl font-bold">Rates</h1>
-                        <h3 className="text-sm font-bold text-red-500">
-                          * Excluding GST
-                        </h3>
-                      </div>
+                  <>
+                    <div className="w-full mt-2 mb-4">
+                      <div className="mt-1 w-full bg-white rounded-[10px]  border border-white">
+                        <div className=" w-full py-2  px-3 border-b border-white commonGBackOffice CGBgray rounded-t-[10px]">
+                          <div className="flex-wrap lg:flex-nowrap flex gap-2 items-center justify-between w-full commonGBackOfficeInner ">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <i className=" w-[25px] h-[25px]  rounded-lg flex items-center justify-center bg-mustard">
+                                  <User className="w-[17px]  text-[#fff] " />
+                                </i>
+                                <h4 className="text-[16px] font-medium text-white">
+                                  Rates
+                                </h4>
+                              </div>
+                            </div>
 
-                      <Lucide
-                        icon="ChevronUp"
-                        onClick={() => setCurrentStep(2)}
-                        className={`${
-                          currentStep == 2
-                            ? ""
-                            : "rotate-180 transform stroke-2.5"
-                        } h-8 w-8 text-mustard`}
-                      />
-                    </Disclosure.Button>
-                    {currentStep == 2 && (
-                      <Disclosure.Panel
-                        static={true}
-                        className="px-2 pb-2 py-4 text-sm text-gray-500 border-t mb-4"
-                      >
-                        <div className="overflow-x-auto mb-4">
-                          <Table className="table mb-0 border">
-                            <Table.Thead
-                              variant="dark"
-                              className="thead-primary table-sorting bg-mustard"
+                            <div className="flex items-center">
+                              {" "}
+                              <h3 className="text-sm font-bold text-red-500">
+                                * Excluding GST
+                              </h3>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-2  lg:p-6">
+                          <div className="w-full">
+                            <Disclosure.Button
+                              onClick={() => setCurrentStep(2)}
+                              className="flex items-center w-full justify-between text-left text-sm font-medium "
                             >
-                              <Table.Tr className="text-center ">
-                                <Table.Th className="whitespace-nowrap border">
-                                  SR.No.
-                                </Table.Th>
-                                <Table.Th className="whitespace-nowrap border">
-                                  VENDOR
-                                </Table.Th>
-                                <Table.Th className="whitespace-nowrap border">
-                                  PRODUCT TYPE
-                                </Table.Th>
-                                <Table.Th className="whitespace-nowrap border">
-                                  COST (₹)
-                                </Table.Th>
-                                <Table.Th className="whitespace-nowrap border">
-                                  CHARGEABLE WEIGHT
-                                </Table.Th>
-                                <Table.Th className="whitespace-nowrap border">
-                                  TAT
-                                </Table.Th>
-                              </Table.Tr>
-                            </Table.Thead>
-                            <Table.Tbody>
-                              {ratesData?.map((elem, index) => (
-                                <>
-                                  <Table.Tr
-                                    key={index}
-                                    className={`text-left cursor-pointer  ${
-                                      index % 2 === 1 ? "bg-yellow-50" : ""
-                                    } hover:bg-yellow-100`}
-                                    onClick={() => setClicked(index)}
-                                  >
-                                    <Table.Td className="border text-right">
-                                      {index + 1}.
-                                    </Table.Td>
-                                    <Table.Td className="border">
-                                      {elem?.product_name}
-                                    </Table.Td>
-                                    <Table.Td className="border">
-                                      {elem?.product_code}
-                                    </Table.Td>
-                                    <Table.Td className="border text-right">
-                                      {indianFormat(
-                                        Number(elem?.grand_total_without_gst)
-                                      ) || "-"}
-                                    </Table.Td>
-                                    <Table.Td className="border text-right">
-                                      {elem?.actual_weight} Kg
-                                    </Table.Td>
-                                    <Table.Td className="border text-right">
-                                      {elem?.tat_days}
-                                    </Table.Td>
-                                  </Table.Tr>
-
-                                  {clicked === index && (
-                                    <>
-                                      <Table.Tr className="text-xs">
+                              {/* <Lucide
+                          icon="ChevronUp"
+                          onClick={() => setCurrentStep(2)}
+                          className={`${
+                            currentStep == 2
+                              ? ""
+                              : "rotate-180 transform stroke-2.5"
+                          } h-8 w-8 text-mustard`}
+                        /> */}
+                            </Disclosure.Button>
+                            {currentStep == 2 && (
+                              <Disclosure.Panel static={true} className="">
+                                <div className="overflow-x-auto mb-4">
+                                  <Table className="table mb-0 border">
+                                    <Table.Thead
+                                      variant="dark"
+                                      className="thead-primary table-sorting bg-mustard"
+                                    >
+                                      <Table.Tr className="text-center ">
                                         <Table.Th className="whitespace-nowrap border">
                                           SR.No.
                                         </Table.Th>
-                                        <Table.Th
-                                          colSpan={3}
-                                          className="whitespace-nowrap border"
-                                        >
-                                          PARTICULARS
+                                        <Table.Th className="whitespace-nowrap border">
+                                          VENDOR
                                         </Table.Th>
-                                        <Table.Th
-                                          colSpan={2}
-                                          className="whitespace-nowrap border text-right"
-                                        >
-                                          CHARGES
+                                        <Table.Th className="whitespace-nowrap border">
+                                          PRODUCT TYPE
+                                        </Table.Th>
+                                        <Table.Th className="whitespace-nowrap border">
+                                          COST (₹)
+                                        </Table.Th>
+                                        <Table.Th className="whitespace-nowrap border">
+                                          CHARGEABLE WEIGHT
+                                        </Table.Th>
+                                        <Table.Th className="whitespace-nowrap border">
+                                          TAT
                                         </Table.Th>
                                       </Table.Tr>
-                                      {elem?.selling_charges
-                                        ?.filter(
-                                          (item) => item?.charge_amount != 0
-                                        )
-                                        .map((item, index) => (
+                                    </Table.Thead>
+                                    <Table.Tbody>
+                                      {ratesData?.map((elem, index) => (
+                                        <>
                                           <Table.Tr
-                                            className="border p-1 text-xs text-left"
                                             key={index}
+                                            className={`text-left cursor-pointer  ${
+                                              index % 2 === 1
+                                                ? "bg-yellow-50"
+                                                : ""
+                                            } hover:bg-yellow-100`}
+                                            onClick={() => setClicked(index)}
                                           >
                                             <Table.Td className="border text-right">
                                               {index + 1}.
                                             </Table.Td>
-                                            <Table.Td
-                                              colSpan={3}
-                                              className="border"
-                                            >
-                                              {item?.charge_name}
+                                            <Table.Td className="border">
+                                              {elem?.product_name}
                                             </Table.Td>
-                                            <Table.Td
-                                              colSpan={2}
-                                              className="border text-right"
-                                            >
+                                            <Table.Td className="border">
+                                              {elem?.product_code}
+                                            </Table.Td>
+                                            <Table.Td className="border text-right">
                                               {indianFormat(
-                                                Number(item?.charge_amount)
+                                                Number(
+                                                  elem?.grand_total_without_gst,
+                                                ),
                                               ) || "-"}
                                             </Table.Td>
+                                            <Table.Td className="border text-right">
+                                              {elem?.actual_weight} Kg
+                                            </Table.Td>
+                                            <Table.Td className="border text-right">
+                                              {elem?.tat_days}
+                                            </Table.Td>
                                           </Table.Tr>
-                                        ))}
-                                      <Table.Tr className="border p-1 text-xs">
-                                        <Table.Td className="border font-medium"></Table.Td>
-                                        <Table.Td
-                                          colSpan={3}
-                                          className="border font-medium"
-                                        >
-                                          TOTAL
-                                        </Table.Td>
-                                        <Table.Td
-                                          colSpan={2}
-                                          className="border  font-medium text-right"
-                                        >
-                                          {indianFormat(
-                                            Number(
-                                              elem?.grand_total_without_gst
-                                            )
-                                          ) || "-"}
-                                        </Table.Td>
-                                      </Table.Tr>
-                                    </>
-                                  )}
-                                </>
-                              ))}
-                            </Table.Tbody>
-                          </Table>
+
+                                          {clicked === index && (
+                                            <>
+                                              <Table.Tr className="text-xs">
+                                                <Table.Th className="whitespace-nowrap border">
+                                                  SR.No.
+                                                </Table.Th>
+                                                <Table.Th
+                                                  colSpan={3}
+                                                  className="whitespace-nowrap border"
+                                                >
+                                                  PARTICULARS
+                                                </Table.Th>
+                                                <Table.Th
+                                                  colSpan={2}
+                                                  className="whitespace-nowrap border text-right"
+                                                >
+                                                  CHARGES
+                                                </Table.Th>
+                                              </Table.Tr>
+                                              {elem?.selling_charges
+                                                ?.filter(
+                                                  (item) =>
+                                                    item?.charge_amount != 0,
+                                                )
+                                                .map((item, index) => (
+                                                  <Table.Tr
+                                                    className="border p-1 text-xs text-left"
+                                                    key={index}
+                                                  >
+                                                    <Table.Td className="border text-right">
+                                                      {index + 1}.
+                                                    </Table.Td>
+                                                    <Table.Td
+                                                      colSpan={3}
+                                                      className="border"
+                                                    >
+                                                      {item?.charge_name}
+                                                    </Table.Td>
+                                                    <Table.Td
+                                                      colSpan={2}
+                                                      className="border text-right"
+                                                    >
+                                                      {indianFormat(
+                                                        Number(
+                                                          item?.charge_amount,
+                                                        ),
+                                                      ) || "-"}
+                                                    </Table.Td>
+                                                  </Table.Tr>
+                                                ))}
+                                              <Table.Tr className="border p-1 text-xs">
+                                                <Table.Td className="border font-medium"></Table.Td>
+                                                <Table.Td
+                                                  colSpan={3}
+                                                  className="border font-medium"
+                                                >
+                                                  TOTAL
+                                                </Table.Td>
+                                                <Table.Td
+                                                  colSpan={2}
+                                                  className="border  font-medium text-right"
+                                                >
+                                                  {indianFormat(
+                                                    Number(
+                                                      elem?.grand_total_without_gst,
+                                                    ),
+                                                  ) || "-"}
+                                                </Table.Td>
+                                              </Table.Tr>
+                                            </>
+                                          )}
+                                        </>
+                                      ))}
+                                    </Table.Tbody>
+                                  </Table>
+                                </div>
+                              </Disclosure.Panel>
+                            )}
+                          </div>
                         </div>
-                      </Disclosure.Panel>
-                    )}
-                  </div>
+                      </div>
+                    </div>
+                  </>
                 )}
               </Disclosure>
             ) : (

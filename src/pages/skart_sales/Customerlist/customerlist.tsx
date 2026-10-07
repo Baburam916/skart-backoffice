@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FormInput } from "../../../base-components/Form";
-import { Search } from "lucide-react";
+import { Contact, Search } from "lucide-react";
 import Table from "../../../components/Table";
 import CommonPagination from "../../../components/Pagination";
 import { useAlert } from "../../../ContextProvider/AlertContext";
@@ -8,6 +8,10 @@ import { useDebounce } from "../../../components/Search";
 import { commongetrequest } from "../../../AllServices/services";
 import Nodatafound from "../commoncomponents/Nodatafound/Nodatafound";
 import IsLoading from "../commoncomponents/isLoading/isLoading";
+import { User } from "lucide-react";
+
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const customerlist = () => {
   const { showAlert } = useAlert();
@@ -41,12 +45,14 @@ const customerlist = () => {
     { field: "email_id", headerName: "EMAIL", textalign: "left" },
     { field: "address", headerName: "ADDRESS", textalign: "left" },
     { field: "branch", headerName: "BRANCH", textalign: "left" },
-    { field: "field_sales", headerName: "FIELD SALES PERSON", textalign: "left" },
+    {
+      field: "field_sales",
+      headerName: "FIELD SALES PERSON",
+      textalign: "left",
+    },
   ];
 
   const row: any = customerList?.map((item: any) => {
-
-    
     return {
       ...item,
       contact_person: item?.contacts[0]?.contact_person || "N.A.",
@@ -79,7 +85,7 @@ const customerlist = () => {
     try {
       setLoading(true);
       const res = await commongetrequest(
-        `admin/franchisee-settings?offset=${page}&key=${debouncedSearch.trim()}`
+        `admin/franchisee-settings?offset=${page}&key=${debouncedSearch.trim()}`,
       );
       if (res?.status == 200) {
         setCustomerList(res?.data?.data || []);
@@ -90,7 +96,7 @@ const customerlist = () => {
       } else {
         showAlert(
           res?.data?.message || res?.response?.data?.message || res?.message,
-          "error"
+          "error",
         );
       }
     } catch (error) {
@@ -109,26 +115,25 @@ const customerlist = () => {
       } else {
         showAlert(
           res?.data?.message || res?.response?.data?.message || res?.message,
-          "error"
+          "error",
         );
       }
     } catch (error) {
       console.log(error);
     }
   };
- 
+
   const getsalesperson = async () => {
     try {
       const res = await commongetrequest(`admin/sales-person`);
       if (res?.status == 200) {
-
         setSalesPersondata(res?.data?.data || []);
       } else if (res?.status == 204) {
         setSalesPersondata([]);
       } else {
         showAlert(
           res?.data?.message || res?.response?.data?.message || res?.message,
-          "error"
+          "error",
         );
       }
     } catch (error) {
@@ -145,50 +150,75 @@ const customerlist = () => {
     getData();
   }, [debouncedSearch, page]);
 
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
+  }, []);
+
   return (
     <>
-      <div className="w-full max-w-8xl mx-auto mt-4 px-6 py-3 bg-white rounded-lg shadow-lg">
-        <div className="">
-          <div className="min-[474px]:flex flex-row justify-between border-b border-gray-300">
-            <div className="w-[40%]">
-              <h1 className="text-2xl mt-4 ml-2 font-bold  text-primary ">
-                Customer List
-              </h1>
-            </div>
-            <div className="flex w-[60%] justify-end mb-4">
+      <div className="w-full mt-2 mb-4">
+        <div
+          className="mt-1 w-full bg-white rounded-[10px]  border border-white"
+          data-aos="fade-up"
+        >
+          <div className=" w-full py-2  px-3 border-b border-white commonGBackOffice  rounded-t-[10px]">
+            <div className="flex-wrap lg:flex-nowrap flex gap-2 items-center justify-between w-full commonGBackOfficeInner">
               <div>
-                <div className="relative flex justify-between items-center mt-4">
+                <div className="flex items-center gap-2" data-aos="fade-up">
+                  <i className=" w-[25px] h-[25px]  rounded-lg flex items-center justify-center bg-mustard">
+                    <Contact className="w-[17px]  text-[#fff] " />
+                  </i>
+                  <h4 className="text-[16px] font-medium text-white">
+                    Customer List
+                  </h4>
+                </div>
+              </div>
+
+              <div
+                className="flex items-center  w-full lg:w-auto"
+                data-aos="fade-up"
+              >
+                <div className="relative w-full lg:w-[230px]">
                   <FormInput
-                    className="pr-8 pt-1 pb-1 rounded-xl"
+                    className="pr-8 pt-1 pb-1 rounded-md border-none "
                     type="text"
                     placeholder="Search"
                     onChange={(e) => setSearch(e.target.value)}
                     value={search}
                   />
-                  <Search className="absolute right-1 w-5 h-5" />
+                  <button className="absolute top-[2px] right-2.5 text-gray-400 ">
+                    <Search className="w-[16px]" />
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="mt-4">
-          {loading ? (
-            <IsLoading h="h-40" />
-          ) : customerList?.length > 0 ? (
-            <>
-              <Table heightTable="60vh" columns={columns} row={row} />
-              <CommonPagination
-                totalpages={totalpages}
-                onPageChange={handlePagechange}
-                page={page + 1}
-              />
-            </>
-          ) : (
-            <>
-              <Nodatafound />
-            </>
-          )}
+          <div className="p-2  lg:p-6">
+            <div className="w-full" data-aos="fade-up">
+              <div className="">
+                {loading ? (
+                  <IsLoading h="h-40" />
+                ) : customerList?.length > 0 ? (
+                  <>
+                    <Table heightTable="60vh" columns={columns} row={row} />
+                    <CommonPagination
+                      totalpages={totalpages}
+                      onPageChange={handlePagechange}
+                      page={page + 1}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Nodatafound />
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>

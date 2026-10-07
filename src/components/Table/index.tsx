@@ -12,16 +12,18 @@ export default function index(data: any) {
     showSno = false,
     isLoading,
     height,
-    vendorData = []
+    vendorData = [],
   } = data;
 
   return (
     <>
       <div
         style={{ maxHeight: heightTable }}
-        className={`${margin ? margin : "mt-4"} tbl-overflow-x-auto ${height ? height : ""} `}
+        className={`${margin ? margin : "mt-0"} tbl-overflow-x-auto ${height ? height : ""} `}
       >
-        {isLoading ? <IsLoading /> :
+        {isLoading ? (
+          <IsLoading />
+        ) : (
           <Table className={` min-w-full table-auto`}>
             <Table.Thead className="bg-mustard text-white sticky top-0 z-10">
               <Table.Tr className="text-center">
@@ -46,10 +48,14 @@ export default function index(data: any) {
                   key={rowIndex}
                   className="text-center"
                   style={
-                     ((item?.shipment_type_id == 4 || item?.shipment_type_id == 5) && vendorData
-                      ?.find((elem: any) => elem?.product_id == item?.courier_id)
+                    (item?.shipment_type_id == 4 ||
+                      item?.shipment_type_id == 5) &&
+                    vendorData
+                      ?.find(
+                        (elem: any) => elem?.product_id == item?.courier_id,
+                      )
                       ?.product_name?.toLowerCase()
-                      ?.includes("fedex"))
+                      ?.includes("fedex")
                       ? { backgroundColor: "#FDF6B2" }
                       : {}
                   }
@@ -62,8 +68,9 @@ export default function index(data: any) {
                   </Table.Td>
                   {columns?.map((col: any, colIndex: number) => (
                     <Table.Td
-                      className={`whitespace-nowrap p-2 ${col?.textalign ? ` text-${col.textalign}` : ""
-                        }`}
+                      className={`whitespace-nowrap p-2 ${
+                        col?.textalign ? ` text-${col.textalign}` : ""
+                      }`}
                       key={colIndex}
                     >
                       {item[col.field]}
@@ -72,8 +79,9 @@ export default function index(data: any) {
                 </Table.Tr>
               ))}
             </Table.Tbody>
-          </Table>}
-      </div >
+          </Table>
+        )}
+      </div>
     </>
   );
 }

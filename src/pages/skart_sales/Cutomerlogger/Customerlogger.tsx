@@ -6,8 +6,12 @@ import {
 import { useAlert } from "../../../ContextProvider/AlertContext";
 import Table from "../../../base-components/Table";
 
-import { Search } from "lucide-react";
-import { FormInput,FormLabel, FormSelect } from "../../../base-components/Form";
+import { Search, User } from "lucide-react";
+import {
+  FormInput,
+  FormLabel,
+  FormSelect,
+} from "../../../base-components/Form";
 import Button from "../../../base-components/Button";
 import Nodatafound from "../commoncomponents/Nodatafound/Nodatafound";
 
@@ -26,66 +30,68 @@ import { useLogin } from "../commoncomponents/LoginContextProvider/LoginContextP
 import CommonSearchableAll from "../commoncomponents/CommonSearchableall/CommonSearchableall";
 import { formatIndianNumber } from "../commoncomponents/CommonNumberConverter/CommonNumberconverter";
 
+import AOS from "aos";
+import "aos/dist/aos.css";
+import { UserCog } from "lucide-react";
 
 const intfranchiseedata = {
   franchisee_id: "",
   franchisee_name: "",
 };
-const intalldata=[{
-"id": 984662,
-"franchise_id": 992,
+const intalldata = [
+  {
+    id: 984662,
+    franchise_id: 992,
 
-"entry_type": "Airwaybill void",
+    entry_type: "Airwaybill void",
 
-"transaction_type": "Cr",
+    transaction_type: "Cr",
 
-"airwaybilno": "3538919882",
+    airwaybilno: "3538919882",
 
-"skyway_airwaybilno": "3538919882",
+    skyway_airwaybilno: "3538919882",
 
-"random_ref_no": "",
+    random_ref_no: "",
 
-"utrn": "",
+    utrn: "",
 
-"entry_amount": 15365.960000000001,
+    entry_amount: 15365.960000000001,
 
-"opening_balance": 1.88,
+    opening_balance: 1.88,
 
-"closing_balance": 15367.84,
+    closing_balance: 15367.84,
 
-"invoice_no": "",
+    invoice_no: "",
 
-"bank_ref_no": "",
+    bank_ref_no: "",
 
-"is_deleted": 0,
+    is_deleted: 0,
 
-"is_active": 1,
+    is_active: 1,
 
-"payment_type": "",
+    payment_type: "",
 
-"bank_name": "",
+    bank_name: "",
 
-"cheque_no": "",
+    cheque_no: "",
 
-"available_credit_balance": 15367.84,
+    available_credit_balance: 15367.84,
 
-"wallet_balance": 0,
+    wallet_balance: 0,
 
-"billed_under_invoice_no": "",
+    billed_under_invoice_no: "",
 
-"type": 1,
+    type: 1,
 
-"remarks": "Airwaybill void",
+    remarks: "Airwaybill void",
 
-"entry_date": "2025-01-14T09:59:26.000Z"
-
-},
-
-]
+    entry_date: "2025-01-14T09:59:26.000Z",
+  },
+];
 export default function CustomerLogger() {
   const [count, setCount] = useState<any>(0);
   const [franchiseId, setFranchiseId] = useState<any>(0);
-  const [franchises,setFranchises]=useState<any>([])
+  const [franchises, setFranchises] = useState<any>([]);
   const [fromdate, setFromDate] = useState("");
   const [todate, setTodate] = useState("");
   const [selectedfranchisedata, setSelectedfranchisedata] =
@@ -95,7 +101,7 @@ export default function CustomerLogger() {
   const [page, setPage] = useState<number>(1);
 
   const { showAlert } = useAlert();
-const {userdata}=useLogin()
+  const { userdata } = useLogin();
   const [datfordownload, setDatafordownload] = useState<any>([]);
   const [refresh, setRefresh] = useState<boolean>(false);
   const [offset, setOffset] = useState(0);
@@ -111,11 +117,11 @@ const {userdata}=useLogin()
 
   const fun1 = (a?: any) => {
     setFranchiseId(a?.franchisee_id);
-    setFranchiseName(a?.franchisee_name)
+    setFranchiseName(a?.franchisee_name);
     // setFranchiseName(a?.franchisee_name);
     setFranchiseedata([]);
     setPage(1);
-  
+
     setHit(3);
     // if(a){
     //     const singledata=franchises?.find((item:any)=>item?.franchisee_id==a?.franchisee_id)
@@ -137,61 +143,53 @@ const {userdata}=useLogin()
 
   //   },[])
   const handlePagechange = (e: number) => {
-
     setPage(Number(e));
- 
-    setHit(1);
-  
-  };
 
+    setHit(1);
+  };
 
   useEffect(() => {
     if (franchiseId && fromdate && todate) {
       fetchData(hit);
     }
-  }, [page,hit]);
-  useEffect(()=>{
-getintdata()
-  },[])
-  const getintdata=async()=>{
-    try{
-const res = await commongetrequest(`admin/franchisee-settings?sales_id=${userdata?.mapped_id}`);
-if(res?.status==200){
-  const data=res?.data?.data||[]
+  }, [page, hit]);
+  useEffect(() => {
+    getintdata();
+  }, []);
+  const getintdata = async () => {
+    try {
+      const res = await commongetrequest(
+        `admin/franchisee-settings?sales_id=${userdata?.mapped_id}`,
+      );
+      if (res?.status == 200) {
+        const data = res?.data?.data || [];
 
-    setFranchises(res?.data?.data||[])
-}else{
-    setFranchises([])
-}
-    }catch(err:any){
-        console.log(err?.message)
+        setFranchises(res?.data?.data || []);
+      } else {
+        setFranchises([]);
+      }
+    } catch (err: any) {
+      console.log(err?.message);
     }
-  }
+  };
   const fetchData = async (value: any) => {
-
-    if (
-      fromdate &&
-      todate &&
-     franchiseId &&
-      value == 1
-    ) {
-    
+    if (fromdate && todate && franchiseId && value == 1) {
       try {
         // ?limit=10&offset=1&value=123423412
         setLoading(true);
         const response = await commonpostrequest(
-          `logger/list/${franchiseId}?limit=20&offset=${((page-1)*20)}`,
+          `logger/list/${franchiseId}?limit=20&offset=${(page - 1) * 20}`,
           {
             from_date: fromdate,
             to_date: todate,
-          }
+          },
         );
         const response2 = await commonpostrequest(
           `logger/list/${franchiseId}`,
           {
             from_date: fromdate,
             to_date: todate,
-          }
+          },
         );
 
         if (response?.status == 200) {
@@ -257,10 +255,10 @@ if(res?.status==200){
       !franchiseId
         ? showAlert("Please provide franchise ", "warning")
         : !fromdate
-        ? showAlert("Please Provide from date", "warning")
-        : !todate
-        ? showAlert("Please Provide to which date", "warning")
-        : "";
+          ? showAlert("Please Provide from date", "warning")
+          : !todate
+            ? showAlert("Please Provide to which date", "warning")
+            : "";
     }
   };
   const fun2 = () => {
@@ -269,255 +267,306 @@ if(res?.status==200){
   const handleint = () => {
     setFranchiseedata([]);
     setDatafordownload([]);
-    setSelectedfranchisedata(intfranchiseedata)
+    setSelectedfranchisedata(intfranchiseedata);
     setHit(3);
     setPage(1);
     setOffset(0);
   };
 
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
+  }, []);
   return (
     <>
-      <div>
-        {/* <BackButton/> */}
-        <div>
-          <h2 className="text-2xl mt-4 ml-2 font-bold border-b-2 text-primary ">
-            CUSTOMER LOGGER
-          </h2>
-        </div>
-        <div
-          className={`${
-            franciseedata?.length >= 1
-              ? "sm:grid grid-cols-5"
-              : "sm:grid grid-cols-4"
-          }   gap-4 mt-5 mb-2 p-2 bg-white shadow-lg rounded-md`}
-        >
-          {" "}
-          <div className="col-span-1">
-            <FormLabel htmlFor="modal-form-1">
-              FRANCHISEE NAME<span className="text-red-400">*</span>
-            </FormLabel>
-            <div className="grid col-span-1">
-               <CommonSearchableAll
-                                apiEndpoint={`admin/franchisee-settings?sales_id=${userdata?.mapped_id}`}
-                                placeholder={"Search For  Franchisee"}
-                                selecteddata={selectedfranchisedata}
-                                setSelecteddata={setSelectedfranchisedata}
-                                fun1={fun1}
-                                comingselectedname={"franchisee_name"}
-                                comingselectedid={"franchisee_id"}
-                                funtoempty={fun2}
-                                questionmark={true}
-                                zIndex={20}
-                                key1={"key"}
-                                // border={error?.franchisee ? true : false}
-                              />
-              {/* <div>
+      <div className="w-full mt-2 mb-4" data-aos="fade-up">
+        <div className="mt-1 w-full bg-white rounded-[10px]  border border-white">
+          <div className=" w-full py-2  px-3 border-b border-white commonGBackOffice  rounded-t-[10px]">
+            <div className="flex-wrap lg:flex-nowrap flex gap-2 items-center justify-between w-full commonGBackOfficeInner">
+              <div>
+                <div className="flex items-center gap-2" data-aos="fade-up">
+                  <i className=" w-[25px] h-[25px]  rounded-lg flex items-center justify-center bg-mustard">
+                    <UserCog className="w-[17px]  text-[#fff] " />
+                  </i>
+                  <h4 className="text-[16px] font-medium text-white">
+                    CUSTOMER LOGGER
+                  </h4>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            className="w-full p-2 lg:p-3 border-b border-[#fffaef] bg-[#fffaef]"
+            data-aos="fade-up"
+          >
+            {/* <BackButton/> */}
+
+            <div
+              className={`grid grid-cols-12 ${
+                franciseedata?.length >= 1
+                  ? "grid grid-cols-12 lg:grid-cols-12"
+                  : "grid grid-cols-12 sm:grid-cols-12"
+              }   gap-2 `}
+            >
+              <div className="col-span-12 lg:col-span-3 w-full">
+                <FormLabel htmlFor="modal-form-1" className="text-[14px] !mb-0">
+                  FRANCHISEE NAME<span className="text-red-400">*</span>
+                </FormLabel>
+                <div className="grid col-span-1">
+                  <CommonSearchableAll
+                    apiEndpoint={`admin/franchisee-settings?sales_id=${userdata?.mapped_id}`}
+                    placeholder={"Search For  Franchisee"}
+                    selecteddata={selectedfranchisedata}
+                    setSelecteddata={setSelectedfranchisedata}
+                    fun1={fun1}
+                    comingselectedname={"franchisee_name"}
+                    comingselectedid={"franchisee_id"}
+                    funtoempty={fun2}
+                    questionmark={true}
+                    zIndex={20}
+                    key1={"key"}
+                    // border={error?.franchisee ? true : false}
+                  />
+                  {/* <div>
               <FormSelect onChange={(e)=>fun1(e.target.value)}>
                 <option value="">Select</option>
                 {franchises?.length>=1&&franchises?.map((item:any)=>
                 <option value={item?.franchisee_id}>{item?.franchisee_name}</option>)}
               </FormSelect>
               </div> */}
-            </div>
-          </div>
-        
-          <div className="w-full">
-            <FormLabel htmlFor="modal-form-5">
-              FROM DATE <span className="text-red-500">*</span>
-            </FormLabel>
-            <FormInput
-              id="modal-form-5"
-              type="date"
-              value={fromdate}
-            //   min={todate}
-              max={todate}
-              onChange={(e) => setFromDate(e.target.value)}
-            />
-          </div>
-          <div className="w-full">
-            <FormLabel htmlFor="modal-form-5">
-              TO DATE <span className="text-red-500">*</span>
-            </FormLabel>
-            <FormInput
-              id="modal-form-5"
-              type="date"
-              value={todate}
-              min={fromdate}
-            
-              onChange={(e) => setTodate(e.target.value)}
-            />
-          </div>
-          {franciseedata?.length >= 1 && (
-            <div>
-              <FormLabel>EXPORT</FormLabel>
-              <Menu className=" sm:w-auto z-[100] ">
-                <Menu.Button
-                  as={Button}
-                  variant="outline-secondary"
-                  className="w-full sm:w-auto p-2"
-                >
-                  <Lucide icon="FileText" className="w-4 h-4 mr-2" /> Export
-                  <Lucide
-                    icon="ChevronDown"
-                    className="w-4 h-4 ml-auto sm:ml-2"
-                  />
-                </Menu.Button>
-                <Menu.Items className="w-40">
-                  <Menu.Item
-                    className={"flex "}
+                </div>
+              </div>
+
+              <div className="col-span-6 lg:col-span-2">
+                <FormLabel htmlFor="modal-form-5" className="text-[14px] !mb-0">
+                  FROM DATE <span className="text-red-500">*</span>
+                </FormLabel>
+                <FormInput
+                  id="modal-form-5"
+                  type="date"
+                  value={fromdate}
+                  //   min={todate}
+                  max={todate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                />
+              </div>
+              <div className="col-span-6 lg:col-span-2">
+                <FormLabel htmlFor="modal-form-5" className="text-[14px] !mb-0">
+                  TO DATE <span className="text-red-500">*</span>
+                </FormLabel>
+                <FormInput
+                  id="modal-form-5"
+                  type="date"
+                  value={todate}
+                  min={fromdate}
+                  onChange={(e) => setTodate(e.target.value)}
+                />
+              </div>
+
+              {franciseedata?.length >= 1 && (
+                <div className="col-span-12 lg:col-span-2">
+                  <div>
+                    <FormLabel className="text-[14px] !mb-0">EXPORT</FormLabel>
+                    <Menu className=" sm:w-auto z-[100] ">
+                      <Menu.Button
+                        as={Button}
+                        variant="outline-secondary"
+                        className="w-full  p-2 bg-white "
+                      >
+                        <Lucide icon="FileText" className="w-4 h-4 mr-2" />{" "}
+                        Export
+                        <Lucide
+                          icon="ChevronDown"
+                          className="w-4 h-4 ml-auto sm:ml-2"
+                        />
+                      </Menu.Button>
+                      <Menu.Items className="w-40">
+                        <Menu.Item
+                          className={"flex "}
+                          onClick={() => {
+                            convertJSONtoXLSX(datfordownload, "Report.xlsx");
+                          }}
+                        >
+                          <Lucide icon="FileText" className="w-4 h-4 mr-2" />{" "}
+                          Export XLSX
+                        </Menu.Item>
+                        <Menu.Item
+                          className={"flex "}
+                          onClick={() =>
+                            jsontocsv(datfordownload, "CSV_download")
+                          }
+                        >
+                          <Lucide icon="FileText" className="w-4 h-4 mr-2" />{" "}
+                          Export CSV
+                        </Menu.Item>
+                        <Menu.Item
+                          className={"flex "}
+                          onClick={() =>
+                            exportToPDF(datfordownload, franchiseName)
+                          }
+                          // onClick={() => console.log(formatData(logData))}
+                        >
+                          <Lucide icon="FileText" className="w-4 h-4 mr-2" />{" "}
+                          Export PDF
+                        </Menu.Item>
+                      </Menu.Items>
+                    </Menu>
+                  </div>
+                </div>
+              )}
+              <div className="col-span-12 lg:col-span-2">
+                {loading ? (
+                  <Button variant="mustard" className="p-2  mt-1 lg:mt-5">
+                    <Search className="w-[16px] h-[16px] mr-[2px]" />{" "}
+                    SEARCHING..
+                  </Button>
+                ) : (
+                  <Button
+                    variant="mustard"
+                    className="p-2  mt-1 lg:mt-5"
                     onClick={() => {
-                      convertJSONtoXLSX(datfordownload, "Report.xlsx");
+                      handleSearch();
+                      setPage(1);
                     }}
                   >
-                    <Lucide icon="FileText" className="w-4 h-4 mr-2" /> Export
-                    XLSX
-                  </Menu.Item>
-                  <Menu.Item
-                    className={"flex "}
-                    onClick={() => jsontocsv(datfordownload, "CSV_download")}
-                  >
-                    <Lucide icon="FileText" className="w-4 h-4 mr-2" /> Export
-                    CSV
-                  </Menu.Item>
-                  <Menu.Item
-                    className={"flex "}
-                    onClick={() => exportToPDF(datfordownload, franchiseName)}
-                    // onClick={() => console.log(formatData(logData))}
-                  >
-                    <Lucide icon="FileText" className="w-4 h-4 mr-2" /> Export
-                    PDF
-                  </Menu.Item>
-                </Menu.Items>
-              </Menu>
+                    <Search className="w-[16px] h-[16px] mr-[2px]" /> SEARCH
+                  </Button>
+                )}
+              </div>
             </div>
-          )}
-          <div className="w-full">
-            {loading ? (
-              <Button variant="mustard" className="p-2  mt-5">
-                <Search /> SEARCHING..
-              </Button>
-            ) : (
-              <Button
-                variant="mustard"
-                className="p-2  mt-5"
-                onClick={()=>{handleSearch()
-                setPage(1)}}
-              >
-                <Search /> SEARCH
-              </Button>
-            )}
+          </div>
+
+          <div className="p-2  lg:p-6">
+            <div>
+              <div className="w-full overflow-auto" data-aos="fade-up">
+                {loading ? (
+                  <IsLoading />
+                ) : franciseedata?.length >= 1 ? (
+                  <Table hover sm className="w-[200%]">
+                    {/* Table headers */}
+                    <Table.Thead>
+                      <Table.Tr>
+                        <Table.Th className="text-center">#</Table.Th>
+
+                        <Table.Th className="text-left">
+                          FRANCHISE NAME
+                        </Table.Th>
+                        <Table.Th className="text-left">DATE</Table.Th>
+                        <Table.Th className="text-left">
+                          TRANSACTION TYPE
+                        </Table.Th>
+                        <Table.Th className="text-left">AWB NO.</Table.Th>
+                        <Table.Th className="text-left w-[10%]">
+                          OPENING BALANCE
+                        </Table.Th>
+                        <Table.Th className="text-left">DR</Table.Th>
+                        <Table.Th className="text-left">CR</Table.Th>
+                        <Table.Th className="text-left w-[10%]">
+                          CLOSING BALANCE
+                        </Table.Th>
+                        <Table.Th className="text-left w-[10%]">
+                          {" "}
+                          UTR No/ Chq No/NEFT
+                        </Table.Th>
+                        <Table.Th className="text-left"> REMARKS</Table.Th>
+
+                        <Table.Th className="text-left">
+                          {" "}
+                          Random Transaction No.
+                        </Table.Th>
+                        {/* <Table.Th className="text-center">ACTION</Table.Th> */}
+                      </Table.Tr>
+                    </Table.Thead>
+
+                    {/* Table body */}
+                    <Table.Tbody>
+                      {franciseedata &&
+                        franciseedata?.length >= 1 &&
+                        franciseedata.map(
+                          (data: any, index: number) =>
+                            data?.is_active == "1" && (
+                              <Table.Tr
+                                key={index}
+                                className={`text-center  intro-x`}
+                              >
+                                <Table.Td className="text-center">
+                                  {(page - 1) * 20 + index + 1}.
+                                </Table.Td>
+                                <Table.Td className="text-left">
+                                  {data?.franchiseName || "N.A"}
+                                </Table.Td>
+                                <Table.Td className="text-left sm:w-[40%]  md:w-[16%]   lg:w-[12%] xl:w-[12%]">
+                                  {formatDate(data?.entry_date)}
+                                </Table.Td>
+                                <Table.Td className="text-left">
+                                  {data?.entry_type}
+                                </Table.Td>
+                                <Table.Td className="text-left">
+                                  {data?.airwaybilno}
+                                </Table.Td>
+                                <Table.Td className="text-left">
+                                  {formatIndianNumber(
+                                    Number(data?.opening_balance || 0),
+                                  )}
+                                </Table.Td>
+                                <Table.Td className="text-left">
+                                  {data?.transaction_type?.toLowerCase() == "dr"
+                                    ? Number(data?.entry_amount)?.toFixed(3)
+                                    : "-"}
+                                </Table.Td>
+                                <Table.Td className="text-left">
+                                  {data?.transaction_type?.toLowerCase() == "cr"
+                                    ? Number(data?.entry_amount || 0)?.toFixed(
+                                        3,
+                                      )
+                                    : "-"}
+                                </Table.Td>
+                                <Table.Td className="text-left">
+                                  {Number(data?.closing_balance || 0)?.toFixed(
+                                    3,
+                                  )}
+                                </Table.Td>
+                                <Table.Td className="text-left">
+                                  {data?.utrn
+                                    ? data?.utrn
+                                    : data?.cheque_no
+                                      ? data?.cheque_no
+                                      : data?.bank_ref_no
+                                        ? data?.bank_ref_no
+                                        : "-"}
+                                </Table.Td>
+                                <Table.Td className="text-left">
+                                  {data?.remarks}
+                                </Table.Td>
+                                <Table.Td className="text-left">
+                                  {data?.random_ref_no
+                                    ? data?.random_ref_no
+                                    : "-"}
+                                </Table.Td>
+                              </Table.Tr>
+                            ),
+                        )}
+                    </Table.Tbody>
+                  </Table>
+                ) : (
+                  <Nodatafound />
+                )}
+              </div>
+              {franciseedata?.length !== 0 && (
+                <div>
+                  <CommonPagination
+                    totalpages={+count}
+                    onPageChange={handlePagechange}
+                    page={page}
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </div>
-        <div className="bg-white w-full shadow-lg rounded-md overflow-auto">
-          {loading ? (
-            <IsLoading />
-          ) : franciseedata?.length>=1?(
-            <Table hover sm className="w-[200%]">
-              {/* Table headers */}
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th className="text-center">#</Table.Th>
-
-                  <Table.Th className="text-left">FRANCHISE NAME</Table.Th>
-                  <Table.Th className="text-left">DATE</Table.Th>
-                  <Table.Th className="text-left">TRANSACTION TYPE</Table.Th>
-                  <Table.Th className="text-left">AWB NO.</Table.Th>
-                  <Table.Th className="text-left w-[10%]">
-                    OPENING BALANCE
-                  </Table.Th>
-                  <Table.Th className="text-left">DR</Table.Th>
-                  <Table.Th className="text-left">CR</Table.Th>
-                  <Table.Th className="text-left w-[10%]">
-                    CLOSING BALANCE
-                  </Table.Th>
-                  <Table.Th className="text-left w-[10%]">
-                    {" "}
-                    UTR No/ Chq No/NEFT
-                  </Table.Th>
-                  <Table.Th className="text-left"> REMARKS</Table.Th>
-
-                  <Table.Th className="text-left">
-                    {" "}
-                    Random Transaction No.
-                  </Table.Th>
-                  {/* <Table.Th className="text-center">ACTION</Table.Th> */}
-                </Table.Tr>
-              </Table.Thead>
-
-              {/* Table body */}
-              <Table.Tbody>
-                {franciseedata &&
-                  franciseedata?.length >= 1 &&
-                  franciseedata.map(
-                    (data: any, index: number) =>
-                      data?.is_active == "1" && (
-                        <Table.Tr
-                          key={index}
-                          className={`text-center  intro-x`}
-                        >
-                          <Table.Td className="text-center">
-                            {(page - 1) * 20 + index + 1}.
-                          </Table.Td>
-                          <Table.Td className="text-left">
-                            {data?.franchiseName || "N.A"}
-                          </Table.Td>
-                          <Table.Td className="text-left sm:w-[40%]  md:w-[16%]   lg:w-[12%] xl:w-[12%]">
-                            {formatDate(data?.entry_date)}
-                          </Table.Td>
-                          <Table.Td className="text-left">
-                            {data?.entry_type}
-                          </Table.Td>
-                          <Table.Td className="text-left">
-                            {data?.airwaybilno}
-                          </Table.Td>
-                          <Table.Td className="text-left">
-                            {formatIndianNumber(Number(data?.opening_balance||0))}
-                          </Table.Td>
-                          <Table.Td className="text-left">
-                            {data?.transaction_type?.toLowerCase() == "dr"
-                              ? Number(data?.entry_amount)?.toFixed(3)
-                              : "-"}
-                          </Table.Td>
-                          <Table.Td className="text-left">
-                            {data?.transaction_type?.toLowerCase() == "cr"
-                              ? Number(data?.entry_amount||0)?.toFixed(3)
-                              : "-"}
-                          </Table.Td>
-                          <Table.Td className="text-left">
-                            {Number(data?.closing_balance||0)?.toFixed(3)}
-                          </Table.Td>
-                          <Table.Td className="text-left">
-                            {data?.utrn
-                              ? data?.utrn
-                              : data?.cheque_no
-                              ? data?.cheque_no
-                              : data?.bank_ref_no
-                              ? data?.bank_ref_no
-                              : "-"}
-                          </Table.Td>
-                          <Table.Td className="text-left">
-                            {data?.remarks}
-                          </Table.Td>
-                          <Table.Td className="text-left">
-                            {data?.random_ref_no ? data?.random_ref_no : "-"}
-                          </Table.Td>
-                        </Table.Tr>
-                      )
-                  )}
-              </Table.Tbody>
-            </Table>
-          ): <Nodatafound />}
-        </div>
-        {franciseedata?.length !== 0 && (
-          <div>
-            <CommonPagination
-              totalpages={+count}
-              onPageChange={handlePagechange}
-              page={page}
-            />
-          </div>
-        )}
-   
       </div>
     </>
   );

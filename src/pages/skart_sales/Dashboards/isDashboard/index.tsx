@@ -22,6 +22,7 @@ import {
   Calendar,
   Bookmark,
   Scroll,
+  CreditCard,
 } from "lucide-react";
 
 import {
@@ -82,6 +83,10 @@ import { FileText } from "lucide-react";
 import SellBuyForm from "../../SpotEnquiry/SpotEnquiryModal/spotpriceChargeform";
 import { useServiceSocket } from "../../../../hooks/useServiceSocket";
 // import './style.css';
+
+import AOS from "aos";
+import "aos/dist/aos.css";
+import { Database } from "lucide-react";
 
 const intdata = {
   search1: "",
@@ -1638,7 +1643,27 @@ export const IsDashboard = () => {
 
   const ImportDescription = (
     <>
-      <div className="box col-span-12   px-4 py-2  intro-x font-medium cursor-pointer text-sm flex flex-row justify-between gap-4 rounded-lg bg-white h-auto">
+      <div className=" grid grid-cols-12 gap-2  w-full">
+        <div className="col-span-12 lg:col-span-3  mb-1 lg:mb-3">
+          <div className="bg-[#f2f7ff] rounded-lg p-[7px] flex w-full ">
+            <figure className="w-[35px] flex items-center justify-center">
+              <FileText className="w-[35px]  text-[#3b7dd8] " />
+            </figure>
+            <aside className="md:border-l md:border-[#d8e7ff] md:pl-2 w-[80%] leading-[18px]">
+              <p className="text-[12px] uppercase text-[#757575] w-full">
+                ENQUIRY No
+              </p>
+              <h4 className="font-medium text-[14px] text-[#383838] w-full flex justify-between items-center">
+                <span className="capitalize font-bold cursor-pointer">
+                  {importData?.booking_no}
+                </span>
+              </h4>
+            </aside>
+          </div>
+        </div>
+      </div>
+
+      <div className=" col-span-12 border border-[#ffecca]  px-4 py-2  intro-x font-medium cursor-pointer text-sm flex flex-row justify-between gap-4 rounded-lg bg-[#fffaf1] h-auto">
         <div>
           <div>
             <span className="mt-2 text-lg font-bold">ORIGIN </span>
@@ -2151,7 +2176,7 @@ export const IsDashboard = () => {
   const ImportFooter = (
     <>
       <Button
-        className="text-white bg-gray-500 p-2"
+        className="text-white bg-gray-500 p-2 border-none"
         onClick={() => {
           setOpenImport(false);
           setCounter(0);
@@ -2165,7 +2190,7 @@ export const IsDashboard = () => {
       importData?.booking_status == "10" ||
       importData?.booking_status == "19" ? (
         <Button
-          className="text-white bg-mustard p-2 ml-4"
+          className="text-white bg-mustard p-2 ml-4 border-none"
           onClick={() => {
             if (!importData?.job_id)
               return showAlert("Job Id is required", "warning");
@@ -2206,7 +2231,7 @@ export const IsDashboard = () => {
             </Button>
           ) : null} */}
           <Button
-            className="text-white bg-mustard p-2 ml-4"
+            className="text-white bg-mustard py-2 px-3 ml-4"
             onClick={() => handleBooking(importData?.job_id, 0, 0)}
             disabled={bookingLoading?.status || selfSpinner}
           >
@@ -2245,98 +2270,125 @@ export const IsDashboard = () => {
   );
 
   const EditBookingDescription = (
-    <div className="max-h-[75vh] overflow-y-auto">
-      <div className="box col-span-12   px-4 py-2  intro-x font-medium cursor-pointer text-sm flex flex-row justify-between gap-4 rounded-lg bg-white h-auto">
-        <div>
-          <div>
-            <span className="mt-2 text-lg font-bold">ORIGIN </span>
-          </div>
+    <>
+      {/* <div className="bg-gray-200 rounded p-2 ml-2">
+                    <span className="font-bold">AWB No: </span>
+                    <span>{editBookingData?.airwaybilno}</span>
+                  </div> */}
 
-          <div className="flex gap-2 ">
-            <div className="text-center p-1 border-2 h-auto  sm:h-14 w-full  sm:w-10 rounded flex flex-col items-center">
-              <img
-                src={`https://flagsapi.com/${
-                  editBookingData?.origin_country_code
-                    ? editBookingData?.origin_country_code
-                    : "IN"
-                }/flat/32.png`}
-                alt="origin-flag"
-              />
-              <span className="text-sm block sm:hidden">
-                {" "}
-                {editBookingData?.org_zip}
-              </span>
-              <span className="text-sm">
-                (
-                {editBookingData?.origin_country_code
-                  ? editBookingData?.origin_country_code
-                  : "IN"}
-                )
-              </span>
-            </div>
-            <div className=" p-1 pt-2 h-14 min-w-28 border-2 rounded hidden sm:flex flex-col  justify-center">
-              <h1 className="font-medium text-lg whitespace-nowrap overflow-hidden overflow-ellipsis">
-                {countryData?.find(
-                  (item: any) =>
-                    item?.country_code == editBookingData?.origin_country_code,
-                )?.country_name || "INDIA"}
-              </h1>
-              <p className="whitespace-nowrap overflow-hidden overflow-ellipsis">
-                ( {editBookingData?.org_zip})
+      <div className=" grid grid-cols-12 gap-2  w-full mb-3">
+        <div className="col-span-12 lg:col-span-5">
+          <div className="bg-[#eafffa] rounded-lg p-[7px] flex  w-full lg:w-[50%]">
+            <figure className="w-[35px] flex items-center justify-center">
+              <FileText className="w-[30px]  text-[#18a080]  " />
+            </figure>
+            <aside className="md:border-l md:border-[#d8e7ff] md:pl-2 w-[80%] leading-[18px]">
+              <p className="text-[12px] uppercase text-[#757575] w-full">
+                AWB No
               </p>
-            </div>
+              <h4 className="font-medium text-[14px] text-[#383838] w-full flex justify-between items-center">
+                <span className="capitalize font-bold cursor-pointer">
+                  {editBookingData?.airwaybilno}
+                </span>
+              </h4>
+            </aside>
           </div>
         </div>
+      </div>
 
-        <div className=" mt-11 flex ">
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
-            className="w-5 h-5 opacity-25 hidden lg:block"
-            alt="dot-icon"
-          />
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
-            className="w-5 h-5 opacity-50 hidden lg:block"
-            alt="dot-icon"
-          />
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
-            className="w-5 h-5 opacity-75 hidden lg:block"
-            alt="dot-icon"
-          />
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
-            className="w-5 h-5 hidden lg:block"
-            alt="dot-icon"
-          />
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/61/61212.png"
-            className="w-5 h-5"
-            alt="plane-icon"
-          />
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
-            className="w-5 h-5 hidden lg:block"
-            alt="dot-icon"
-          />
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
-            className="w-5 h-5 opacity-75 hidden lg:block"
-            alt="dot-icon"
-          />
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
-            className="w-5 h-5 opacity-50 hidden lg:block"
-            alt="dot-icon"
-          />
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
-            className="w-5 h-5 opacity-25 hidden lg:block"
-            alt="dot-icon"
-          />
-        </div>
+      <div className="max-h-[75vh] overflow-y-auto mb-3">
+        <div className=" col-span-12 border border-[#ffecca]  px-4 py-2  intro-x font-medium cursor-pointer text-sm flex flex-row justify-between gap-4 rounded-lg bg-[#fffaf1] h-auto">
+          <div>
+            <div>
+              <span className="mt-2 text-lg font-bold">ORIGIN </span>
+            </div>
 
-        {/* <div className="flex sm:hidden justify-center">
+            <div className="flex gap-2 ">
+              <div className="text-center p-1 border-2 h-auto  sm:h-14 w-full  sm:w-10 rounded flex flex-col items-center">
+                <img
+                  src={`https://flagsapi.com/${
+                    editBookingData?.origin_country_code
+                      ? editBookingData?.origin_country_code
+                      : "IN"
+                  }/flat/32.png`}
+                  alt="origin-flag"
+                />
+                <span className="text-sm block sm:hidden">
+                  {" "}
+                  {editBookingData?.org_zip}
+                </span>
+                <span className="text-sm">
+                  (
+                  {editBookingData?.origin_country_code
+                    ? editBookingData?.origin_country_code
+                    : "IN"}
+                  )
+                </span>
+              </div>
+              <div className=" p-1 pt-2 h-14 min-w-28 border-2 rounded hidden sm:flex flex-col  justify-center">
+                <h1 className="font-medium text-lg whitespace-nowrap overflow-hidden overflow-ellipsis">
+                  {countryData?.find(
+                    (item: any) =>
+                      item?.country_code ==
+                      editBookingData?.origin_country_code,
+                  )?.country_name || "INDIA"}
+                </h1>
+                <p className="whitespace-nowrap overflow-hidden overflow-ellipsis">
+                  ( {editBookingData?.org_zip})
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className=" mt-11 flex ">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
+              className="w-5 h-5 opacity-25 hidden lg:block"
+              alt="dot-icon"
+            />
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
+              className="w-5 h-5 opacity-50 hidden lg:block"
+              alt="dot-icon"
+            />
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
+              className="w-5 h-5 opacity-75 hidden lg:block"
+              alt="dot-icon"
+            />
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
+              className="w-5 h-5 hidden lg:block"
+              alt="dot-icon"
+            />
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/61/61212.png"
+              className="w-5 h-5"
+              alt="plane-icon"
+            />
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
+              className="w-5 h-5 hidden lg:block"
+              alt="dot-icon"
+            />
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
+              className="w-5 h-5 opacity-75 hidden lg:block"
+              alt="dot-icon"
+            />
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
+              className="w-5 h-5 opacity-50 hidden lg:block"
+              alt="dot-icon"
+            />
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/7500/7500224.png"
+              className="w-5 h-5 opacity-25 hidden lg:block"
+              alt="dot-icon"
+            />
+          </div>
+
+          {/* <div className="flex sm:hidden justify-center">
                 <img
                   src="https://cdn-icons-png.flaticon.com/512/61/61212.png"
                   className="w-6 h-6 md:hidden block"
@@ -2344,299 +2396,299 @@ export const IsDashboard = () => {
                 />
               </div> */}
 
-        <div>
           <div>
-            <span className="mt-2 text-lg font-bold">DESTINATION</span>
-          </div>
-
-          <div className="flex gap-2 ">
-            <div className="text-center p-1 border-2 h-auto mx-6 sm:mx-0 sm:h-14 w-full  sm:w-10 rounded flex flex-col items-center">
-              <img
-                src={`https://flagsapi.com/IN/flat/32.png`}
-                alt="destination-flag"
-              />
-              <span className="text-sm block sm:hidden">
-                {editBookingData?.dest_zip == "0000"
-                  ? editBookingData?.dest_city
-                  : editBookingData?.dest_zip || "0000"}
-              </span>
-              <span className="text-sm">(IN)</span>
+            <div>
+              <span className="mt-2 text-lg font-bold">DESTINATION</span>
             </div>
-            <div className=" p-1 pt-2 min-w-28 h-14 border-2 rounded hidden sm:flex flex-col  justify-center text-wrap">
-              <h1 className="font-medium text-lg whitespace-nowrap overflow-hidden overflow-ellipsis">
-                INDIA
-              </h1>
-              <p className="whitespace-nowrap overflow-hidden overflow-ellipsis">
-                (
-                {editBookingData?.dest_zip == "0000"
-                  ? editBookingData?.dest_city
-                  : editBookingData?.dest_zip || "0000"}
-                )
-              </p>
+
+            <div className="flex gap-2 ">
+              <div className="text-center p-1 border-2 h-auto mx-6 sm:mx-0 sm:h-14 w-full  sm:w-10 rounded flex flex-col items-center">
+                <img
+                  src={`https://flagsapi.com/IN/flat/32.png`}
+                  alt="destination-flag"
+                />
+                <span className="text-sm block sm:hidden">
+                  {editBookingData?.dest_zip == "0000"
+                    ? editBookingData?.dest_city
+                    : editBookingData?.dest_zip || "0000"}
+                </span>
+                <span className="text-sm">(IN)</span>
+              </div>
+              <div className=" p-1 pt-2 min-w-28 h-14 border-2 rounded hidden sm:flex flex-col  justify-center text-wrap">
+                <h1 className="font-medium text-lg whitespace-nowrap overflow-hidden overflow-ellipsis">
+                  INDIA
+                </h1>
+                <p className="whitespace-nowrap overflow-hidden overflow-ellipsis">
+                  (
+                  {editBookingData?.dest_zip == "0000"
+                    ? editBookingData?.dest_city
+                    : editBookingData?.dest_zip || "0000"}
+                  )
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="box col-span-12">
-        <div className="space-y-4 px-2 py-1">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ">
-            <div className=" col-span-3 md:col-span-3 lg:col-span-1">
-              <div>
-                <FormLabel className="text-base text-slate-500">
-                  FRANCHISEE <span className="text-red-400">*</span>
-                </FormLabel>
-              </div>
-              <FormInput
-                value={
-                  getparticulardata(
-                    "franchisee",
-                    editBookingData?.franchisee_id,
-                    allfdata,
-                  )?.franchisee_name || ""
-                }
-                disabled
-              />
-            </div>
-            <div className=" col-span-3 md:col-span-3 lg:col-span-1">
-              <FormLabel
-                htmlFor="origin-country"
-                className="text-base text-slate-500"
-              >
-                SHIPMENT TYPE <span className="text-red-400">*</span>
-              </FormLabel>
-              <FormSelect
-                id="default"
-                value={editBookingData?.shipment_type}
-                disabled
-              >
-                {getShipment?.map(
-                  (type) =>
-                    type?.booking_shipment_type_id !== 2 &&
-                    type?.is_active == 1 && (
-                      <option
-                        key={type?.booking_shipment_type_id}
-                        value={type?.booking_shipment_type_id}
-                      >
-                        {type?.shipment_type}
-                      </option>
-                    ),
-                )}
-              </FormSelect>
-            </div>
-            <div className=" col-span-3 md:col-span-3 lg:col-span-1">
-              {" "}
-              <FormLabel
-                htmlFor="origin-city"
-                className="text-base text-slate-500"
-              >
-                QUOTED BY <span className="text-red-400">*</span>
-              </FormLabel>
-              <div className="flex items-center gap-2 w-[100%]">
+        <div className="box col-span-12">
+          <div className="space-y-4 px-2 py-1">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ">
+              <div className=" col-span-3 md:col-span-3 lg:col-span-1">
+                <div>
+                  <FormLabel className="text-base text-slate-500">
+                    FRANCHISEE <span className="text-red-400">*</span>
+                  </FormLabel>
+                </div>
                 <FormInput
-                  className="w-[100%]"
-                  id="origin-city"
-                  value={editBookingData?.quoted_by}
+                  value={
+                    getparticulardata(
+                      "franchisee",
+                      editBookingData?.franchisee_id,
+                      allfdata,
+                    )?.franchisee_name || ""
+                  }
                   disabled
                 />
               </div>
-            </div>
-            <div className=" col-span-3 md:col-span-3 lg:col-span-1">
-              {" "}
-              <FormLabel
-                htmlFor="origin-city"
-                className="text-base text-slate-500"
-              >
-                COMMODITY <span className="text-red-400">*</span>
-              </FormLabel>
-              <CommonSearchableAll
-                apiEndpoint={`admin/commodity-type`}
-                placeholder={"Search Commodity Type"}
-                selecteddata={selectedEditCommoditydata}
-                setSelecteddata={setSelectedEditCommoditydata}
-                fun1={() => {}}
-                comingselectedname={"commodity"}
-                comingselectedid={"commodity_id"}
-                funtoempty={() => {}}
-                key1={"key"}
-                id={editBookingData?.commodity}
-                zIndex={20}
-                // isDisabled
-              />
-            </div>
-
-            <div>
-              {" "}
-              <FormLabel
-                htmlFor="origin-city"
-                className="text-base text-slate-500"
-              >
-                SHIPMENT CURRENCY
-                {/* Shipment Currency */}
-              </FormLabel>
-              <FormSelect
-                // disabled
-                value={editBookingData?.currency_id || "24"}
-              >
-                <option value="">Select</option>
-                {currencydata?.length >= 1
-                  ? currencydata?.map((item: any) => (
-                      <option value={item?.id}>{item?.currency}</option>
-                    ))
-                  : ""}
-              </FormSelect>
-            </div>
-            <div className=" col-span-3 md:col-span-3 lg:col-span-1">
-              <FormLabel
-                htmlFor="incoterm"
-                className="text-base text-slate-500"
-              >
-                INCOTERM <span className="text-red-400">*</span>
-              </FormLabel>
-
-              <FormSelect
-                id="incoterm"
-                className={`sm:mr-2`}
-                value={editBookingData?.incoterm}
-                onChange={(e) =>
-                  setEditBookingData((prev) => ({
-                    ...prev,
-                    incoterm: e.target.value,
-                  }))
-                }
-              >
-                <option value="">Select Incoterm</option>
-                {incotermType &&
-                  incotermType?.map((ele, index) => (
-                    <option key={ele?.id} value={ele?.id}>
-                      {ele?.name}
-                    </option>
-                  ))}
-              </FormSelect>
-            </div>
-            {(editBookingData?.shipment_type == 4 ||
-              editBookingData?.shipment_type == 5) && (
-              <>
-                <div className="col-span-3 md:col-span-3 lg:col-span-1">
-                  <FormLabel
-                    htmlFor="clearence-type"
-                    className="text-base text-slate-500"
-                  >
-                    CLEARANCE TYPE <span className="text-red-400">*</span>
-                  </FormLabel>
-
-                  <FormSelect
-                    className={`sm:mr-2`}
-                    value={editBookingData?.clearence_type}
-                    onChange={(e) =>
-                      setEditBookingData((prev) => ({
-                        ...prev,
-                        clearence_type: e.target.value,
-                      }))
-                    }
-                  >
-                    <option value="">Select Clearance Type</option>
-                    {clearanceType &&
-                      clearanceType?.map((ele, index) => (
-                        <option key={index} value={ele?.id}>
-                          {ele?.name}
+              <div className=" col-span-3 md:col-span-3 lg:col-span-1">
+                <FormLabel
+                  htmlFor="origin-country"
+                  className="text-base text-slate-500"
+                >
+                  SHIPMENT TYPE <span className="text-red-400">*</span>
+                </FormLabel>
+                <FormSelect
+                  id="default"
+                  value={editBookingData?.shipment_type}
+                  disabled
+                >
+                  {getShipment?.map(
+                    (type) =>
+                      type?.booking_shipment_type_id !== 2 &&
+                      type?.is_active == 1 && (
+                        <option
+                          key={type?.booking_shipment_type_id}
+                          value={type?.booking_shipment_type_id}
+                        >
+                          {type?.shipment_type}
                         </option>
-                      ))}
-                  </FormSelect>
+                      ),
+                  )}
+                </FormSelect>
+              </div>
+              <div className=" col-span-3 md:col-span-3 lg:col-span-1">
+                {" "}
+                <FormLabel
+                  htmlFor="origin-city"
+                  className="text-base text-slate-500"
+                >
+                  QUOTED BY <span className="text-red-400">*</span>
+                </FormLabel>
+                <div className="flex items-center gap-2 w-[100%]">
+                  <FormInput
+                    className="w-[100%]"
+                    id="origin-city"
+                    value={editBookingData?.quoted_by}
+                    disabled
+                  />
                 </div>
+              </div>
+              <div className=" col-span-3 md:col-span-3 lg:col-span-1">
+                {" "}
+                <FormLabel
+                  htmlFor="origin-city"
+                  className="text-base text-slate-500"
+                >
+                  COMMODITY <span className="text-red-400">*</span>
+                </FormLabel>
+                <CommonSearchableAll
+                  apiEndpoint={`admin/commodity-type`}
+                  placeholder={"Search Commodity Type"}
+                  selecteddata={selectedEditCommoditydata}
+                  setSelecteddata={setSelectedEditCommoditydata}
+                  fun1={() => {}}
+                  comingselectedname={"commodity"}
+                  comingselectedid={"commodity_id"}
+                  funtoempty={() => {}}
+                  key1={"key"}
+                  id={editBookingData?.commodity}
+                  zIndex={20}
+                  // isDisabled
+                />
+              </div>
 
-                <div className="col-span-3 md:col-span-3 lg:col-span-1">
-                  {" "}
-                  <FormLabel className="text-base text-slate-500">
-                    VENDOR NAME <span className="text-red-400">*</span>
-                    {/* Shipment Currency */}
-                  </FormLabel>
-                  <FormSelect disabled value={editBookingData?.courier_id}>
-                    {/* <option value="">Select</option> */}
-                    {products?.length >= 1
-                      ? products?.map((item: any) => (
-                          <option value={item?.product_id}>
-                            {item?.product_name}
-                          </option>
-                        ))
-                      : ""}
-                  </FormSelect>
-                </div>
+              <div>
+                {" "}
+                <FormLabel
+                  htmlFor="origin-city"
+                  className="text-base text-slate-500"
+                >
+                  SHIPMENT CURRENCY
+                  {/* Shipment Currency */}
+                </FormLabel>
+                <FormSelect
+                  // disabled
+                  value={editBookingData?.currency_id || "24"}
+                >
+                  <option value="">Select</option>
+                  {currencydata?.length >= 1
+                    ? currencydata?.map((item: any) => (
+                        <option value={item?.id}>{item?.currency}</option>
+                      ))
+                    : ""}
+                </FormSelect>
+              </div>
+              <div className=" col-span-3 md:col-span-3 lg:col-span-1">
+                <FormLabel
+                  htmlFor="incoterm"
+                  className="text-base text-slate-500"
+                >
+                  INCOTERM <span className="text-red-400">*</span>
+                </FormLabel>
 
-                {editBookingData?.import_booking == 2 ? (
+                <FormSelect
+                  id="incoterm"
+                  className={`sm:mr-2`}
+                  value={editBookingData?.incoterm}
+                  onChange={(e) =>
+                    setEditBookingData((prev) => ({
+                      ...prev,
+                      incoterm: e.target.value,
+                    }))
+                  }
+                >
+                  <option value="">Select Incoterm</option>
+                  {incotermType &&
+                    incotermType?.map((ele, index) => (
+                      <option key={ele?.id} value={ele?.id}>
+                        {ele?.name}
+                      </option>
+                    ))}
+                </FormSelect>
+              </div>
+              {(editBookingData?.shipment_type == 4 ||
+                editBookingData?.shipment_type == 5) && (
+                <>
                   <div className="col-span-3 md:col-span-3 lg:col-span-1">
-                    {" "}
-                    <FormLabel className="text-base text-slate-500">
-                      IMPORT SERVICE TYPE{" "}
-                      <span className="text-red-400">*</span>
+                    <FormLabel
+                      htmlFor="clearence-type"
+                      className="text-base text-slate-500"
+                    >
+                      CLEARANCE TYPE <span className="text-red-400">*</span>
                     </FormLabel>
+
                     <FormSelect
-                      value={editBookingData?.import_service_type}
+                      className={`sm:mr-2`}
+                      value={editBookingData?.clearence_type}
                       onChange={(e) =>
                         setEditBookingData((prev) => ({
                           ...prev,
-                          import_service_type: e.target.value,
+                          clearence_type: e.target.value,
                         }))
                       }
                     >
-                      {/* <option value="">Select</option> */}
-                      <option value="">Select</option>
-                      <option value={1}>Economy</option>
-                      <option value={2}>Express (IP)</option>
+                      <option value="">Select Clearance Type</option>
+                      {clearanceType &&
+                        clearanceType?.map((ele, index) => (
+                          <option key={index} value={ele?.id}>
+                            {ele?.name}
+                          </option>
+                        ))}
                     </FormSelect>
                   </div>
-                ) : null}
 
-                <div className="col-span-3 md:col-span-3 lg:col-span-1">
-                  <FormLabel className="text-base text-slate-500">
-                    CURRENCY <span className="text-red-400">*</span>
-                  </FormLabel>
-                  <FormSelect
-                    value={editBookingData?.currency_id || ""}
-                    onChange={(e) =>
-                      setEditBookingData((prev) => ({
-                        ...prev,
-                        currency_id: e.target.value,
-                      }))
-                    }
-                  >
-                    {currencydata?.length >= 1
-                      ? currencydata?.map((item: any) => (
-                          <option key={item?.id} value={item?.id}>
-                            {item?.currency}
-                          </option>
-                        ))
-                      : ""}
-                  </FormSelect>
-                </div>
-              </>
-            )}
+                  <div className="col-span-3 md:col-span-3 lg:col-span-1">
+                    {" "}
+                    <FormLabel className="text-base text-slate-500">
+                      VENDOR NAME <span className="text-red-400">*</span>
+                      {/* Shipment Currency */}
+                    </FormLabel>
+                    <FormSelect disabled value={editBookingData?.courier_id}>
+                      {/* <option value="">Select</option> */}
+                      {products?.length >= 1
+                        ? products?.map((item: any) => (
+                            <option value={item?.product_id}>
+                              {item?.product_name}
+                            </option>
+                          ))
+                        : ""}
+                    </FormSelect>
+                  </div>
+
+                  {editBookingData?.import_booking == 2 ? (
+                    <div className="col-span-3 md:col-span-3 lg:col-span-1">
+                      {" "}
+                      <FormLabel className="text-base text-slate-500">
+                        IMPORT SERVICE TYPE{" "}
+                        <span className="text-red-400">*</span>
+                      </FormLabel>
+                      <FormSelect
+                        value={editBookingData?.import_service_type}
+                        onChange={(e) =>
+                          setEditBookingData((prev) => ({
+                            ...prev,
+                            import_service_type: e.target.value,
+                          }))
+                        }
+                      >
+                        {/* <option value="">Select</option> */}
+                        <option value="">Select</option>
+                        <option value={1}>Economy</option>
+                        <option value={2}>Express (IP)</option>
+                      </FormSelect>
+                    </div>
+                  ) : null}
+
+                  <div className="col-span-3 md:col-span-3 lg:col-span-1">
+                    <FormLabel className="text-base text-slate-500">
+                      CURRENCY <span className="text-red-400">*</span>
+                    </FormLabel>
+                    <FormSelect
+                      value={editBookingData?.currency_id || ""}
+                      onChange={(e) =>
+                        setEditBookingData((prev) => ({
+                          ...prev,
+                          currency_id: e.target.value,
+                        }))
+                      }
+                    >
+                      {currencydata?.length >= 1
+                        ? currencydata?.map((item: any) => (
+                            <option key={item?.id} value={item?.id}>
+                              {item?.currency}
+                            </option>
+                          ))
+                        : ""}
+                    </FormSelect>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="mb-4 col-span-12 overflow-x-auto">
-        <FormLabel
-          htmlFor="regular-form-1"
-          className="text-base font-medium text-gray-900"
-        >
-          {" "}
-          Shipment Dimension
-        </FormLabel>
+        <div className="mb-4 col-span-12 overflow-x-auto">
+          <FormLabel
+            htmlFor="regular-form-1"
+            className="text-base font-medium text-gray-900"
+          >
+            {" "}
+            Shipment Dimension
+          </FormLabel>
 
-        <ShipmentDimensions
-          dimensionData={dimensionData}
-          setDimensionData={setDimensionData}
-          setJobData={setJobData}
-          jobdata={jobData}
-          checkdisable={false}
-          currencyData={currencydata}
-          currencyId={editBookingData?.currency_id}
-          weightUnit={editBookingData?.weight_unit}
-        />
-      </div>
+          <ShipmentDimensions
+            dimensionData={dimensionData}
+            setDimensionData={setDimensionData}
+            setJobData={setJobData}
+            jobdata={jobData}
+            checkdisable={false}
+            currencyData={currencydata}
+            currencyId={editBookingData?.currency_id}
+            weightUnit={editBookingData?.weight_unit}
+          />
+        </div>
 
-      {/* {editBookingData?.booking_status != "1" &&
+        {/* {editBookingData?.booking_status != "1" &&
       editBookingData?.booking_status != "8" &&
       editBookingData?.booking_status != "9" &&
       editBookingData?.booking_status != "19" && (
@@ -2685,103 +2737,107 @@ export const IsDashboard = () => {
         </div>
       )} */}
 
-      <div className="grid grid-cols-2 col-span-12 p-2">
-        <div className="flex gap-4 items-center">
-          {" "}
-          <h1 className="font-bold text-sm md:text-lg whitespace-nowrap">
-            Sender Details
-          </h1>
-          <Tippy content="Add Sender Details" options={{ placement: "right" }}>
-            <PlusCircle
-              className="w-6 h-6 cursor-pointer text-mustard"
-              onClick={() => {
-                setSenderOpen(true);
-              }}
-            />
-          </Tippy>
-          {senderOpen && (
-            <SenderDetails
-              open={senderOpen}
-              onClose={() => {
-                setSenderOpen(false);
-              }}
-              isEdit={true}
-              booking={jobData}
-              setJobData={setJobData}
-              enquiryData={{
-                ...editBookingData,
-                courier_name:
-                  products?.find(
-                    (item: any) =>
-                      item?.product_id == editBookingData?.courier_id,
-                  )?.product_name || "N.A.",
-              }}
-              countryData={countryData || []}
-            />
-          )}
-        </div>
-        <div className="flex gap-4 items-center">
-          <h1 className="font-bold text-sm md:text-lg whitespace-nowrap">
-            Receiver Details
-          </h1>
-          <Tippy
-            content="Add Receiver Details"
-            options={{ placement: "right" }}
-          >
-            <PlusCircle
-              className="w-6 h-6 cursor-pointer text-mustard"
-              onClick={() => {
-                setReceiverOpen(true);
-              }}
-            />
-          </Tippy>
-          {receiverOpen && (
-            <ReceiverDetails
-              open={receiverOpen}
-              onClose={() => {
-                setReceiverOpen(false);
-              }}
-              isEdit={true}
-              countryData={countryData || []}
-              booking={jobData}
-              setJobData={setJobData}
-              dimensionData={dimensionData || []}
-              enquiryData={editBookingData}
-            />
-          )}
-        </div>
-        <div>
-          <p className="font-semibold ">
-            {jobData?.shipper_details?.consigner_first_name}
-          </p>
-          <p className="font-semibold ">
-            {jobData?.shipper_details?.consigner_address_1}
-          </p>
-          <p className="font-semibold ">
-            {jobData?.shipper_details?.consigner_city}
-          </p>
-          <p className="font-semibold ">
+        <div className="grid grid-cols-2 col-span-12 p-2">
+          <div className="flex gap-4 items-center">
             {" "}
-            {jobData?.shipper_details?.consigner_pincode}
-          </p>
-        </div>
-        <div>
-          <p className="font-semibold ">
-            {jobData?.consignee_details?.consignee_first_name}
-          </p>
-          <p className="font-semibold ">
-            {jobData?.consignee_details?.consignee_address_1}
-          </p>
-          <p className="font-semibold ">
-            {jobData?.consignee_details?.consignee_city}
-          </p>
-          <p className="font-semibold ">
-            {" "}
-            {jobData?.consignee_details?.consignee_pincode}
-          </p>
+            <h1 className="font-bold text-sm md:text-lg whitespace-nowrap">
+              Sender Details
+            </h1>
+            <Tippy
+              content="Add Sender Details"
+              options={{ placement: "right" }}
+            >
+              <PlusCircle
+                className="w-6 h-6 cursor-pointer text-mustard"
+                onClick={() => {
+                  setSenderOpen(true);
+                }}
+              />
+            </Tippy>
+            {senderOpen && (
+              <SenderDetails
+                open={senderOpen}
+                onClose={() => {
+                  setSenderOpen(false);
+                }}
+                isEdit={true}
+                booking={jobData}
+                setJobData={setJobData}
+                enquiryData={{
+                  ...editBookingData,
+                  courier_name:
+                    products?.find(
+                      (item: any) =>
+                        item?.product_id == editBookingData?.courier_id,
+                    )?.product_name || "N.A.",
+                }}
+                countryData={countryData || []}
+              />
+            )}
+          </div>
+          <div className="flex gap-4 items-center">
+            <h1 className="font-bold text-sm md:text-lg whitespace-nowrap">
+              Receiver Details
+            </h1>
+            <Tippy
+              content="Add Receiver Details"
+              options={{ placement: "right" }}
+            >
+              <PlusCircle
+                className="w-6 h-6 cursor-pointer text-mustard"
+                onClick={() => {
+                  setReceiverOpen(true);
+                }}
+              />
+            </Tippy>
+            {receiverOpen && (
+              <ReceiverDetails
+                open={receiverOpen}
+                onClose={() => {
+                  setReceiverOpen(false);
+                }}
+                isEdit={true}
+                countryData={countryData || []}
+                booking={jobData}
+                setJobData={setJobData}
+                dimensionData={dimensionData || []}
+                enquiryData={editBookingData}
+              />
+            )}
+          </div>
+          <div>
+            <p className="font-semibold ">
+              {jobData?.shipper_details?.consigner_first_name}
+            </p>
+            <p className="font-semibold ">
+              {jobData?.shipper_details?.consigner_address_1}
+            </p>
+            <p className="font-semibold ">
+              {jobData?.shipper_details?.consigner_city}
+            </p>
+            <p className="font-semibold ">
+              {" "}
+              {jobData?.shipper_details?.consigner_pincode}
+            </p>
+          </div>
+          <div>
+            <p className="font-semibold ">
+              {jobData?.consignee_details?.consignee_first_name}
+            </p>
+            <p className="font-semibold ">
+              {jobData?.consignee_details?.consignee_address_1}
+            </p>
+            <p className="font-semibold ">
+              {jobData?.consignee_details?.consignee_city}
+            </p>
+            <p className="font-semibold ">
+              {" "}
+              {jobData?.consignee_details?.consignee_pincode}
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
   const EditBookingFooter = (
     <>
@@ -2827,9 +2883,9 @@ export const IsDashboard = () => {
   const proformaTitle = (
     <>
       <div className="flex justify-between w-full items-center">
-        <p className="text-base font-medium">Confirmation</p>
+        <p className="text-base font-medium text-white">Confirmation</p>
         <XCircle
-          className="w-5 h-5 cursor-pointer hover:text-red-500"
+          className="stroke-1.5 w-5 h-5 cursor-pointer text-red-500  hover:text-red-700 "
           onClick={() => setProformaOpen(false)}
         />
       </div>
@@ -2838,6 +2894,48 @@ export const IsDashboard = () => {
 
   const proformaDescription = (
     <>
+      <div className=" grid grid-cols-12 gap-2  w-full">
+        <div className="col-span-12 lg:col-span-5  mb-1 lg:mb-3">
+          <div className="bg-[#f2f7ff] rounded-lg p-[7px] flex w-full ">
+            <figure className="w-[35px] flex items-center justify-center">
+              <FileText className="w-[35px]  text-[#3b7dd8] " />
+            </figure>
+            <aside className="md:border-l md:border-[#d8e7ff] md:pl-2 w-[80%] leading-[18px]">
+              <p className="text-[12px] uppercase text-[#757575] w-full">
+                ENQUIRY No
+              </p>
+              <h4 className="font-medium text-[14px] text-[#383838] w-full flex justify-between items-center">
+                <span className="capitalize font-bold cursor-pointer">
+                  {proformaData?.booking_no}
+                </span>
+              </h4>
+            </aside>
+          </div>
+        </div>
+
+        <div className="col-span-12 lg:col-span-7  mb-1 lg:mb-3">
+          <div className="bg-[#eafffa] rounded-lg p-[7px] flex  w-full">
+            <figure className="w-[35px] flex items-center justify-center">
+              <User className="w-[30px]  text-[#18a080]  " />
+            </figure>
+            <aside className="md:border-l md:border-[#d8e7ff] md:pl-2 w-[80%] leading-[18px]">
+              <p className="text-[12px] uppercase text-[#757575] w-full">
+                FRANCHISEE
+              </p>
+              <h4 className="font-medium text-[14px] text-[#383838] w-full flex justify-between items-center">
+                <span className="capitalize font-bold cursor-pointer">
+                  {allfdata?.find(
+                    (item: any) =>
+                      item?.franchisee_id == proformaData?.franchisee_id,
+                  )?.franchisee_name || proformaData?.franchisee_id}
+                </span>
+              </h4>
+            </aside>
+          </div>
+        </div>
+      </div>
+
+      {/* 
       <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-4 mb-4">
         <div className="bg-gray-200 rounded p-2 overflow-hidden truncate w-full min-w-0 sm:max-w-1/2">
           <b>ENQUIRY No: </b>
@@ -2849,8 +2947,8 @@ export const IsDashboard = () => {
             (item: any) => item?.franchisee_id == proformaData?.franchisee_id,
           )?.franchisee_name || proformaData?.franchisee_id}
         </div>
-      </div>
-      <p className="text-center text-sm">
+      </div> */}
+      <p className="text-center text-lg font-semibold text-gray-700 mt-5">
         Are you sure you want to Generate Proforma Invoice ?
       </p>
     </>
@@ -2859,7 +2957,7 @@ export const IsDashboard = () => {
   const proformaFooter = (
     <>
       <Button
-        className="text-white bg-green-500 p-2"
+        className="text-white bg-green-500 p-2 border-none"
         onClick={handleProformaInvoice}
         disabled={proformaLoading}
       >
@@ -2868,7 +2966,7 @@ export const IsDashboard = () => {
           <LoadingIcon
             icon="puff"
             color="white"
-            className="w-5 h-5 ml-2 stroke-2.5 text-white"
+            className="w-5 h-5 ml-2 stroke-2.5 text-white  border-none"
           />
         )}
       </Button>
@@ -3234,7 +3332,50 @@ export const IsDashboard = () => {
   );
   const tagDescription = (
     <>
-      <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-4 mb-2">
+      <div className=" grid grid-cols-12 gap-2  w-full">
+        <div className="col-span-12 lg:col-span-5  mb-1 lg:mb-3">
+          <div className="bg-[#f2f7ff] rounded-lg p-[7px] flex w-full ">
+            <figure className="w-[35px] flex items-center justify-center">
+              <FileText className="w-[35px]  text-[#3b7dd8] " />
+            </figure>
+            <aside className="md:border-l md:border-[#d8e7ff] md:pl-2 w-[80%] leading-[18px]">
+              <p className="text-[12px] uppercase text-[#757575] w-full">
+                ENQUIRY No
+              </p>
+              <h4 className="font-medium text-[14px] text-[#383838] w-full flex justify-between items-center">
+                <span className="capitalize font-bold cursor-pointer">
+                  {" "}
+                  {tagData?.booking_no}
+                </span>
+              </h4>
+            </aside>
+          </div>
+        </div>
+
+        <div className="col-span-12 lg:col-span-7  mb-1 lg:mb-3">
+          <div className="bg-[#eafffa] rounded-lg p-[7px] flex  w-full">
+            <figure className="w-[35px] flex items-center justify-center">
+              <User className="w-[30px]  text-[#18a080]  " />
+            </figure>
+            <aside className="md:border-l md:border-[#d8e7ff] md:pl-2 w-[80%] leading-[18px]">
+              <p className="text-[12px] uppercase text-[#757575] w-full">
+                FRANCHISEE
+              </p>
+              <h4 className="font-medium text-[14px] text-[#383838] w-full flex justify-between items-center">
+                <span className="capitalize font-bold cursor-pointer">
+                  {
+                    allfdata?.find(
+                      (item: any) =>
+                        item?.franchisee_id == tagData?.franchisee_id,
+                    )?.franchisee_name
+                  }
+                </span>
+              </h4>
+            </aside>
+          </div>
+        </div>
+      </div>
+      {/* <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-4 mb-2">
         <div className="bg-gray-200 rounded p-2 overflow-hidden truncate w-full min-w-0 sm:max-w-1/2">
           <b>ENQUIRY No: </b>
           {tagData?.booking_no}
@@ -3247,7 +3388,7 @@ export const IsDashboard = () => {
             )?.franchisee_name
           }
         </div>
-      </div>
+      </div> */}
       <div className=" flex gap-4 flex-col">
         <div>
           <FormLabel htmlFor="regular-form-1">
@@ -3287,7 +3428,7 @@ export const IsDashboard = () => {
   const tagFooter = (
     <div className="flex justify-end ">
       <Button
-        className="px-4 py-1 rounded-lg bg-mustard text-white  ml-2"
+        className="px-4 py-1 rounded-lg bg-mustard text-white  ml-2 border-none"
         onClick={handleTagHouseMaster}
         disabled={tagSpinner}
       >
@@ -3425,12 +3566,92 @@ export const IsDashboard = () => {
     }
   };
 
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
+
+    // The layout scrolls inside an inner container (not window), so AOS never
+    // sees scroll events and lower boxes stay hidden. Trigger them ourselves.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("aos-animate");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.05 },
+    );
+    document
+      .querySelectorAll("[data-aos]")
+      .forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const items = document.querySelectorAll<HTMLElement>(
+      ".job-reveal:not(.job-reveal-visible)",
+    );
+    if (!items.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries
+          .filter((entry) => entry.isIntersecting)
+          .sort(
+            (a, b) =>
+              Number((a.target as HTMLElement).dataset.revealIndex) -
+              Number((b.target as HTMLElement).dataset.revealIndex),
+          )
+          .forEach((entry, i) => {
+            const el = entry.target as HTMLElement;
+            el.style.transitionDelay = `${i * 300}ms`;
+
+            el.classList.remove("opacity-0", "translate-y-6");
+            el.classList.add(
+              "opacity-100",
+              "translate-y-0",
+              "job-reveal-visible",
+            );
+
+            const onEnd = (e: TransitionEvent) => {
+              if (e.propertyName === "transform") {
+                el.classList.remove("translate-y-0");
+                el.removeEventListener("transitionend", onEnd);
+              }
+            };
+
+            el.addEventListener("transitionend", onEnd);
+            observer.unobserve(entry.target);
+          });
+      },
+      { threshold: 0.1 },
+    );
+
+    items.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [
+    datatoget?.spotdata1,
+    datatoget?.loading1,
+    datatoget?.spotdata2,
+    datatoget?.loading2,
+    datatoget?.spotdata3,
+    datatoget?.loading3,
+    datatoget?.spotdata4,
+    datatoget?.loading4,
+  ]);
+
   return (
     <>
       {/* <h2 className=" text-lg font-medium my-5">IS DASHBOARD</h2> */}
 
       <div className="grid grid-cols-12  gap-2 my-5">
-        <div className="col-span-5 lg:col-span-2 ">
+        <div className="col-span-5 lg:col-span-2 " data-aos="fade-up">
           <div className="relative  overflow-hidden bg-white rounded-[10px] p-3 w-full h-full text-center bg-gradient-to-t from-[#fff] via-[#FFF9EC] to-[#FFF9EC] border border-[#fff]">
             <figure className=" bg-[#ffc24b] rounded-full w-[45px] h-[45px] flex justify-center items-center m-auto">
               <Briefcase className="text-white w-[23px]" />
@@ -3451,7 +3672,7 @@ export const IsDashboard = () => {
           </div>
         </div>
 
-        <div className="col-span-7 lg:col-span-3 ">
+        <div className="col-span-7 lg:col-span-3 " data-aos="fade-up">
           <div className="relative  overflow-hidden bg-white rounded-[10px] p-3 w-full h-full text-center  bg-gradient-to-t from-[#fff] via-[#fff] to-[#D1FFDC] border border-[#fff]">
             <figure className=" bg-[#48cd68] rounded-full w-[45px] h-[45px] flex justify-center items-center m-auto">
               {" "}
@@ -3473,10 +3694,13 @@ export const IsDashboard = () => {
           </div>
         </div>
 
-        <div className="col-span-12 lg:col-span-7 ">
+        <div className="col-span-12 lg:col-span-7 " data-aos="fade-up">
           <div className="bg-white rounded-[10px]   w-full h-full text-center bg-gradient-to-t from-[#fff] via-[#fff] to-[#ECECEC] border border-[#fff]">
             <div className=" block lg:flex justify-between items-center   px-[12px] py-[3px] rounded-t-[8px]  bg-gradient-to-r from-[#fff4da] via-[#FFE8E8] to-[#FFE8E8] ">
-              <div className="   rounded-[5px] py-[3px]  flex justify-center items-center ">
+              <div
+                className="   rounded-[5px] py-[3px]  flex justify-center items-center "
+                data-aos="fade-up"
+              >
                 <i className="md:inline-block  hidden">
                   <Search className="w-[16px]" />
                 </i>
@@ -3487,7 +3711,10 @@ export const IsDashboard = () => {
 
               <div className="flex gap-2 items-center justify-center lg:justify-end">
                 <div className=" rounded-[10px] gap-2 flex justify-center items-center">
-                  <div className="flex border-r border-[#ffb0b0] pr-2">
+                  <div
+                    className="flex border-r border-[#ffb0b0] pr-2"
+                    data-aos="fade-up"
+                  >
                     <figure className="">
                       <ShieldAlert className="w-[14px] h-[22px] text-[#f94141] " />
                     </figure>
@@ -3498,7 +3725,7 @@ export const IsDashboard = () => {
                     </p>
                   </div>
 
-                  <div className="flex">
+                  <div className="flex" data-aos="fade-up">
                     <figure className="">
                       <ThumbsDown className="w-[14px] h-[22px] text-[#f94141] " />
                     </figure>
@@ -3513,7 +3740,7 @@ export const IsDashboard = () => {
 
             <div className="p-3">
               <div className="grid grid-cols-12  gap-2 ">
-                <div className="col-span-12 md:col-span-6 ">
+                <div className="col-span-12 md:col-span-6 " data-aos="fade-up">
                   <div className="flex items-center">
                     <figure className=" bg-[#ccfbd7] rounded-full w-[29px] h-[29px] flex justify-center items-center">
                       <FolderOpen className="w-[15px]  text-green-500 " />
@@ -3525,7 +3752,7 @@ export const IsDashboard = () => {
                   </div>
                 </div>
 
-                <div className="col-span-12 md:col-span-6 ">
+                <div className="col-span-12 md:col-span-6 " data-aos="fade-up">
                   <div className="flex items-center">
                     <figure className=" bg-[#ffedc3] rounded-full w-[29px] h-[29px] flex justify-center items-center">
                       <MessageCircle className="w-[18px]  text-[#c78c03]" />
@@ -3538,7 +3765,7 @@ export const IsDashboard = () => {
                   </div>
                 </div>
 
-                <div className="col-span-12 md:col-span-6 ">
+                <div className="col-span-12 md:col-span-6 " data-aos="fade-up">
                   <div className="flex items-center">
                     <figure className=" bg-blue-100 rounded-full w-[29px] h-[29px] flex justify-center items-center">
                       <Loader className="w-[15px]  text-[#106acb]" />
@@ -3553,7 +3780,7 @@ export const IsDashboard = () => {
                   </div>
                 </div>
 
-                <div className="col-span-12 md:col-span-6 ">
+                <div className="col-span-12 md:col-span-6 " data-aos="fade-up">
                   <div className="flex items-center">
                     <figure className="  bg-[#ffd7d7] rounded-full w-[29px] h-[29px] flex justify-center items-center">
                       <Wallet className="w-[18px]  text-[#d21a1a]" />
@@ -3573,9 +3800,12 @@ export const IsDashboard = () => {
         </div>
       </div>
 
-      <div className="relative   bg-white rounded-[10px] p-4 w-full  text-center   border border-[#fff]">
+      <div
+        className="relative z-[40]  bg-white rounded-[10px] p-4 w-full  text-center   border border-[#fff]"
+        data-aos="fade-up"
+      >
         <div className="grid grid-cols-12  gap-2 ">
-          <div className="col-span-12 lg:col-span-2">
+          <div className="col-span-12 lg:col-span-2" data-aos="fade-up">
             {/* Dropdown Section */}
             <div
               className={`relative ${
@@ -3704,7 +3934,7 @@ export const IsDashboard = () => {
             </React.Fragment>
           ))}
 
-          <div className="col-span-12 lg:col-span-2">
+          <div className="col-span-12 lg:col-span-2" data-aos="fade-up">
             {/* Search Button */}
             {selectedOptions.length > 0 && (
               <div className="flex justify-between mt-[24px]">
@@ -3728,245 +3958,244 @@ export const IsDashboard = () => {
       </div>
 
       <div className="grid grid-cols-12  gap-3 mt-4">
-     
-          <div className="col-span-12 lg:col-span-6">
-            <div className="">
-              <div className="NewtableBox min-h-auto lg:h-full bg-white rounded-md justify-between shadow-blue-900 border border-[#fff]  ">
-                <div className="tbaleTittle p-2 bg-[#e9edf2] flex justify-between items-center rounded-t-md ">
-                  <h2 className="text-[15px] font-medium">
-                    Pending Spot Enquiries
-                  </h2>
+        <div className="col-span-12 lg:col-span-6" data-aos="fade-up">
+          <div className="">
+            <div className="NewtableBox min-h-auto lg:h-full bg-white rounded-md justify-between shadow-blue-900 border border-[#fff]  ">
+              <div className="tbaleTittle p-2 bg-[#e9edf2] flex justify-between items-center rounded-t-md ">
+                <h2 className="text-[15px] font-medium">
+                  Pending Spot Enquiries
+                </h2>
 
-                  <div className="tableSearch relative w-200">
-                    <FormInput
-                      className="h-[30px] !p-1 !px-2"
-                      id="vertical-form-1"
-                      type="text"
-                      placeholder="Search By Enquiry Id "
-                      onChange={(e: any) => {
-                        handlealldatatoget("page1", 1);
-                        setDatatoget((pre: any) => ({
-                          ...pre,
-                          search1: e.target.value,
-                        }));
-                      }}
-                    />
+                <div className="tableSearch relative w-200">
+                  <FormInput
+                    className="h-[30px] !p-1 !px-2"
+                    id="vertical-form-1"
+                    type="text"
+                    placeholder="Search By Enquiry Id "
+                    onChange={(e: any) => {
+                      handlealldatatoget("page1", 1);
+                      setDatatoget((pre: any) => ({
+                        ...pre,
+                        search1: e.target.value,
+                      }));
+                    }}
+                  />
 
-                    <button
-                      onClick={() => {
-                        if (searchvalue) {
-                          getspotenqdata(1, [0, 16]);
-                        }
-                      }}
-                      className="searchListTable absolute top-[6px] right-2 text-stone-300"
-                    >
-                      {" "}
-                      <Search className="w-[17px] h-[17px]" />
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => {
+                      if (searchvalue) {
+                        getspotenqdata(1, [0, 16]);
+                      }
+                    }}
+                    className="searchListTable absolute top-[6px] right-2 text-stone-300"
+                  >
+                    {" "}
+                    <Search className="w-[17px] h-[17px]" />
+                  </button>
                 </div>
+              </div>
 
-                <div
-                  className={`tablelist p-3 ${
-                    isActive ? "showtable" : "hideTable"
-                  }`}
-                >
-                  {/* <div
+              <div
+                className={`tablelist p-3 ${
+                  isActive ? "showtable" : "hideTable"
+                }`}
+              >
+                {/* <div
                     className={`overflow-x-auto  overflow-y-hidden ${"h-[60vh]"}`}
                   > */}
-                  <div className="overflow-x-auto">
-                    <div className="table-responsive ">
-                      {datatoget?.spotdata1?.length >= 1 &&
-                      !datatoget?.loading1 ? (
-                        <div className="w-full">
-                          {datatoget?.spotdata1?.map(
-                            (data: any, index: number) => (
-                              <div
-                                key={index}
-                                className="w-full border rounded-lg mb-3 group bg-[#fff] border-[#fff1d3] even:bg-[#fff] even:border-[#eaf1f6] hover:bg-[#fff] hover:border-[#E6E6E6]"
-                              >
-                                <div className="justify-between border-[#fff1d3] border-b w-full  block lg:flex pt-[5px] pb-[3px] px-2 items-center bg-[#fffbf2] group-even:bg-[#f6faff] rounded-t-lg group-even:border-[#eaf1f6] group-hover:bg-[#F8F8F8] group-hover:border-[#E6E6E6]">
-                                  <div className="flex relative mb-2 lg:mb-0">
-                                    <figure className="bg-[#FFF0CE] group-even:bg-[#E8F2FF] rounded-full p-[2px] w-[30px] h-[30px] justify-between flex items-center group-hover:bg-[#e3e3e3]">
-                                      <FileText className="w-[18px] h-[18px] text-[#B68F34] group-even:text-[#5A81B4] m-auto group-hover:text-[#303030]" />
-                                    </figure>
+                <div className="overflow-x-auto">
+                  <div className="table-responsive ">
+                    {datatoget?.spotdata1?.length >= 1 &&
+                    !datatoget?.loading1 ? (
+                      <div className="w-full">
+                        {datatoget?.spotdata1?.map(
+                          (data: any, index: number) => (
+                            <div
+                              key={index}
+                              data-reveal-index={index}
+                              className="relative job-reveal w-full border rounded-lg mb-3 group bg-[#fff] border-[#fff1d3] even:bg-[#fff] even:border-[#eaf1f6] hover:bg-[#fff] hover:border-[#E6E6E6] opacity-0 translate-y-6 transition-all duration-700 ease-out"
+                            >
+                              <div className="justify-between border-[#fff1d3] border-b w-full  block lg:flex pt-[5px] pb-[3px] px-2 items-center bg-[#fffbf2] group-even:bg-[#f6faff] rounded-t-lg group-even:border-[#eaf1f6] group-hover:bg-[#F8F8F8] group-hover:border-[#E6E6E6]">
+                                <div className="flex relative mb-2 lg:mb-0">
+                                  <figure className="bg-[#FFF0CE] group-even:bg-[#E8F2FF] rounded-full p-[2px] w-[30px] h-[30px] justify-between flex items-center group-hover:bg-[#e3e3e3]">
+                                    <FileText className="w-[18px] h-[18px] text-[#B68F34] group-even:text-[#5A81B4] m-auto group-hover:text-[#303030]" />
+                                  </figure>
 
-                                    <aside className="ml-2 leading-[14px]">
-                                      <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[14px] ">
-                                        Shipment :{" "}
-                                        {shipmentTypedata?.find(
-                                          (item2: any) =>
-                                            item2?.booking_shipment_type_id ==
-                                            data?.shipment_type,
-                                        )?.shipment_type || "-"}
-                                      </h2>
+                                  <aside className="ml-2 leading-[14px]">
+                                    <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[14px] ">
+                                      Shipment :{" "}
+                                      {shipmentTypedata?.find(
+                                        (item2: any) =>
+                                          item2?.booking_shipment_type_id ==
+                                          data?.shipment_type,
+                                      )?.shipment_type || "-"}
+                                    </h2>
 
-                                      <h3 className="text-[12px] font-bold text-[#e1a722] rounded-[10px] ">
-                                        ENQUIRY NO: {data?.booking_no || "N.A."}
-                                      </h3>
-                                    </aside>
-                                  </div>
-
-                                  <div className="flex gap-2 items-center">
-                                    <div className="text-left lg:text-right leading-[16px]">
-                                      <h4 className="font-medium text-[13px]">
-                                        {" "}
-                                        WEIGHT :
-                                        <span>
-                                          {" "}
-                                          {Number(data?.weight) || "-"}{" "}
-                                          {data?.weight_unit
-                                            ? `(${data.weight_unit})`
-                                            : ""}
-                                        </span>
-                                      </h4>
-                                      <p className="text-[13px] text-[#797979]">
-                                        {formatDate(data?.created_date) || "-"}
-                                      </p>
-                                    </div>
-                                  </div>
+                                    <h3 className="text-[12px] font-bold text-[#e1a722] rounded-[10px] ">
+                                      ENQUIRY NO: {data?.booking_no || "N.A."}
+                                    </h3>
+                                  </aside>
                                 </div>
 
-                                <div className="px-3 pt-3 pb-2">
-                                  <div className="grid grid-cols-12 gap-2">
-                                    <div className="col-span-12 lg:col-span-8">
-                                      <div className="w-full">
-                                        <div className="w-full font-medium text-[14px]">
-                                          {" "}
-                                          Name :{" "}
-                                          {getrelateddata(
-                                            "franchisee",
-                                            allfdata,
-                                            data?.franchisee_id,
-                                          )?.franchisee_name || "-"}
+                                <div className="flex gap-2 items-center">
+                                  <div className="text-left lg:text-right leading-[16px]">
+                                    <h4 className="font-medium text-[13px]">
+                                      {" "}
+                                      WEIGHT :
+                                      <span>
+                                        {" "}
+                                        {Number(data?.weight) || "-"}{" "}
+                                        {data?.weight_unit
+                                          ? `(${data.weight_unit})`
+                                          : ""}
+                                      </span>
+                                    </h4>
+                                    <p className="text-[13px] text-[#797979]">
+                                      {formatDate(data?.created_date) || "-"}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="px-3 pt-3 pb-2">
+                                <div className="grid grid-cols-12 gap-2">
+                                  <div className="col-span-12 lg:col-span-8">
+                                    <div className="w-full">
+                                      <div className="w-full font-medium text-[14px]">
+                                        {" "}
+                                        Name :{" "}
+                                        {getrelateddata(
+                                          "franchisee",
+                                          allfdata,
+                                          data?.franchisee_id,
+                                        )?.franchisee_name || "-"}
+                                      </div>
+
+                                      <div className="w-full block lg:flex gap-x-5 mt-1">
+                                        <div className="leading-[16px] mb-2 lg:mb-0">
+                                          <small className="text-[11px] text-[#797979] flex items-center">
+                                            <i className="w-[5px] h-[5px] bg-green-500 group-even:bg-[#6EA8E0] rounded-full mr-1 inline-block group-hover:bg-[#a0a0a0]"></i>{" "}
+                                            ORIGIN{" "}
+                                          </small>
+                                          <p className="text-[14px] text-[#303030]">
+                                            {data?.org_city || "-"}
+                                          </p>
                                         </div>
 
-                                        <div className="w-full block lg:flex gap-x-5 mt-1">
-                                          <div className="leading-[16px] mb-2 lg:mb-0">
-                                            <small className="text-[11px] text-[#797979] flex items-center">
-                                              <i className="w-[5px] h-[5px] bg-green-500 group-even:bg-[#6EA8E0] rounded-full mr-1 inline-block group-hover:bg-[#a0a0a0]"></i>{" "}
-                                              ORIGIN{" "}
-                                            </small>
-                                            <p className="text-[14px] text-[#303030]">
-                                              {data?.org_city || "-"}
-                                            </p>
-                                          </div>
-
-                                          <div className="leading-[16px]">
-                                            <small className="text-[11px] text-[#797979] flex items-center">
-                                              <i className="w-[5px] h-[5px] bg-[#efb847] group-even:bg-[#6EA8E0] rounded-full mr-1 inline-block group-hover:bg-[#a0a0a0]"></i>{" "}
-                                              DESTINATION{" "}
-                                            </small>
-                                            <p className="text-[14px] text-[#303030]">
-                                              {data?.org_country_id == "97" &&
-                                              data?.dest_country_id == "97"
-                                                ? data?.dest_city
-                                                : countryData?.find(
-                                                    (item: any) =>
-                                                      item.country_id ==
-                                                      data?.dest_country_id,
-                                                  )?.country_name ||
-                                                  data?.dest_city ||
-                                                  "N.A."}
-                                            </p>
-                                          </div>
+                                        <div className="leading-[16px]">
+                                          <small className="text-[11px] text-[#797979] flex items-center">
+                                            <i className="w-[5px] h-[5px] bg-[#efb847] group-even:bg-[#6EA8E0] rounded-full mr-1 inline-block group-hover:bg-[#a0a0a0]"></i>{" "}
+                                            DESTINATION{" "}
+                                          </small>
+                                          <p className="text-[14px] text-[#303030]">
+                                            {data?.org_country_id == "97" &&
+                                            data?.dest_country_id == "97"
+                                              ? data?.dest_city
+                                              : countryData?.find(
+                                                  (item: any) =>
+                                                    item.country_id ==
+                                                    data?.dest_country_id,
+                                                )?.country_name ||
+                                                data?.dest_city ||
+                                                "N.A."}
+                                          </p>
                                         </div>
                                       </div>
                                     </div>
+                                  </div>
 
-                                    <div className="col-span-12 lg:col-span-4">
-                                      <div className="flex relative gap-2 justify-start lg:justify-end">
-                                        <Button
-                                          className="text-[13px] bg-mustard text-white border-none px-3 py-[1px] hover:bg-[#d2d2d2] hover:text-[#303030]"
-                                          onClick={() => {
-                                            handleEdit(data, "enq");
-                                          }}
-                                        >
-                                          Action
-                                        </Button>
+                                  <div className="col-span-12 lg:col-span-4">
+                                    <div className="flex relative gap-2 justify-start lg:justify-end">
+                                      <Button
+                                        className="text-[13px] bg-mustard text-white border-none px-3 py-[1px] hover:bg-[#d2d2d2] hover:text-[#303030]"
+                                        onClick={() => {
+                                          handleEdit(data, "enq");
+                                        }}
+                                      >
+                                        Action
+                                      </Button>
 
-                                        <Button
-                                          onClick={() => {
-                                            setSelectedCardData(data);
-                                            setViewCardModal(true);
-                                          }}
-                                          className="text-[13px] bg-mustard text-white border-none hover:bg-[#d2d2d2] hover:text-[#303030] rounded-md flex items-center pl-2 pr-1 py-[3px]"
-                                        >
-                                          View{" "}
-                                          <ChevronRight className="w-[14px] h-[16px]" />
-                                        </Button>
-                                      </div>
-                                      <div className="w-full text-[13px] mt-2 text-left lg:text-right">
-                                        Price (₹) :{" "}
-                                        <span>
-                                          {indianFormat(data?.spot_price) ||
-                                            "-"}{" "}
-                                          {data?.price_type == "1"
-                                            ? "(a)"
-                                            : data?.price_type == "2"
-                                              ? "(k)"
-                                              : ""}
+                                      <Button
+                                        onClick={() => {
+                                          setSelectedCardData(data);
+                                          setViewCardModal(true);
+                                        }}
+                                        className="text-[13px] bg-mustard text-white border-none hover:bg-[#d2d2d2] hover:text-[#303030] rounded-md flex items-center pl-2 pr-1 py-[3px]"
+                                      >
+                                        View{" "}
+                                        <ChevronRight className="w-[14px] h-[16px]" />
+                                      </Button>
+                                    </div>
+                                    <div className="w-full text-[13px] mt-2 text-left lg:text-right">
+                                      Price (₹) :{" "}
+                                      <span>
+                                        {indianFormat(data?.spot_price) || "-"}{" "}
+                                        {data?.price_type == "1"
+                                          ? "(a)"
+                                          : data?.price_type == "2"
+                                            ? "(k)"
+                                            : ""}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  <div className="col-span-12 lg:col-span-12">
+                                    <div className=" flex  w-full  border-t border-[#f2f2f2] px-[0] pt-[4px]">
+                                      <h2 className="flex text-[#9099a2] text-[11px] font-medium  uppercase leading-[20px]  ">
+                                        <i className="mr-1 bg-[#f1f5f9] border-none p-[2px] w-[18px] h-[18px] rounded-full flex justify-center items-center ">
+                                          <User
+                                            className="w-[12px] h-[12px]  text-[#959595]"
+                                            strokeWidth={3}
+                                          />
+                                        </i>
+                                        <span className="text-[#959595]">
+                                          Status{" "}
                                         </span>
-                                      </div>
-                                    </div>
-
-                                    <div className="col-span-12 lg:col-span-12">
-                                      <div className=" flex  w-full  border-t border-[#f2f2f2] px-[0] pt-[4px]">
-                                        <h2 className="flex text-[#9099a2] text-[11px] font-medium  uppercase leading-[20px]  ">
-                                          <i className="mr-1 bg-[#f1f5f9] border-none p-[2px] w-[18px] h-[18px] rounded-full flex justify-center items-center ">
-                                            <User
-                                              className="w-[12px] h-[12px]  text-[#959595]"
-                                              strokeWidth={3}
-                                            />
-                                          </i>
-                                          <span className="text-[#959595]">
-                                            Status{" "}
-                                          </span>
-                                          &nbsp; : &nbsp;{" "}
-                                          <span
-                                            className={
-                                              bookingStatusColorMap[
-                                                Number(data?.booking_status)
-                                              ] || ""
-                                            }
-                                          >
-                                            {bookingStatuses.find(
-                                              (s) =>
-                                                s.status_code ==
-                                                data?.booking_status,
-                                            )?.status_name || "-"}
-                                          </span>
-                                        </h2>
-                                      </div>
+                                        &nbsp; : &nbsp;{" "}
+                                        <span
+                                          className={
+                                            bookingStatusColorMap[
+                                              Number(data?.booking_status)
+                                            ] || ""
+                                          }
+                                        >
+                                          {bookingStatuses.find(
+                                            (s) =>
+                                              s.status_code ==
+                                              data?.booking_status,
+                                          )?.status_name || "-"}
+                                        </span>
+                                      </h2>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            ),
-                          )}
-                        </div>
-                      ) : datatoget?.loading1 ? (
-                        <IsLoading w={"w-[50vw]"} h={"h-[40vh]"} />
-                      ) : (
-                        <Nodatafound w={"w-[50vw]"} h={"h-[50vh]"} />
-                      )}
-                    </div>
-
-                    {datatoget?.spotdata1?.length > 0 &&
-                      datatoget?.totalpages1 > 1 && (
-                        <CommonPagination
-                          totalpages={datatoget?.totalpages1}
-                          onPageChange={handlePagechange}
-                          page={datatoget?.page1}
-                          value={1}
-                        />
-                      )}
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    ) : datatoget?.loading1 ? (
+                      <IsLoading w={"w-[50vw]"} h={"h-[40vh]"} />
+                    ) : (
+                      <Nodatafound w={"w-[50vw]"} h={"h-[50vh]"} />
+                    )}
                   </div>
+
+                  {datatoget?.spotdata1?.length > 0 &&
+                    datatoget?.totalpages1 > 1 && (
+                      <CommonPagination
+                        totalpages={datatoget?.totalpages1}
+                        onPageChange={handlePagechange}
+                        page={datatoget?.page1}
+                        value={1}
+                      />
+                    )}
                 </div>
               </div>
             </div>
           </div>
-          {/* <div className="w-full mb-5">
+        </div>
+        {/* <div className="w-full mb-5">
             <div className=" tableMain ">
               <div className="NewtableBox  bg-white rounded-md justify-between shadow-blue-900  ">
                 <div className="tbaleTittle p-2 bg-gray-50 flex justify-between items-center ">
@@ -4207,242 +4436,233 @@ export const IsDashboard = () => {
               </div>
             </div>
           </div> */}
- 
-   <div className="col-span-12 lg:col-span-6 mb-5">
-            <div className=" tableMain lg:h-full ">
-              <div className="NewtableBox  min-h-auto lg:h-full  bg-white rounded-md justify-between shadow-blue-900 border border-[#fff]  ">
-                <div className="tbaleTittle p-2 bg-[#e9edf2] flex justify-between items-center rounded-t-md ">
-                  <h2 className="text-[15px] font-medium">
-                    Approved/Pending/Rejected
-                  </h2>
 
-                  <div className="tableSearch relative w-200">
-                    <FormInput
-                      className="h-[30px] !p-1 !px-2"
-                      id="vertical-form-1"
-                      type="text"
-                      placeholder="Search By Enquiry No. "
-                      onChange={(e: any) => {
-                        setDatatoget((pre: any) => ({ ...pre, page3: 1 }));
-                        setDatatoget((pre: any) => ({
-                          ...pre,
-                          search3: e.target.value,
-                        }));
-                      }}
-                    />
+        <div className="col-span-12 lg:col-span-6 mb-5" data-aos="fade-up">
+          <div className=" tableMain lg:h-full ">
+            <div className="NewtableBox  min-h-auto lg:h-full  bg-white rounded-md justify-between shadow-blue-900 border border-[#fff]  ">
+              <div className="tbaleTittle p-2 bg-[#e9edf2] flex justify-between items-center rounded-t-md ">
+                <h2 className="text-[15px] font-medium">
+                  Approved/Pending/Rejected
+                </h2>
 
-                    <button
-                      onClick={() => {
-                        if (datatoget.search3) {
-                          getspotenqdata(3, [1, 3, 7, 8, 9, 10]);
-                        }
-                      }}
-                      className="searchListTable absolute top-[6px] right-2 text-stone-300"
-                    >
-                      {" "}
-                      <Search className="w-[17px] h-[17px]" />
-                    </button>
-                  </div>
+                <div className="tableSearch relative w-200">
+                  <FormInput
+                    className="h-[30px] !p-1 !px-2"
+                    id="vertical-form-1"
+                    type="text"
+                    placeholder="Search By Enquiry No. "
+                    onChange={(e: any) => {
+                      setDatatoget((pre: any) => ({ ...pre, page3: 1 }));
+                      setDatatoget((pre: any) => ({
+                        ...pre,
+                        search3: e.target.value,
+                      }));
+                    }}
+                  />
+
+                  <button
+                    onClick={() => {
+                      if (datatoget.search3) {
+                        getspotenqdata(3, [1, 3, 7, 8, 9, 10]);
+                      }
+                    }}
+                    className="searchListTable absolute top-[6px] right-2 text-stone-300"
+                  >
+                    {" "}
+                    <Search className="w-[17px] h-[17px]" />
+                  </button>
                 </div>
+              </div>
 
-                <div
-                  className={`tablelist p-3 ${
-                    isActive ? "showtable" : "hideTable"
-                  }`}
-                >
-                  <div className="w=full">
-                    <div className="table-responsive ">
-                      {datatoget?.spotdata3?.length >= 1 &&
-                      !datatoget?.loading3 ? (
-                        <div className="w-full ">
-                          {datatoget?.spotdata3?.map(
-                            (data: any, index: number) => (
-                              <div
-                                key={index}
-                                className="w-full border rounded-lg mb-3 group bg-[#fff] border-[#fff1d3] even:bg-[#fff] even:border-[#eaf1f6] hover:bg-[#fff] hover:border-[#E6E6E6]"
-                              >
-                                <div className="justify-between border-[#fff1d3] border-b w-full  block lg:flex pt-[5px] pb-[3px] px-2 items-center bg-[#fffbf2] group-even:bg-[#f6faff] rounded-t-lg group-even:border-[#eaf1f6] group-hover:bg-[#F8F8F8] group-hover:border-[#E6E6E6]">
-                                  <div className="flex relative mb-2 lg:mb-0">
-                                    <figure className="bg-[#FFF0CE] group-even:bg-[#E8F2FF] rounded-full p-[2px] w-[30px] h-[30px] justify-between flex items-center group-hover:bg-[#e3e3e3]">
-                                      <FileText className="w-[18px] h-[18px] text-[#B68F34] group-even:text-[#5A81B4] m-auto group-hover:text-[#303030]" />
-                                    </figure>
+              <div
+                className={`tablelist p-3 ${
+                  isActive ? "showtable" : "hideTable"
+                }`}
+              >
+                <div className="w=full">
+                  <div className="table-responsive ">
+                    {datatoget?.spotdata3?.length >= 1 &&
+                    !datatoget?.loading3 ? (
+                      <div className="w-full ">
+                        {datatoget?.spotdata3?.map(
+                          (data: any, index: number) => (
+                            <div
+                              key={index}
+                              data-reveal-index={index}
+                              className="relative job-reveal w-full border rounded-lg mb-3 group bg-[#fff] border-[#fff1d3] even:bg-[#fff] even:border-[#eaf1f6] hover:bg-[#fff] hover:border-[#E6E6E6] opacity-0 translate-y-6 transition-all duration-700 ease-out"
+                            >
+                              <div className="justify-between border-[#fff1d3] border-b w-full  block lg:flex pt-[5px] pb-[3px] px-2 items-center bg-[#fffbf2] group-even:bg-[#f6faff] rounded-t-lg group-even:border-[#eaf1f6] group-hover:bg-[#F8F8F8] group-hover:border-[#E6E6E6]">
+                                <div className="flex relative mb-2 lg:mb-0">
+                                  <figure className="bg-[#FFF0CE] group-even:bg-[#E8F2FF] rounded-full p-[2px] w-[30px] h-[30px] justify-between flex items-center group-hover:bg-[#e3e3e3]">
+                                    <FileText className="w-[18px] h-[18px] text-[#B68F34] group-even:text-[#5A81B4] m-auto group-hover:text-[#303030]" />
+                                  </figure>
 
-                                    <aside className="ml-2 leading-[14px]">
-                                      <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[14px] ">
-                                        Shipment :{" "}
-                                        {shipmentTypedata?.find(
-                                          (item2: any) =>
-                                            item2?.booking_shipment_type_id ==
-                                            data?.shipment_type,
-                                        )?.shipment_type || "-"}
-                                      </h2>
+                                  <aside className="ml-2 leading-[14px]">
+                                    <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[14px] ">
+                                      Shipment :{" "}
+                                      {shipmentTypedata?.find(
+                                        (item2: any) =>
+                                          item2?.booking_shipment_type_id ==
+                                          data?.shipment_type,
+                                      )?.shipment_type || "-"}
+                                    </h2>
 
-                                      <h3 className="text-[12px] font-bold text-[#e1a722] rounded-[10px] ">
-                                        ENQUIRY NO: {data?.booking_no || "N.A."}
-                                      </h3>
-                                    </aside>
-                                  </div>
-
-                                  <div className="flex gap-2 items-center">
-                                    <div className="text-left lg:text-right leading-[16px]">
-                                      <h4 className="font-medium text-[13px]">
-                                        {" "}
-                                        WEIGHT :
-                                        <span>
-                                          {Number(data?.weight) || "-"}{" "}
-                                          {data?.weight_unit
-                                            ? `(${data.weight_unit})`
-                                            : ""}
-                                        </span>
-                                      </h4>
-                                      <p className="text-[13px] text-[#797979]">
-                                        {formatDate(data?.created_date) || "-"}
-                                      </p>
-                                    </div>
-                                  </div>
+                                    <h3 className="text-[12px] font-bold text-[#e1a722] rounded-[10px] ">
+                                      ENQUIRY NO: {data?.booking_no || "N.A."}
+                                    </h3>
+                                  </aside>
                                 </div>
 
-                                <div className="px-3 pt-3 pb-2">
-                                  <div className="grid grid-cols-12 gap-2">
-                                    <div className="col-span-12 lg:col-span-8">
-                                      <div className="w-full">
-                                        <div className="w-full font-medium text-[14px]">
-                                          {" "}
-                                          Name :{" "}
-                                          {getrelateddata(
-                                            "franchisee",
-                                            allfdata,
-                                            data?.franchisee_id,
-                                          )?.franchisee_name || ""}
+                                <div className="flex gap-2 items-center">
+                                  <div className="text-left lg:text-right leading-[16px]">
+                                    <h4 className="font-medium text-[13px]">
+                                      {" "}
+                                      WEIGHT :
+                                      <span>
+                                        {Number(data?.weight) || "-"}{" "}
+                                        {data?.weight_unit
+                                          ? `(${data.weight_unit})`
+                                          : ""}
+                                      </span>
+                                    </h4>
+                                    <p className="text-[13px] text-[#797979]">
+                                      {formatDate(data?.created_date) || "-"}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="px-3 pt-3 pb-2">
+                                <div className="grid grid-cols-12 gap-2">
+                                  <div className="col-span-12 lg:col-span-8">
+                                    <div className="w-full">
+                                      <div className="w-full font-medium text-[14px]">
+                                        {" "}
+                                        Name :{" "}
+                                        {getrelateddata(
+                                          "franchisee",
+                                          allfdata,
+                                          data?.franchisee_id,
+                                        )?.franchisee_name || ""}
+                                      </div>
+
+                                      <div className="w-full block lg:flex gap-x-5 mt-1">
+                                        <div className="leading-[16px] mb-2 lg:mb-0">
+                                          <small className="text-[11px] text-[#797979] flex items-center">
+                                            <i className="w-[5px] h-[5px] bg-green-500 group-even:bg-[#6EA8E0] rounded-full mr-1 inline-block group-hover:bg-[#a0a0a0]"></i>{" "}
+                                            ORIGIN{" "}
+                                          </small>
+                                          <p className="text-[14px] text-[#303030]">
+                                            {data?.org_city || "-"}
+                                          </p>
                                         </div>
 
-                                        <div className="w-full block lg:flex gap-x-5 mt-1">
-                                          <div className="leading-[16px] mb-2 lg:mb-0">
-                                            <small className="text-[11px] text-[#797979] flex items-center">
-                                              <i className="w-[5px] h-[5px] bg-green-500 group-even:bg-[#6EA8E0] rounded-full mr-1 inline-block group-hover:bg-[#a0a0a0]"></i>{" "}
-                                              ORIGIN{" "}
-                                            </small>
-                                            <p className="text-[14px] text-[#303030]">
-                                              {data?.org_city || "-"}
-                                            </p>
-                                          </div>
-
-                                          <div className="leading-[16px]">
-                                            <small className="text-[11px] text-[#797979] flex items-center">
-                                              <i className="w-[5px] h-[5px] bg-[#efb847] group-even:bg-[#6EA8E0] rounded-full mr-1 inline-block group-hover:bg-[#a0a0a0]"></i>{" "}
-                                              DESTINATION{" "}
-                                            </small>
-                                            <p className="text-[14px] text-[#303030]">
-                                              {data?.org_country_id == "97" &&
-                                              data?.dest_country_id == "97"
-                                                ? data?.dest_city
-                                                : countryData?.find(
-                                                    (item: any) =>
-                                                      item.country_id ==
-                                                      data?.dest_country_id,
-                                                  )?.country_name ||
-                                                  data?.dest_city ||
-                                                  "N.A."}
-                                            </p>
-                                          </div>
+                                        <div className="leading-[16px]">
+                                          <small className="text-[11px] text-[#797979] flex items-center">
+                                            <i className="w-[5px] h-[5px] bg-[#efb847] group-even:bg-[#6EA8E0] rounded-full mr-1 inline-block group-hover:bg-[#a0a0a0]"></i>{" "}
+                                            DESTINATION{" "}
+                                          </small>
+                                          <p className="text-[14px] text-[#303030]">
+                                            {data?.org_country_id == "97" &&
+                                            data?.dest_country_id == "97"
+                                              ? data?.dest_city
+                                              : countryData?.find(
+                                                  (item: any) =>
+                                                    item.country_id ==
+                                                    data?.dest_country_id,
+                                                )?.country_name ||
+                                                data?.dest_city ||
+                                                "N.A."}
+                                          </p>
                                         </div>
                                       </div>
                                     </div>
+                                  </div>
 
-                                    <div className="col-span-12 lg:col-span-4">
-                                      <div className="flex relative gap-2 justify-start lg:justify-end">
-                                        <div className="">
-                                          {(data?.shipment_type == 5 ||
-                                            data?.shipment_type == 1 ||
-                                            data?.shipment_type == 8) &&
-                                          data?.import_booking == 2 &&
-                                          data?.booking_status != 3 &&
-                                          data?.booking_status != 7 &&
-                                          data?.booking_status != 18 ? (
-                                            <Menu>
-                                              <Menu.Button className=" bg-blue-100 text-blue-500 border-blue-300 flex py-[3px] px-2 rounded-md border h-[26px] ">
-                                                <UserCog className="w-[17px] h-[17px] stroke-2.5" />
-                                                <ChevronDown className="w-[16px] h-[16px]  stroke-2.5 mt-0 ml-2 relative top-[1px]" />
-                                              </Menu.Button>
-                                              <Menu.Items
-                                                className="w-44 mt-px border-2 border-slate-200"
-                                                placement="left-start"
-                                              >
-                                                {/* <Menu.Divider  /> */}
-                                                {data?.booking_status ==
-                                                  "1" && (
+                                  <div className="col-span-12 lg:col-span-4">
+                                    <div className="flex relative gap-2 justify-start lg:justify-end">
+                                      <div className="">
+                                        {(data?.shipment_type == 5 ||
+                                          data?.shipment_type == 1 ||
+                                          data?.shipment_type == 8) &&
+                                        data?.import_booking == 2 &&
+                                        data?.booking_status != 3 &&
+                                        data?.booking_status != 7 &&
+                                        data?.booking_status != 18 ? (
+                                          <Menu>
+                                            <Menu.Button className=" bg-blue-100 text-blue-500 border-blue-300 flex py-[3px] px-2 rounded-md border h-[26px] ">
+                                              <UserCog className="w-[17px] h-[17px] stroke-2.5" />
+                                              <ChevronDown className="w-[16px] h-[16px]  stroke-2.5 mt-0 ml-2 relative top-[1px]" />
+                                            </Menu.Button>
+                                            <Menu.Items
+                                              className="w-44 mt-px border-2 border-slate-200"
+                                              placement="left-start"
+                                            >
+                                              {/* <Menu.Divider  /> */}
+                                              {data?.booking_status == "1" && (
+                                                <Menu.Item
+                                                  className="hover:bg-mustard hover:text-white !px-[9px] !py-[4px]"
+                                                  onClick={() => {
+                                                    handleEdit(data, "credit");
+                                                  }}
+                                                >
+                                                  REQUEST CREDIT
+                                                </Menu.Item>
+                                              )}
+
+                                              {data?.booking_status == "5" &&
+                                              data?.airwaybilno ? (
+                                                <>
                                                   <Menu.Item
                                                     className="hover:bg-mustard hover:text-white !px-[9px] !py-[4px]"
                                                     onClick={() => {
-                                                      handleEdit(
-                                                        data,
-                                                        "credit",
+                                                      setEditBookingData(data);
+                                                      setDimensionData(
+                                                        data?.shipment_dimensions || [
+                                                          {
+                                                            item_description:
+                                                              "",
+                                                            weight: "",
+                                                            value: "",
+                                                            quantity: "",
+                                                            length: "",
+                                                            breadth: "",
+                                                            height: "",
+                                                            hsn_code: "",
+                                                          },
+                                                        ],
                                                       );
+                                                      getJobData(data?.job_id);
+                                                      setShowEditBooking(true);
                                                     }}
                                                   >
-                                                    REQUEST CREDIT
+                                                    EDIT BOOKING
                                                   </Menu.Item>
-                                                )}
 
-                                                {data?.booking_status == "5" &&
-                                                data?.airwaybilno ? (
-                                                  <>
-                                                    <Menu.Item
-                                                      className="hover:bg-mustard hover:text-white !px-[9px] !py-[4px]"
-                                                      onClick={() => {
-                                                        setEditBookingData(
-                                                          data,
-                                                        );
-                                                        setDimensionData(
-                                                          data?.shipment_dimensions || [
-                                                            {
-                                                              item_description:
-                                                                "",
-                                                              weight: "",
-                                                              value: "",
-                                                              quantity: "",
-                                                              length: "",
-                                                              breadth: "",
-                                                              height: "",
-                                                              hsn_code: "",
-                                                            },
-                                                          ],
-                                                        );
-                                                        getJobData(
-                                                          data?.job_id,
-                                                        );
-                                                        setShowEditBooking(
-                                                          true,
-                                                        );
-                                                      }}
-                                                    >
-                                                      EDIT BOOKING
-                                                    </Menu.Item>
-
-                                                    <Menu.Item
-                                                      className="hover:bg-mustard hover:text-white !px-[9px] !py-[4px]"
-                                                      onClick={() => {
-                                                        setTagData({
-                                                          job_id: data?.job_id,
-                                                          booking_no:
-                                                            data?.booking_no,
-                                                          franchisee_id:
-                                                            data?.franchisee_id,
-                                                          mawb:
-                                                            data?.master || "",
-                                                          hawb:
-                                                            data?.airwaybilno ||
-                                                            "",
-                                                        });
-                                                        setMawbPresent(
-                                                          !!data?.master,
-                                                        );
-                                                        setTagOpen(true);
-                                                      }}
-                                                    >
-                                                      TAG HOUSE/MASTER
-                                                    </Menu.Item>
-                                                    {/* <Menu.Divider />
+                                                  <Menu.Item
+                                                    className="hover:bg-mustard hover:text-white !px-[9px] !py-[4px]"
+                                                    onClick={() => {
+                                                      setTagData({
+                                                        job_id: data?.job_id,
+                                                        booking_no:
+                                                          data?.booking_no,
+                                                        franchisee_id:
+                                                          data?.franchisee_id,
+                                                        mawb:
+                                                          data?.master || "",
+                                                        hawb:
+                                                          data?.airwaybilno ||
+                                                          "",
+                                                      });
+                                                      setMawbPresent(
+                                                        !!data?.master,
+                                                      );
+                                                      setTagOpen(true);
+                                                    }}
+                                                  >
+                                                    TAG HOUSE/MASTER
+                                                  </Menu.Item>
+                                                  {/* <Menu.Divider />
                                               <Menu.Item
                                                 className="hover:bg-mustard hover:text-white !p-0"
                                                 onClick={() => {
@@ -4468,292 +4688,282 @@ export const IsDashboard = () => {
                                               >
                                                 UPDATE SCAN EVENTS
                                               </Menu.Item> */}
-                                                  </>
-                                                ) : (
-                                                  <>
-                                                    {((data?.booking_status ==
-                                                      "1" ||
+                                                </>
+                                              ) : (
+                                                <>
+                                                  {((data?.booking_status ==
+                                                    "1" ||
+                                                    data?.booking_status ==
+                                                      "8" ||
+                                                    data?.booking_status ==
+                                                      "9" ||
+                                                    data?.booking_status ==
+                                                      "10" ||
+                                                    data?.booking_status ==
+                                                      "19") &&
+                                                    data?.is_draft == null &&
+                                                    data?.is_import_reject_approve ==
+                                                      0) ||
+                                                  data?.booking_status ==
+                                                    "15" ||
+                                                  (data?.booking_status ==
+                                                    "18" &&
+                                                    data?.is_draft == null &&
+                                                    data?.is_import_reject_approve ==
+                                                      0) ||
+                                                  data?.booking_status ==
+                                                    "15" ||
+                                                  (data?.booking_status ==
+                                                    "18" &&
+                                                    data?.is_draft == 1 &&
+                                                    data?.is_import_reject_approve ==
+                                                      1) ? (
+                                                    <Menu.Item
+                                                      className="hover:bg-mustard hover:text-white !p-0"
+                                                      onClick={async () => {
+                                                        setDimensionData(
+                                                          data?.shipment_dimensions || [
+                                                            {
+                                                              item_description:
+                                                                "",
+                                                              weight: "",
+                                                              value: "",
+                                                              quantity: "",
+                                                              length: "",
+                                                              breadth: "",
+                                                              height: "",
+                                                              hsn_code: "",
+                                                            },
+                                                          ],
+                                                        );
+                                                        setEmailData({
+                                                          job_id: data?.job_id,
+                                                          booking_no:
+                                                            data?.booking_no,
+                                                          franchisee_id:
+                                                            data?.franchisee_id,
+                                                          cc_email:
+                                                            allfdata?.find(
+                                                              (item: any) =>
+                                                                item?.franchisee_id ==
+                                                                data?.franchisee_id,
+                                                            )?.email_id
+                                                              ? [
+                                                                  allfdata.find(
+                                                                    (
+                                                                      item: any,
+                                                                    ) =>
+                                                                      item?.franchisee_id ==
+                                                                      data?.franchisee_id,
+                                                                  )!.email_id,
+                                                                ]
+                                                              : [],
+                                                        });
+                                                        setImportData(data);
+                                                        getJobData(
+                                                          data?.job_id,
+                                                        );
+                                                        setShowBtn(false);
+                                                        setOpenImport(true);
+                                                        handleImportLastMail(
+                                                          data?.franchisee_id,
+                                                        );
+                                                      }}
+                                                    >
+                                                      {data?.booking_status ==
+                                                        "1" ||
                                                       data?.booking_status ==
                                                         "8" ||
                                                       data?.booking_status ==
                                                         "9" ||
                                                       data?.booking_status ==
-                                                        "10" ||
-                                                      data?.booking_status ==
-                                                        "19") &&
-                                                      data?.is_draft == null &&
-                                                      data?.is_import_reject_approve ==
-                                                        0) ||
+                                                        "10"
+                                                        ? "ADD DETAILS"
+                                                        : "COMPLETE BOOKING"}
+                                                    </Menu.Item>
+                                                  ) : null}
+                                                  {(data?.booking_status ==
+                                                    "1" ||
                                                     data?.booking_status ==
-                                                      "15" ||
-                                                    (data?.booking_status ==
-                                                      "18" &&
-                                                      data?.is_draft == null &&
-                                                      data?.is_import_reject_approve ==
-                                                        0) ||
+                                                      "8" ||
                                                     data?.booking_status ==
-                                                      "15" ||
-                                                    (data?.booking_status ==
-                                                      "18" &&
-                                                      data?.is_draft == 1 &&
-                                                      data?.is_import_reject_approve ==
-                                                        1) ? (
+                                                      "9" ||
+                                                    data?.booking_status ==
+                                                      "10" ||
+                                                    data?.booking_status ==
+                                                      "19") && (
+                                                    <>
                                                       <Menu.Item
-                                                        className="hover:bg-mustard hover:text-white !p-0"
-                                                        onClick={async () => {
-                                                          setDimensionData(
-                                                            data?.shipment_dimensions || [
-                                                              {
-                                                                item_description:
-                                                                  "",
-                                                                weight: "",
-                                                                value: "",
-                                                                quantity: "",
-                                                                length: "",
-                                                                breadth: "",
-                                                                height: "",
-                                                                hsn_code: "",
-                                                              },
-                                                            ],
-                                                          );
-                                                          setEmailData({
-                                                            job_id:
-                                                              data?.job_id,
-                                                            booking_no:
-                                                              data?.booking_no,
-                                                            franchisee_id:
-                                                              data?.franchisee_id,
-                                                            cc_email:
-                                                              allfdata?.find(
-                                                                (item: any) =>
-                                                                  item?.franchisee_id ==
-                                                                  data?.franchisee_id,
-                                                              )?.email_id
-                                                                ? [
-                                                                    allfdata.find(
-                                                                      (
-                                                                        item: any,
-                                                                      ) =>
-                                                                        item?.franchisee_id ==
-                                                                        data?.franchisee_id,
-                                                                    )!.email_id,
-                                                                  ]
-                                                                : [],
-                                                          });
-                                                          setImportData(data);
-                                                          getJobData(
-                                                            data?.job_id,
-                                                          );
-                                                          setShowBtn(false);
-                                                          setOpenImport(true);
-                                                          handleImportLastMail(
-                                                            data?.franchisee_id,
-                                                          );
+                                                        className="hover:bg-mustard hover:text-white"
+                                                        onClick={() => {
+                                                          setProformaData(data);
+                                                          setProformaOpen(true);
                                                         }}
                                                       >
-                                                        {data?.booking_status ==
-                                                          "1" ||
-                                                        data?.booking_status ==
-                                                          "8" ||
-                                                        data?.booking_status ==
-                                                          "9" ||
-                                                        data?.booking_status ==
-                                                          "10"
-                                                          ? "ADD DETAILS"
-                                                          : "COMPLETE BOOKING"}
+                                                        PROFORMA INVOICE
                                                       </Menu.Item>
-                                                    ) : null}
-                                                    {(data?.booking_status ==
-                                                      "1" ||
-                                                      data?.booking_status ==
-                                                        "8" ||
-                                                      data?.booking_status ==
-                                                        "9" ||
-                                                      data?.booking_status ==
-                                                        "10" ||
-                                                      data?.booking_status ==
-                                                        "19") && (
-                                                      <>
-                                                        <Menu.Item
-                                                          className="hover:bg-mustard hover:text-white"
-                                                          onClick={() => {
-                                                            setProformaData(
-                                                              data,
-                                                            );
-                                                            setProformaOpen(
-                                                              true,
-                                                            );
-                                                          }}
-                                                        >
-                                                          PROFORMA INVOICE
-                                                        </Menu.Item>
-                                                      </>
-                                                    )}
-                                                  </>
-                                                )}
-                                              </Menu.Items>
-                                            </Menu>
-                                          ) : (
-                                            <div className="flex justify-center items-center">
-                                              <Button
-                                                className="h-[26px] text-[13px] bg-mustard text-white border-none px-3 py-[1px] hover:bg-[#d2d2d2] hover:text-[#303030]"
-                                                onClick={() => {
-                                                  handleEdit(data, "credit");
-                                                }}
-                                              >
-                                                Action
-                                              </Button>
-                                            </div>
-                                          )}
-                                        </div>
+                                                    </>
+                                                  )}
+                                                </>
+                                              )}
+                                            </Menu.Items>
+                                          </Menu>
+                                        ) : (
+                                          <div className="flex justify-center items-center">
+                                            <Button
+                                              className="h-[26px] text-[13px] bg-mustard text-white border-none px-3 py-[1px] hover:bg-[#d2d2d2] hover:text-[#303030]"
+                                              onClick={() => {
+                                                handleEdit(data, "credit");
+                                              }}
+                                            >
+                                              Action
+                                            </Button>
+                                          </div>
+                                        )}
+                                      </div>
 
-                                        <Button
-                                          onClick={() => {
-                                            setSelectedCardData(data);
-                                            setViewApprovedModal(true);
-                                          }}
-                                          className="text-[13px] bg-mustard text-white border-none hover:bg-[#d2d2d2] hover:text-[#303030] rounded-md flex items-center pl-2 pr-1 py-[3px]"
-                                        >
-                                          View{" "}
-                                          <ChevronRight className="w-[14px] h-[16px]" />
-                                        </Button>
-                                      </div>
-                                      <div className="w-full text-[13px] mt-2 text-left lg:text-right">
-                                        Price (₹) :{" "}
-                                        <span>
-                                          {indianFormat(data?.spot_price) ||
-                                            "-"}{" "}
-                                          {data?.price_type == "1"
-                                            ? "(a)"
-                                            : data?.price_type == "2"
-                                              ? "(k)"
-                                              : ""}
-                                        </span>
-                                      </div>
+                                      <Button
+                                        onClick={() => {
+                                          setSelectedCardData(data);
+                                          setViewApprovedModal(true);
+                                        }}
+                                        className="text-[13px] bg-mustard text-white border-none hover:bg-[#d2d2d2] hover:text-[#303030] rounded-md flex items-center pl-2 pr-1 py-[3px]"
+                                      >
+                                        View{" "}
+                                        <ChevronRight className="w-[14px] h-[16px]" />
+                                      </Button>
                                     </div>
+                                    <div className="w-full text-[13px] mt-2 text-left lg:text-right">
+                                      Price (₹) :{" "}
+                                      <span>
+                                        {indianFormat(data?.spot_price) || "-"}{" "}
+                                        {data?.price_type == "1"
+                                          ? "(a)"
+                                          : data?.price_type == "2"
+                                            ? "(k)"
+                                            : ""}
+                                      </span>
+                                    </div>
+                                  </div>
 
-                                    <div className="col-span-12 lg:col-span-12">
-                                      <div className=" flex  w-full  border-t border-[#f2f2f2] px-[0] pt-[4px]">
-                                        <h2 className="flex text-[#9099a2] text-[11px] font-medium  uppercase leading-[20px]  ">
-                                          <i className="mr-1 bg-[#f1f5f9] border-none p-[2px] w-[18px] h-[18px] rounded-full flex justify-center items-center ">
-                                            <User
-                                              className="w-[12px] h-[12px]  text-[#959595]"
-                                              strokeWidth={3}
-                                            />
-                                          </i>
-                                          <span className="text-[#959595]">
-                                            Status{" "}
-                                          </span>
-                                          &nbsp; : &nbsp;
-                                          <span
-                                            className={
-                                              data?.booking_status == 15
-                                                ? data?.import_booking == 2
-                                                  ? "text-green-400"
-                                                  : data?.is_checklist == 1
-                                                    ? "text-green-400"
-                                                    : "text-red-400"
-                                                : statusdata?.find(
-                                                    (s: any) =>
-                                                      s.status_code ==
-                                                      data?.booking_status,
-                                                  )?.css_class
-                                            }
-                                          >
-                                            {data?.booking_status == 15
+                                  <div className="col-span-12 lg:col-span-12">
+                                    <div className=" flex  w-full  border-t border-[#f2f2f2] px-[0] pt-[4px]">
+                                      <h2 className="flex text-[#9099a2] text-[11px] font-medium  uppercase leading-[20px]  ">
+                                        <i className="mr-1 bg-[#f1f5f9] border-none p-[2px] w-[18px] h-[18px] rounded-full flex justify-center items-center ">
+                                          <User
+                                            className="w-[12px] h-[12px]  text-[#959595]"
+                                            strokeWidth={3}
+                                          />
+                                        </i>
+                                        <span className="text-[#959595]">
+                                          Status{" "}
+                                        </span>
+                                        &nbsp; : &nbsp;
+                                        <span
+                                          className={
+                                            data?.booking_status == 15
                                               ? data?.import_booking == 2
-                                                ? "Customer Approval Pending"
+                                                ? "text-green-400"
                                                 : data?.is_checklist == 1
-                                                  ? "CheckList Done"
-                                                  : "CheckList Pending"
+                                                  ? "text-green-400"
+                                                  : "text-red-400"
                                               : statusdata?.find(
                                                   (s: any) =>
                                                     s.status_code ==
                                                     data?.booking_status,
-                                                )?.status_name}
-                                          </span>
-                                        </h2>
-                                      </div>
+                                                )?.css_class
+                                          }
+                                        >
+                                          {data?.booking_status == 15
+                                            ? data?.import_booking == 2
+                                              ? "Customer Approval Pending"
+                                              : data?.is_checklist == 1
+                                                ? "CheckList Done"
+                                                : "CheckList Pending"
+                                            : statusdata?.find(
+                                                (s: any) =>
+                                                  s.status_code ==
+                                                  data?.booking_status,
+                                              )?.status_name}
+                                        </span>
+                                      </h2>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            ),
-                          )}
-                        </div>
-                      ) : datatoget?.loading3 ? (
-                        <IsLoading w={"w-[50vw]"} h={"h-[40vh]"} />
-                      ) : (
-                        <Nodatafound w={"w-[50vw]"} h={"h-[50vh]"} />
-                      )}
-                    </div>
-                    {datatoget?.spotdata3?.length > 0 &&
-                      datatoget?.totalpages3 > 1 && (
-                        <CommonPagination
-                          totalpages={datatoget?.totalpages3}
-                          onPageChange={handlePagechange}
-                          page={datatoget?.page3}
-                          value={3}
-                        />
-                      )}
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    ) : datatoget?.loading3 ? (
+                      <IsLoading w={"w-[50vw]"} h={"h-[40vh]"} />
+                    ) : (
+                      <Nodatafound w={"w-[50vw]"} h={"h-[50vh]"} />
+                    )}
                   </div>
+                  {datatoget?.spotdata3?.length > 0 &&
+                    datatoget?.totalpages3 > 1 && (
+                      <CommonPagination
+                        totalpages={datatoget?.totalpages3}
+                        onPageChange={handlePagechange}
+                        page={datatoget?.page3}
+                        value={3}
+                      />
+                    )}
                 </div>
               </div>
             </div>
           </div>
-        
+        </div>
 
-  
-    <div className="col-span-12 lg:col-span-6 mb-5">
-            <div className=" tableMain lg:h-full ">
-              <div className="NewtableBox min-h-auto lg:h-full  bg-white rounded-md justify-between shadow-blue-900 border border-[#fff]  ">
-                <div className="tbaleTittle p-2 bg-[#e9edf2] flex justify-between items-center rounded-t-md ">
-                  <h2 className="text-[15px] font-medium">
-                    Initiated Jobs by OPS Team
-                  </h2>
+        <div className="col-span-12 lg:col-span-6 mb-5" data-aos="fade-up">
+          <div className=" tableMain lg:h-full ">
+            <div className="NewtableBox min-h-auto lg:h-full  bg-white rounded-md justify-between shadow-blue-900 border border-[#fff]  ">
+              <div className="tbaleTittle p-2 bg-[#e9edf2] flex justify-between items-center rounded-t-md ">
+                <h2 className="text-[15px] font-medium">
+                  Initiated Jobs by OPS Team
+                </h2>
 
-                  <div className="tableSearch relative w-200">
-                    <FormInput
-                      className="h-[30px] !p-1 !px-2"
-                      id="vertical-form-1"
-                      type="text"
-                      placeholder="Search By Franchisee "
-                      onChange={(e: any) => {
-                        setDatatoget((pre: any) => ({ ...pre, page2: 1 }));
-                        setDatatoget((pre: any) => ({
-                          ...pre,
-                          search2: e.target.value,
-                        }));
-                      }}
-                    />
+                <div className="tableSearch relative w-200">
+                  <FormInput
+                    className="h-[30px] !p-1 !px-2"
+                    id="vertical-form-1"
+                    type="text"
+                    placeholder="Search By Franchisee "
+                    onChange={(e: any) => {
+                      setDatatoget((pre: any) => ({ ...pre, page2: 1 }));
+                      setDatatoget((pre: any) => ({
+                        ...pre,
+                        search2: e.target.value,
+                      }));
+                    }}
+                  />
 
-                    <button
-                      onClick={() => {
-                        if (datatoget.search2) {
-                          getspotenqdata(2, 0);
-                        }
-                      }}
-                      className="searchListTable absolute top-[6px] right-2 text-stone-300"
-                    >
-                      {" "}
-                      <Search className="w-[17px] h-[17px]" />
-                    </button>
-                  </div>
-                </div>
-
-                <div
-                  className={`tablelist p-3 ${
-                    isActive ? "showtable" : "hideTable"
-                  }`}
-                >
-                  <div
-                    className={`overflow-x-auto overflow-y-hidden  ${""}`}
+                  <button
+                    onClick={() => {
+                      if (datatoget.search2) {
+                        getspotenqdata(2, 0);
+                      }
+                    }}
+                    className="searchListTable absolute top-[6px] right-2 text-stone-300"
                   >
-                    <div className="table-responsive ">
-                      {datatoget?.spotdata2?.length >= 1 &&
-                      !datatoget?.loading2 ? (
-                        <div className="w-full  ">
-                          {/* <Table.Tr className="text-center text-white">
+                    {" "}
+                    <Search className="w-[17px] h-[17px]" />
+                  </button>
+                </div>
+              </div>
+
+              <div
+                className={`tablelist p-3 ${
+                  isActive ? "showtable" : "hideTable"
+                }`}
+              >
+                <div className={`overflow-x-auto overflow-y-hidden  ${""}`}>
+                  <div className="table-responsive ">
+                    {datatoget?.spotdata2?.length >= 1 &&
+                    !datatoget?.loading2 ? (
+                      <div className="w-full  ">
+                        {/* <Table.Tr className="text-center text-white">
                               <Table.Th className="whitespace-nowrap border text-right">
                                 SR.NO.
                               </Table.Th>
@@ -4763,7 +4973,7 @@ export const IsDashboard = () => {
                               {/* <Table.Th className="whitespace-nowrap border text-left">
                                 JOB ID
                               </Table.Th> */}
-                          {/* <Table.Th className="whitespace-nowrap border text-left">
+                        {/* <Table.Th className="whitespace-nowrap border text-left">
                                 STATUS
                               </Table.Th> 
                               <Table.Th className="whitespace-nowrap border text-left">
@@ -4781,381 +4991,363 @@ export const IsDashboard = () => {
                             </Table.Tr>
                           </Table.Thead> */}
 
-                          {datatoget?.spotdata2?.map(
-                            (data: any, index: number) => (
+                        {datatoget?.spotdata2?.map(
+                          (data: any, index: number) => (
+                            <div
+                              className="relative job-reveal w-full border   rounded-lg mb-3   group bg-[#fff] border-[#fff1d3] even:bg-[#fff] even:border-[#eaf1f6]    hover:bg-[#fff]  hover:border-[#E6E6E6] opacity-0 translate-y-6 transition-all duration-700 ease-out"
+                              key={index}
+                              data-reveal-index={index}
+                            >
                               <div
-                                className="w-full border   rounded-lg mb-3   group bg-[#fff] border-[#fff1d3] even:bg-[#fff] even:border-[#eaf1f6]    hover:bg-[#fff]  hover:border-[#E6E6E6] "
-                                key={index}
-                              >
-                                <div
-                                  className=" justify-between border-[#fff1d3] border-b w-full flex pt-[5px] pb-[3px] px-2  items-center  
+                                className=" justify-between border-[#fff1d3] border-b w-full flex pt-[5px] pb-[3px] px-2  items-center  
                                 bg-[#fffbf2] group-even:bg-[#f6faff] rounded-t-lg   group-even:border-[#eaf1f6]  group-hover:bg-[#F8F8F8]  group-hover:border-[#E6E6E6]"
-                                >
-                                  <div className="  flex      relative ">
-                                    <figure className="bg-[#FFF0CE] group-even:bg-[#E8F2FF] rounded-full p-[2px] w-[30px] h-[30px] justify-between  flex   items-center   group-hover:bg-[#e3e3e3]">
-                                      <MapPin className="w-[18px] h-[18px] text-[#B68F34] group-even:text-[#5A81B4] m-auto group-hover:text-[#303030]" />
-                                    </figure>
+                              >
+                                <div className="  flex      relative ">
+                                  <figure className="bg-[#FFF0CE] group-even:bg-[#E8F2FF] rounded-full p-[2px] w-[30px] h-[30px] justify-between  flex   items-center   group-hover:bg-[#e3e3e3]">
+                                    <MapPin className="w-[18px] h-[18px] text-[#B68F34] group-even:text-[#5A81B4] m-auto group-hover:text-[#303030]" />
+                                  </figure>
 
-                                    <aside className="ml-2 leading-[14px]">
-                                      <small className="text-[12px] text-[#797979]">
-                                        DESTINATION COUNTRY
-                                      </small>
-                                      <h2 className="text-[#515151] text-[15px] font-medium   leading-[20px]">
-                                        {/* {(datatoget?.page2 - 1) * 5 + (index + 1)} */}
+                                  <aside className="ml-2 leading-[14px]">
+                                    <small className="text-[12px] text-[#797979]">
+                                      DESTINATION COUNTRY
+                                    </small>
+                                    <h2 className="text-[#515151] text-[15px] font-medium   leading-[20px]">
+                                      {/* {(datatoget?.page2 - 1) * 5 + (index + 1)} */}
 
-                                        {countryData?.find(
-                                          (item: any) =>
-                                            item.country_id ==
-                                            data?.destination_country,
-                                        )?.country_name || ""}
-                                      </h2>
-                                    </aside>
+                                      {countryData?.find(
+                                        (item: any) =>
+                                          item.country_id ==
+                                          data?.destination_country,
+                                      )?.country_name || ""}
+                                    </h2>
+                                  </aside>
+                                </div>
+
+                                <div className="text-right leading-[16px]">
+                                  <h4 className="font-medium">
+                                    {" "}
+                                    WEIGHT :
+                                    <span>
+                                      {" "}
+                                      {(data?.shipment_dimensions?.length >=
+                                        1 &&
+                                        data?.shipment_dimensions?.reduce(
+                                          (acc, item) => {
+                                            return (
+                                              acc + Number(item?.weight || 0)
+                                            ); // Ensure `height` exists, else add 0
+                                          },
+                                          0,
+                                        )) ||
+                                        ""}
+                                    </span>
+                                  </h4>
+
+                                  <p className="text-[13px] text-[#797979]">
+                                    {formatDate(data?.created_date) || ""}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="px-3 pt-3 pb-2">
+                                <div className=" justify-between  w-full flex  items-center ">
+                                  <div className="        relative ">
+                                    <h2 className=" text-sm mb-[2px] uppercase text-[#797979]">
+                                      FRANCHISEE
+                                    </h2>
+                                    <p className="text-[13px] leading-[15px] text-[#262525] flex items-center">
+                                      <i className="w-[7px] h-[7px] bg-[#efb847] group-even:bg-[#6EA8E0] rounded-full mr-2 inline-block group-hover:bg-[#a0a0a0]"></i>
+
+                                      {getrelateddata(
+                                        "franchisee",
+                                        allfdata,
+                                        data?.franchisee_id,
+                                      )?.franchisee_name || ""}
+                                    </p>
                                   </div>
 
-                                  <div className="text-right leading-[16px]">
-                                    <h4 className="font-medium">
+                                  <div className="        relative ">
+                                    <Button
+                                      className="h-[26px]  p-1 bg-mustard text-white border-none px-4 py-1 hover:bg-[#d2d2d2] hover:text-[#303030]"
+                                      onClick={() => {
+                                        handleEdit(data, "job");
+                                      }}
+                                    >
+                                      Action
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    ) : datatoget?.loading2 ? (
+                      <IsLoading w={"w-[50vw]"} h={"h-[40vh]"} />
+                    ) : (
+                      <Nodatafound w={"w-[50vw]"} h={"h-[50vh]"} />
+                    )}
+                  </div>
+                  {datatoget?.spotdata2?.length > 0 &&
+                    datatoget?.totalpages2 > 1 && (
+                      <CommonPagination
+                        totalpages={datatoget?.totalpages2}
+                        onPageChange={handlePagechange}
+                        page={datatoget?.page2}
+                        value={2}
+                      />
+                    )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-span-12 lg:col-span-6 mb-5" data-aos="fade-up">
+          <div className=" tableMain lg:h-full ">
+            <div className="NewtableBox min-h-auto lg:h-full  bg-white rounded-md justify-between shadow-blue-900 border border-[#fff]  ">
+              <div className="tbaleTittle p-2 bg-[#e9edf2] flex justify-between items-center rounded-t-md ">
+                <h2 className="text-[15px] font-medium">
+                  Insufficient Balance
+                </h2>
+
+                <div className="tableSearch relative w-200">
+                  <FormInput
+                    className="h-[30px] !p-1 !px-2"
+                    id="vertical-form-1"
+                    type="text"
+                    placeholder="Search By Enquiry Id "
+                    onChange={(e: any) => {
+                      setDatatoget((pre: any) => ({ ...pre, page4: 1 }));
+                      setDatatoget((pre: any) => ({
+                        ...pre,
+                        search4: e.target.value,
+                      }));
+                    }}
+                  />
+
+                  <button
+                    onClick={() => {
+                      if (datatoget.search4) {
+                        getspotenqdata(4, [14]);
+                      }
+                    }}
+                    className="searchListTable absolute top-[6px] right-2 text-stone-300"
+                  >
+                    {" "}
+                    <Search className="w-[17px] h-[17px]" />
+                  </button>
+                </div>
+              </div>
+              <div
+                className={`tablelist p-3 ${
+                  isActive ? "showtable" : "hideTable"
+                }`}
+              >
+                <div className="w-full">
+                  <div className="table-responsive ">
+                    {datatoget?.spotdata4?.length >= 1 &&
+                    !datatoget?.loading4 ? (
+                      <div className="w-full  ">
+                        {datatoget?.spotdata4?.map(
+                          (data: any, index: number) => (
+                            <div
+                              key={index}
+                              data-reveal-index={index}
+                              className="relative job-reveal w-full border rounded-lg mb-3 group bg-[#fff] border-[#fff1d3] even:bg-[#fff] even:border-[#eaf1f6] hover:bg-[#fff] hover:border-[#E6E6E6] opacity-0 translate-y-6 transition-all duration-700 ease-out"
+                            >
+                              <div className="justify-between border-[#fff1d3] border-b w-full  block lg:flex pt-[5px] pb-[3px] px-2 items-center bg-[#fffbf2] group-even:bg-[#f6faff] rounded-t-lg group-even:border-[#eaf1f6] group-hover:bg-[#F8F8F8] group-hover:border-[#E6E6E6]">
+                                <div className="flex relative mb-2 lg:mb-0">
+                                  <figure className="bg-[#FFF0CE] group-even:bg-[#E8F2FF] rounded-full p-[2px] w-[30px] h-[30px] justify-between flex items-center group-hover:bg-[#e3e3e3]">
+                                    <FileText className="w-[18px] h-[18px] text-[#B68F34] group-even:text-[#5A81B4] m-auto group-hover:text-[#303030]" />
+                                  </figure>
+
+                                  <aside className="ml-2 leading-[14px]">
+                                    <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase  leading-[14px] ">
+                                      Shipment :
+                                      {shipmentTypedata?.find(
+                                        (item2: any) =>
+                                          item2?.booking_shipment_type_id ==
+                                          data?.shipment_type,
+                                      )?.shipment_type || "-"}
+                                    </h2>
+
+                                    <h3 className="text-[12px] font-bold text-[#e1a722] rounded-[10px]">
+                                      ENQUIRY NO: {data?.booking_no || "N.A."}
+                                    </h3>
+                                  </aside>
+                                </div>
+
+                                <div className="flex gap-2 items-center">
+                                  <div className="text-left lg:text-right leading-[16px]">
+                                    <h4 className="font-medium text-[13px]">
                                       {" "}
                                       WEIGHT :
                                       <span>
-                                        {" "}
-                                        {(data?.shipment_dimensions?.length >=
-                                          1 &&
-                                          data?.shipment_dimensions?.reduce(
-                                            (acc, item) => {
-                                              return (
-                                                acc + Number(item?.weight || 0)
-                                              ); // Ensure `height` exists, else add 0
-                                            },
-                                            0,
-                                          )) ||
-                                          ""}
+                                        {Number(data?.weight) || "-"}{" "}
+                                        {data?.weight_unit
+                                          ? `(${data.weight_unit})`
+                                          : ""}
                                       </span>
                                     </h4>
-
                                     <p className="text-[13px] text-[#797979]">
-                                      {formatDate(data?.created_date) || ""}
+                                      {formatDate(data?.created_date) || "-"}
                                     </p>
                                   </div>
                                 </div>
+                              </div>
 
-                                <div className="px-3 pt-3 pb-2">
-                                  <div className=" justify-between  w-full flex  items-center ">
-                                    <div className="        relative ">
-                                      <h2 className=" text-sm mb-[2px] uppercase text-[#797979]">
-                                        FRANCHISEE
-                                      </h2>
-                                      <p className="text-[13px] leading-[15px] text-[#262525] flex items-center">
-                                        <i className="w-[7px] h-[7px] bg-[#efb847] group-even:bg-[#6EA8E0] rounded-full mr-2 inline-block group-hover:bg-[#a0a0a0]"></i>
-
+                              <div className="px-3 pt-3 pb-2">
+                                <div className="grid grid-cols-12 gap-2">
+                                  <div className="col-span-12 lg:col-span-8">
+                                    <div className="w-full">
+                                      <div className="w-full font-medium text-[14px]">
+                                        Name:
                                         {getrelateddata(
                                           "franchisee",
                                           allfdata,
                                           data?.franchisee_id,
                                         )?.franchisee_name || ""}
-                                      </p>
-                                    </div>
+                                      </div>
 
-                                    <div className="        relative ">
+                                      <div className="w-full block lg:flex gap-x-5 mt-1">
+                                        <div className="leading-[16px] mb-2 lg:mb-0">
+                                          <small className="text-[11px] text-[#797979] flex items-center">
+                                            <i className="w-[5px] h-[5px] bg-green-500 group-even:bg-[#6EA8E0] rounded-full mr-1 inline-block group-hover:bg-[#a0a0a0]"></i>{" "}
+                                            ORIGIN{" "}
+                                          </small>
+                                          <p className="text-[14px] text-[#303030]">
+                                            {data?.org_city || "-"}
+                                          </p>
+                                        </div>
+
+                                        <div className="leading-[16px]">
+                                          <small className="text-[11px] text-[#797979] flex items-center">
+                                            <i className="w-[5px] h-[5px] bg-[#efb847] group-even:bg-[#6EA8E0] rounded-full mr-1 inline-block group-hover:bg-[#a0a0a0]"></i>{" "}
+                                            DESTINATION{" "}
+                                          </small>
+                                          <p className="text-[14px] text-[#303030]">
+                                            {data?.org_country_id == "97" &&
+                                            data?.dest_country_id == "97"
+                                              ? data?.dest_city
+                                              : countryData?.find(
+                                                  (item: any) =>
+                                                    item.country_id ==
+                                                    data?.dest_country_id,
+                                                )?.country_name ||
+                                                data?.dest_city ||
+                                                "N.A."}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="col-span-12 lg:col-span-4">
+                                    <div className="flex relative gap-2 justify-start lg:justify-end">
+                                      <div className="">
+                                        <Button
+                                          className="h-[26px]  text-[13px] bg-mustard text-white border-none hover:bg-[#d2d2d2] hover:text-[#303030] rounded-md flex items-center pl-2 pr-1 py-[3px]"
+                                          onClick={() => {
+                                            handleEdit(data, "credit");
+                                          }}
+                                        >
+                                          Action
+                                        </Button>
+                                      </div>
+
                                       <Button
-                                        className="h-[26px]  p-1 bg-mustard text-white border-none px-4 py-1 hover:bg-[#d2d2d2] hover:text-[#303030]"
                                         onClick={() => {
-                                          handleEdit(data, "job");
+                                          setSelectedCardData(data);
+                                          setViewInsufficientModal(true);
                                         }}
+                                        className="text-[13px] bg-mustard text-white border-none hover:bg-[#d2d2d2] ghover:text-[#303030] rounded-md flex items-center pl-2 pr-1 py-[3px]"
                                       >
-                                        Action
+                                        View{" "}
+                                        <ChevronRight className="w-[14px] h-[16px]" />
                                       </Button>
+                                    </div>
+                                    <div className="w-full text-[13px] mt-2 text-left lg:text-right">
+                                      Price (₹) :{" "}
+                                      <span>
+                                        {indianFormat(data?.spot_price) || "-"}{" "}
+                                        {data?.price_type == "1"
+                                          ? "(a)"
+                                          : data?.price_type == "2"
+                                            ? "(k)"
+                                            : ""}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  <div className="col-span-12 lg:col-span-12">
+                                    <div className=" flex  w-full  border-t border-[#f2f2f2] px-[0] pt-[4px]">
+                                      <h2 className="flex text-[#9099a2] text-[11px] font-medium  uppercase leading-[20px]  ">
+                                        <i className="mr-1 bg-[#f1f5f9] border-none p-[2px] w-[18px] h-[18px] rounded-full flex justify-center items-center ">
+                                          <User
+                                            className="w-[12px] h-[12px]  text-[#959595]"
+                                            strokeWidth={3}
+                                          />
+                                        </i>
+                                        <span className="text-[#959595]">
+                                          Status{" "}
+                                        </span>
+                                        &nbsp; : &nbsp;
+                                        <span
+                                          className={
+                                            data?.booking_status == 15
+                                              ? data?.import_booking == 2
+                                                ? "text-green-400"
+                                                : data?.is_checklist == 1
+                                                  ? "text-green-400"
+                                                  : "text-red-400"
+                                              : statusdata?.find(
+                                                  (s: any) =>
+                                                    s.status_code ==
+                                                    data?.booking_status,
+                                                )?.css_class
+                                          }
+                                        >
+                                          {data?.booking_status == 15
+                                            ? data?.import_booking == 2
+                                              ? "Customer Approval Pending"
+                                              : data?.is_checklist == 1
+                                                ? "CheckList Done"
+                                                : "CheckList Pending"
+                                            : statusdata?.find(
+                                                (s: any) =>
+                                                  s.status_code ==
+                                                  data?.booking_status,
+                                              )?.status_name}
+                                        </span>
+                                      </h2>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            ),
-                          )}
-                        </div>
-                      ) : datatoget?.loading2 ? (
-                        <IsLoading w={"w-[50vw]"} h={"h-[40vh]"} />
-                      ) : (
-                        <Nodatafound w={"w-[50vw]"} h={"h-[50vh]"} />
-                      )}
-                    </div>
-                    {datatoget?.spotdata2?.length > 0 &&
-                      datatoget?.totalpages2 > 1 && (
-                        <CommonPagination
-                          totalpages={datatoget?.totalpages2}
-                          onPageChange={handlePagechange}
-                          page={datatoget?.page2}
-                          value={2}
-                        />
-                      )}
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    ) : datatoget?.loading4 ? (
+                      <IsLoading w={"w-[50vw]"} h={"h-[40vh]"} />
+                    ) : (
+                      <Nodatafound w={"w-[50vw]"} h={"h-[50vh]"} />
+                    )}
                   </div>
+                  {datatoget?.spotdata4?.length > 0 &&
+                    datatoget?.totalpages4 > 1 && (
+                      <CommonPagination
+                        totalpages={datatoget?.totalpages4}
+                        onPageChange={handlePagechange}
+                        page={datatoget?.page4}
+                        value={4}
+                      />
+                    )}
                 </div>
               </div>
             </div>
           </div>
-           <div className="col-span-12 lg:col-span-6 mb-5">
-            <div className=" tableMain lg:h-full ">
-              <div className="NewtableBox min-h-auto lg:h-full  bg-white rounded-md justify-between shadow-blue-900 border border-[#fff]  ">
-                <div className="tbaleTittle p-2 bg-[#e9edf2] flex justify-between items-center rounded-t-md ">
-                  <h2 className="text-[15px] font-medium">
-                    Insufficient Balance
-                  </h2>
-
-                  <div className="tableSearch relative w-200">
-                    <FormInput
-                      className="h-[30px] !p-1 !px-2"
-                      id="vertical-form-1"
-                      type="text"
-                      placeholder="Search By Enquiry Id "
-                      onChange={(e: any) => {
-                        setDatatoget((pre: any) => ({ ...pre, page4: 1 }));
-                        setDatatoget((pre: any) => ({
-                          ...pre,
-                          search4: e.target.value,
-                        }));
-                      }}
-                    />
-
-                    <button
-                      onClick={() => {
-                        if (datatoget.search4) {
-                          getspotenqdata(4, [14]);
-                        }
-                      }}
-                      className="searchListTable absolute top-[6px] right-2 text-stone-300"
-                    >
-                      {" "}
-                      <Search className="w-[17px] h-[17px]" />
-                    </button>
-                  </div>
-                </div>
-                <div
-                  className={`tablelist p-3 ${
-                    isActive ? "showtable" : "hideTable"
-                  }`}
-                >
-                  <div className="w-full">
-                    <div className="table-responsive ">
-                      {datatoget?.spotdata4?.length >= 1 &&
-                      !datatoget?.loading4 ? (
-                        <div className="w-full  ">
-                          {datatoget?.spotdata4?.map(
-                            (data: any, index: number) => (
-                              <div
-                                key={index}
-                                className="w-full border rounded-lg mb-3 group bg-[#fff] border-[#fff1d3] even:bg-[#fff] even:border-[#eaf1f6] hover:bg-[#fff] hover:border-[#E6E6E6]"
-                              >
-                                <div className="justify-between border-[#fff1d3] border-b w-full  block lg:flex pt-[5px] pb-[3px] px-2 items-center bg-[#fffbf2] group-even:bg-[#f6faff] rounded-t-lg group-even:border-[#eaf1f6] group-hover:bg-[#F8F8F8] group-hover:border-[#E6E6E6]">
-                                  <div className="flex relative mb-2 lg:mb-0">
-                                    <figure className="bg-[#FFF0CE] group-even:bg-[#E8F2FF] rounded-full p-[2px] w-[30px] h-[30px] justify-between flex items-center group-hover:bg-[#e3e3e3]">
-                                      <FileText className="w-[18px] h-[18px] text-[#B68F34] group-even:text-[#5A81B4] m-auto group-hover:text-[#303030]" />
-                                    </figure>
-
-                                    <aside className="ml-2 leading-[14px]">
-                                      <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase  leading-[14px] ">
-                                        Shipment :
-                                        {shipmentTypedata?.find(
-                                          (item2: any) =>
-                                            item2?.booking_shipment_type_id ==
-                                            data?.shipment_type,
-                                        )?.shipment_type || "-"}
-                                      </h2>
-
-                                      <h3 className="text-[12px] font-bold text-[#e1a722] rounded-[10px]">
-                                        ENQUIRY NO: {data?.booking_no || "N.A."}
-                                      </h3>
-                                    </aside>
-                                  </div>
-
-                                  <div className="flex gap-2 items-center">
-                                    <div className="text-left lg:text-right leading-[16px]">
-                                      <h4 className="font-medium text-[13px]">
-                                        {" "}
-                                        WEIGHT :
-                                        <span>
-                                          {Number(data?.weight) || "-"}{" "}
-                                          {data?.weight_unit
-                                            ? `(${data.weight_unit})`
-                                            : ""}
-                                        </span>
-                                      </h4>
-                                      <p className="text-[13px] text-[#797979]">
-                                        {formatDate(data?.created_date) || "-"}
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <div className="px-3 pt-3 pb-2">
-                                  <div className="grid grid-cols-12 gap-2">
-                                    <div className="col-span-12 lg:col-span-8">
-                                      <div className="w-full">
-                                        <div className="w-full font-medium text-[14px]">
-                                          Name:
-                                          {getrelateddata(
-                                            "franchisee",
-                                            allfdata,
-                                            data?.franchisee_id,
-                                          )?.franchisee_name || ""}
-                                        </div>
-
-                                        <div className="w-full block lg:flex gap-x-5 mt-1">
-                                          <div className="leading-[16px] mb-2 lg:mb-0">
-                                            <small className="text-[11px] text-[#797979] flex items-center">
-                                              <i className="w-[5px] h-[5px] bg-green-500 group-even:bg-[#6EA8E0] rounded-full mr-1 inline-block group-hover:bg-[#a0a0a0]"></i>{" "}
-                                              ORIGIN{" "}
-                                            </small>
-                                            <p className="text-[14px] text-[#303030]">
-                                              {data?.org_city || "-"}
-                                            </p>
-                                          </div>
-
-                                          <div className="leading-[16px]">
-                                            <small className="text-[11px] text-[#797979] flex items-center">
-                                              <i className="w-[5px] h-[5px] bg-[#efb847] group-even:bg-[#6EA8E0] rounded-full mr-1 inline-block group-hover:bg-[#a0a0a0]"></i>{" "}
-                                              DESTINATION{" "}
-                                            </small>
-                                            <p className="text-[14px] text-[#303030]">
-                                              {data?.org_country_id == "97" &&
-                                              data?.dest_country_id == "97"
-                                                ? data?.dest_city
-                                                : countryData?.find(
-                                                    (item: any) =>
-                                                      item.country_id ==
-                                                      data?.dest_country_id,
-                                                  )?.country_name ||
-                                                  data?.dest_city ||
-                                                  "N.A."}
-                                            </p>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-
-                                    <div className="col-span-12 lg:col-span-4">
-                                      <div className="flex relative gap-2 justify-start lg:justify-end">
-                                        <div className="">
-                                          <Button
-                                            className="h-[26px]  text-[13px] bg-mustard text-white border-none hover:bg-[#d2d2d2] hover:text-[#303030] rounded-md flex items-center pl-2 pr-1 py-[3px]"
-                                            onClick={() => {
-                                              handleEdit(data, "credit");
-                                            }}
-                                          >
-                                            Action
-                                          </Button>
-                                        </div>
-
-                                        <Button
-                                          onClick={() => {
-                                            setSelectedCardData(data);
-                                            setViewInsufficientModal(true);
-                                          }}
-                                          className="text-[13px] bg-mustard text-white border-none hover:bg-[#d2d2d2] ghover:text-[#303030] rounded-md flex items-center pl-2 pr-1 py-[3px]"
-                                        >
-                                          View{" "}
-                                          <ChevronRight className="w-[14px] h-[16px]" />
-                                        </Button>
-                                      </div>
-                                      <div className="w-full text-[13px] mt-2 text-left lg:text-right">
-                                        Price (₹) :{" "}
-                                        <span>
-                                          {indianFormat(data?.spot_price) ||
-                                            "-"}{" "}
-                                          {data?.price_type == "1"
-                                            ? "(a)"
-                                            : data?.price_type == "2"
-                                              ? "(k)"
-                                              : ""}
-                                        </span>
-                                      </div>
-                                    </div>
-
-
-
-<div className="col-span-12 lg:col-span-12">
-
-
-
-                    <div className=" flex  w-full  border-t border-[#f2f2f2] px-[0] pt-[4px]">
-
-
-                        <h2 className="flex text-[#9099a2] text-[11px] font-medium  uppercase leading-[20px]  ">
-                          <i className="mr-1 bg-[#f1f5f9] border-none p-[2px] w-[18px] h-[18px] rounded-full flex justify-center items-center ">
-                             <User className="w-[12px] h-[12px]  text-[#959595]" strokeWidth={3}/></i>
-                             <span className="text-[#959595]" >Status </span>&nbsp; : &nbsp;
-                             
-                           
-                          <span
-                            className={
-                              data?.booking_status == 15
-                                ? data?.import_booking == 2
-                                  ? "text-green-400"
-                                  : data?.is_checklist == 1
-                                    ? "text-green-400"
-                                    : "text-red-400"
-                                : statusdata?.find(
-                                    (s: any) =>
-                                      s.status_code ==
-                                      data?.booking_status,
-                                  )?.css_class
-                            }
-                          >
-                            {data?.booking_status == 15
-                              ? data?.import_booking == 2
-                                ? "Customer Approval Pending"
-                                : data?.is_checklist == 1
-                                  ? "CheckList Done"
-                                  : "CheckList Pending"
-                              : statusdata?.find(
-                                  (s: any) =>
-                                    s.status_code ==
-                                    data?.booking_status,
-                                )?.status_name}
-                          </span>
-                   
-
-                  
-
-
-                        </h2>
-
-                      </div>
-
-
-
-
-
-</div>
-
-
-
-
-
-
-                                  </div>
-                                </div>
-                              </div>
-                            ),
-                          )}
-                        </div>
-                      ) : datatoget?.loading4 ? (
-                        <IsLoading w={"w-[50vw]"} h={"h-[40vh]"} />
-                      ) : (
-                        <Nodatafound w={"w-[50vw]"} h={"h-[50vh]"} />
-                      )}
-                    </div>
-                    {datatoget?.spotdata4?.length > 0 &&
-                      datatoget?.totalpages4 > 1 && (
-                        <CommonPagination
-                          totalpages={datatoget?.totalpages4}
-                          onPageChange={handlePagechange}
-                          page={datatoget?.page4}
-                          value={4}
-                        />
-                      )}
-                  </div>
-                </div>
-              </div>
-            </div>
-         
         </div>
         {viewCardModal ? (
           <CommonModal
@@ -5163,17 +5355,17 @@ export const IsDashboard = () => {
             open={viewCardModal}
             setOpen={setViewCardModal}
             title={
-              <div className="flex items-center p-0 !gap-0 w-[130%] lg:w-[120%] bg-[#fff1ce] mx-[-28px] my-[-16px] px-[20px] py-[5px] rounded-t-md">
-                <figure className="flex items-center justify-center  relative mr-1  block bg-[linear-gradient(to_bottom,#ffd675_0%,#f9cf51_50%,#f2be42_100%)] rounded-full border border-[#cda329] w-[35px] h-[35px] ">
+              <div className="flex items-center p-0  w-full ">
+                <figure className="flex items-center justify-center  relative mr-1   bg-[linear-gradient(to_bottom,#ffd675_0%,#f9cf51_50%,#f2be42_100%)] rounded-full border border-[#cda329] w-[35px] h-[35px] ">
                   <User className="w-[20px] h-[20px] text-[#8a6a0c]" />
                 </figure>
 
                 <div className=" w-full  pl-2 gap-0">
-                  <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                  <h2 className="text-[#fff] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
                     Name
                   </h2>
 
-                  <p className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                  <p className="text-[#fff] text-[14px] font-medium  uppercase leading-[20px] ">
                     {getrelateddata(
                       "franchisee",
                       allfdata,
@@ -5187,97 +5379,99 @@ export const IsDashboard = () => {
             size="lg"
             gridColumns={0}
             description={
-              <div className="w-full mt-4 mb-3">
-                <div className=" grid grid-cols-12 gap-x-2 ">
-                  <div className=" col-span-12  md:col-span-6 mb-2 ">
-                    <div className=" flex justify-center w-full  mb-1">
-                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
-                        <FileText className="w-[21px]  text-[#949DA6] " />
-                      </figure>
-                      <div className=" w-full  pl-2">
-                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
-                          ENQUIRY No
-                        </h2>
-                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
-                          {" "}
-                          {selectedCardData?.booking_no || "-"}
+              <>
+                <div className="w-full mt-4 mb-3">
+                  <div className=" grid grid-cols-12 gap-x-2 ">
+                    <div className=" col-span-12  md:col-span-6 mb-2 ">
+                      <div className=" flex justify-center w-full  mb-1">
+                        <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                          <FileText className="w-[21px]  text-[#949DA6] " />
+                        </figure>
+                        <div className=" w-full  pl-2">
+                          <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                            ENQUIRY No
+                          </h2>
+                          <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                            {" "}
+                            {selectedCardData?.booking_no || "-"}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className=" col-span-12  md:col-span-6 mb-2 ">
-                    <div className=" flex justify-center w-full  mb-1">
-                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
-                        <User className="w-[21px]  text-[#949DA6] " />
-                      </figure>
-                      <div className=" w-full  pl-2">
-                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
-                          Quoted By
-                        </h2>
-                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
-                          {selectedCardData?.quoted_by || "-"}
+                    <div className=" col-span-12  md:col-span-6 mb-2 ">
+                      <div className=" flex justify-center w-full  mb-1">
+                        <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                          <User className="w-[21px]  text-[#949DA6] " />
+                        </figure>
+                        <div className=" w-full  pl-2">
+                          <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                            Quoted By
+                          </h2>
+                          <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                            {selectedCardData?.quoted_by || "-"}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className=" col-span-12  md:col-span-6 mb-2 ">
-                    <div className=" flex justify-center w-full  mb-1">
-                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
-                        <Calendar className="w-[21px]  text-[#949DA6] " />
-                      </figure>
-                      <div className=" w-full  pl-2">
-                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
-                          Rate Valid Till
-                        </h2>
-                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
-                          {formatDate(selectedCardData?.valid_till) || "N.A."}
+                    <div className=" col-span-12  md:col-span-6 mb-2 ">
+                      <div className=" flex justify-center w-full  mb-1">
+                        <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                          <Calendar className="w-[21px]  text-[#949DA6] " />
+                        </figure>
+                        <div className=" w-full  pl-2">
+                          <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                            Rate Valid Till
+                          </h2>
+                          <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                            {formatDate(selectedCardData?.valid_till) || "N.A."}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className=" col-span-12  md:col-span-6 mb-2 ">
-                    <div className=" flex justify-center w-full  mb-1">
-                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
-                        <User className="w-[21px]  text-[#949DA6] " />
-                      </figure>
-                      <div className=" w-full  pl-2">
-                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
-                          Vendor
-                        </h2>
-                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
-                          {productTypes?.find(
-                            (item: any) =>
-                              item.product_id == selectedCardData?.courier_id,
-                          )?.product_name || "-"}
+                    <div className=" col-span-12  md:col-span-6 mb-2 ">
+                      <div className=" flex justify-center w-full  mb-1">
+                        <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                          <User className="w-[21px]  text-[#949DA6] " />
+                        </figure>
+                        <div className=" w-full  pl-2">
+                          <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                            Vendor
+                          </h2>
+                          <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                            {productTypes?.find(
+                              (item: any) =>
+                                item.product_id == selectedCardData?.courier_id,
+                            )?.product_name || "-"}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className=" col-span-12  md:col-span-6 mb-2 ">
-                    <div className=" flex justify-center w-full  mb-1">
-                      <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
-                        <FileText className="w-[21px]  text-[#949DA6] " />
-                      </figure>
-                      <div className=" w-full  pl-2">
-                        <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
-                          FRANCHISEE
-                        </h2>
-                        <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
-                          {getrelateddata(
-                            "franchisee",
-                            allfdata,
-                            selectedCardData?.franchisee_id,
-                          )?.franchisee_name || "-"}
+                    <div className=" col-span-12  md:col-span-6 mb-2 ">
+                      <div className=" flex justify-center w-full  mb-1">
+                        <figure className=" w-[50px] h-[42px]  rounded-lg flex items-center justify-center bg-[#f2f2f2]">
+                          <FileText className="w-[21px]  text-[#949DA6] " />
+                        </figure>
+                        <div className=" w-full  pl-2">
+                          <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                            FRANCHISEE
+                          </h2>
+                          <div className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                            {getrelateddata(
+                              "franchisee",
+                              allfdata,
+                              selectedCardData?.franchisee_id,
+                            )?.franchisee_name || "-"}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </>
             }
             footer={
               <Button
@@ -5299,17 +5493,17 @@ export const IsDashboard = () => {
             open={viewApprovedModal}
             setOpen={setViewApprovedModal}
             title={
-              <div className="flex items-center p-0 !gap-0 w-[130%] lg:w-[120%] bg-[#fff1ce] mx-[-28px] my-[-16px] px-[20px] py-[5px] rounded-t-md">
-                <figure className="flex items-center justify-center  relative mr-1  block bg-[linear-gradient(to_bottom,#ffd675_0%,#f9cf51_50%,#f2be42_100%)] rounded-full border border-[#cda329] w-[35px] h-[35px] ">
+              <div className="flex items-center p-0  w-full ">
+                <figure className="flex items-center justify-center  relative mr-1   bg-[linear-gradient(to_bottom,#ffd675_0%,#f9cf51_50%,#f2be42_100%)] rounded-full border border-[#cda329] w-[35px] h-[35px] ">
                   <User className="w-[20px] h-[20px] text-[#8a6a0c]" />
                 </figure>
 
                 <div className=" w-full  pl-2 gap-0">
-                  <h2 className="text-[#9099a2] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
+                  <h2 className="text-[#fff] text-[12px] font-medium  uppercase leading-[20px] group-hover:text-[#f75656] ">
                     Name
                   </h2>
 
-                  <p className="text-[#303030] text-[14px] font-medium  uppercase leading-[20px] ">
+                  <p className="text-[#fff] text-[14px] font-medium  uppercase leading-[20px] ">
                     {getrelateddata(
                       "franchisee",
                       allfdata,
@@ -5611,8 +5805,6 @@ export const IsDashboard = () => {
                       </div>
                     </div>
                   </div>
-
-             
                 </div>
               </div>
             }
@@ -5699,7 +5891,7 @@ export const IsDashboard = () => {
               <>
                 <div className="flex justify-flex justify-between w-full ">
                   <div>
-                    <p className="text-base font-medium">
+                    <p className="text-base font-medium text-white">
                       {importData?.booking_status == "1" ||
                       importData?.booking_status == "8" ||
                       importData?.booking_status == "9" ||
@@ -5708,13 +5900,10 @@ export const IsDashboard = () => {
                         : "COMPLETE BOOKING"}
                     </p>
                   </div>
-                  <div className="bg-gray-200 rounded p-2 ml-2">
-                    <span className="font-bold">ENQUIRY No: </span>
-                    <span>{importData?.booking_no}</span>
-                  </div>
-                  <div>
+
+                  <div className="bOfficeClose absolute top-[50%] right-2 -translate-y-[50%]">
                     <XCircle
-                      className="w-5 h-5 cursor-pointer hover:text-red-500"
+                      className="stroke-1.5 w-5 h-5 cursor-pointer text-red-500  hover:text-red-700 "
                       onClick={() => setOpenImport(false)}
                     />
                   </div>
@@ -5734,15 +5923,14 @@ export const IsDashboard = () => {
               <>
                 <div className="flex justify-flex justify-between w-full ">
                   <div>
-                    <p className="text-base font-medium">EDIT BOOKING</p>
+                    <p className="text-base font-medium text-white ">
+                      EDIT BOOKING
+                    </p>
                   </div>
-                  <div className="bg-gray-200 rounded p-2 ml-2">
-                    <span className="font-bold">AWB No: </span>
-                    <span>{editBookingData?.airwaybilno}</span>
-                  </div>
-                  <div>
+
+                  <div className="bOfficeClose absolute top-[50%] right-2 -translate-y-[50%]">
                     <XCircle
-                      className="w-5 h-5 cursor-pointer hover:text-red-500"
+                      className="stroke-1.5 w-5 h-5 cursor-pointer text-red-500  hover:text-red-700 "
                       onClick={() => setShowEditBooking(false)}
                     />
                   </div>
@@ -5784,13 +5972,15 @@ export const IsDashboard = () => {
             setOpen={setTagOpen}
             title={
               <>
-                <div className="flex justify-flex justify-between w-full ">
+                <div className="flex justify-flex justify-between w-full relative">
                   <div>
-                    <p className="text-base font-medium">TAG HOUSE / MASTER</p>
+                    <p className="text-base text-white font-medium">
+                      TAG HOUSE / MASTER
+                    </p>
                   </div>
-                  <div>
+                  <div className="bOfficeClose absolute top-[50%] right-2 -translate-y-[50%]">
                     <XCircle
-                      className="w-5 h-5 cursor-pointer hover:text-red-500"
+                      className="stroke-1.5 w-5 h-5 cursor-pointer text-red-500  hover:text-red-700 "
                       onClick={() => setTagOpen(false)}
                     />
                   </div>
