@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { UserCog, ChevronDown, X } from "lucide-react";
+import {
+  UserCog,
+  ChevronDown,
+  X,
+  Box,
+  Briefcase,
+  FileText,
+} from "lucide-react";
 import { useAlert } from "../../../ContextProvider/AlertContext";
 import { useDebounce } from "../commoncomponents/JsonToCsv/useDebounce/useDebounce";
 import { FormInput, FormLabel } from "../../../base-components/Form";
@@ -19,6 +26,9 @@ import {
 } from "../../../AllServices/services";
 import { formatDate } from "../commoncomponents/commondateformat/datetoreqformat";
 import { formatIndianNumber } from "../commoncomponents/CommonNumberConverter/CommonNumberconverter";
+
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const intSelectedFranchisee = {
   franchisee_id: "",
@@ -55,7 +65,7 @@ export default function CargoCommercialBookings() {
   const [hawbSearch, setHawbSearch] = useState<string>("");
   const debouncedHawbSearch = useDebounce(hawbSearch, 500);
   const [selectedFranchisee, setSelectedFranchisee] = useState<any>(
-    intSelectedFranchisee
+    intSelectedFranchisee,
   );
   const [franchiseeData, setFranchiseeData] = useState<any[]>([]);
   const [courierData, setCourierData] = useState<any[]>([]);
@@ -89,7 +99,7 @@ export default function CargoCommercialBookings() {
     setChargesLoading(true);
     try {
       const response: any = await commongetrequest(
-        `booking/booking-buy-sell/${item?.pickup_id}`
+        `booking/booking-buy-sell/${item?.pickup_id}`,
       );
       const buying = response?.data?.buying;
       const selling = response?.data?.selling;
@@ -104,7 +114,7 @@ export default function CargoCommercialBookings() {
                 weight: item?.chargeable_weight || 1,
                 job_id: item?.job_id,
               },
-            ]
+            ],
       );
     } catch (err: any) {
       console.log(err);
@@ -150,7 +160,7 @@ export default function CargoCommercialBookings() {
     const activeChargeIds = new Set(
       buyCharges
         ?.filter((item: any) => item?.charge_id)
-        ?.map((item: any) => String(item.charge_id))
+        ?.map((item: any) => String(item.charge_id)),
     );
 
     const activeCharges =
@@ -164,7 +174,7 @@ export default function CargoCommercialBookings() {
       originalBuyCharges
         ?.filter(
           (item: any) =>
-            item?.charge_id && !activeChargeIds.has(String(item.charge_id))
+            item?.charge_id && !activeChargeIds.has(String(item.charge_id)),
         )
         ?.map((item: any) => buildBuyChargePayload(item, 1)) || [];
 
@@ -179,17 +189,17 @@ export default function CargoCommercialBookings() {
     try {
       const response: any = await commonputrequest(
         `booking/pickup-buying-charges/${pickupId}`,
-        { charges: payload }
+        { charges: payload },
       );
       if (response?.status == 200) {
         showAlert(
-          response?.data?.message || "Buying charges updated successfully"
+          response?.data?.message || "Buying charges updated successfully",
         );
         setChargesModalOpen(false);
       } else if (response?.status == 406) {
         showAlert(
           response?.response?.data?.errors?.[0]?.msg || "Validation failed",
-          "error"
+          "error",
         );
       } else {
         showAlert(
@@ -197,7 +207,7 @@ export default function CargoCommercialBookings() {
             response?.response?.data?.message ||
             response?.message ||
             "Something went wrong",
-          "error"
+          "error",
         );
       }
     } catch (err: any) {
@@ -244,7 +254,7 @@ export default function CargoCommercialBookings() {
   const fetchChargesMasterData = async () => {
     try {
       const response: any = await commongetrequest(
-        "admin/charges?type=E&is_cargo=1"
+        "admin/charges?type=E&is_cargo=1",
       );
       if (response?.status == 200) {
         setChargesMasterData(response?.data?.data || []);
@@ -268,7 +278,7 @@ export default function CargoCommercialBookings() {
   const fetchPartyTypeData = async () => {
     try {
       const response: any = await commongetrequest(
-        "master/customer-type-data_ac/2"
+        "master/customer-type-data_ac/2",
       );
       if (response?.status == 200) {
         setPartyTypeData(response?.data?.data || []);
@@ -282,12 +292,24 @@ export default function CargoCommercialBookings() {
     { field: "action", headerName: "Action" },
     { field: "booking_no", headerName: "Booking No", text: "text-left" },
     { field: "airwaybilno", headerName: "HAWB No.", text: "text-left" },
-    { field: "franchisee_name", headerName: "Franchisee Name", text: "text-left" },
+    {
+      field: "franchisee_name",
+      headerName: "Franchisee Name",
+      text: "text-left",
+    },
     { field: "vendor_name", headerName: "Vendor Name", text: "text-left" },
-    { field: "destination_country_name", headerName: "Destination Country", text: "text-left" },
+    {
+      field: "destination_country_name",
+      headerName: "Destination Country",
+      text: "text-left",
+    },
     { field: "shipper_name", headerName: "Shipper Name", text: "text-left" },
     { field: "gross_weight", headerName: "Gross Weight", text: "text-right" },
-    { field: "chargeable_weight", headerName: "Chargeable Weight", text: "text-right" },
+    {
+      field: "chargeable_weight",
+      headerName: "Chargeable Weight",
+      text: "text-right",
+    },
     { field: "td_weight", headerName: "TD Weight (KGS)", text: "text-right" },
   ];
 
@@ -313,11 +335,13 @@ export default function CargoCommercialBookings() {
       </Menu>
     ),
     booking_date: item?.booking_date ? formatDate(item.booking_date) : "N/A",
-    weight: item?.weight ? `${item.weight} ${item?.weight_unit ?? ""}`.trim() : "N/A",
+    weight: item?.weight
+      ? `${item.weight} ${item?.weight_unit ?? ""}`.trim()
+      : "N/A",
     amount: item?.amount != null ? formatIndianNumber(item.amount) : "N/A",
     franchisee_name:
       franchiseeData?.find(
-        (f: any) => f.franchisee_id == item?.pickup_franchisee_id
+        (f: any) => f.franchisee_id == item?.pickup_franchisee_id,
       )?.franchisee_name || "N/A",
     vendor_name:
       courierData?.find((c: any) => c?.product_id == item?.courier_id)
@@ -329,7 +353,7 @@ export default function CargoCommercialBookings() {
     gross_weight:
       item?.shipment_dimensions?.reduce(
         (acc: any, curr: any) => Number(acc) + Number(curr?.weight),
-        0
+        0,
       ) || "-",
     chargeable_weight: item?.chargeable_weight ?? "N/A",
     td_weight: item?.td_weight ?? "N/A",
@@ -345,14 +369,14 @@ export default function CargoCommercialBookings() {
         offset: offset ?? 0,
       };
       if (debouncedHawbSearch?.trim()) {
-        params.key =  debouncedHawbSearch.trim();
+        params.key = debouncedHawbSearch.trim();
       }
       if (selectedFranchisee?.franchisee_id) {
         params.franchisee_id = selectedFranchisee.franchisee_id;
       }
       const response: any = await commongetrequest(
         "booking/booking-list-accounts-pending",
-        { params }
+        { params },
       );
 
       if (response?.status == 200) {
@@ -369,7 +393,7 @@ export default function CargoCommercialBookings() {
           response?.data?.message ||
             response?.response?.data?.message ||
             response?.message,
-          "error"
+          "error",
         );
       }
     } catch (err: any) {
@@ -395,35 +419,26 @@ export default function CargoCommercialBookings() {
   const buyChargesTotal =
     buyCharges?.reduce(
       (acc: number, curr: any) => acc + (Number(curr?.inr_amount) || 0),
-      0
+      0,
     ) || 0;
 
   const buyGstTotal =
     buyCharges?.reduce((acc: number, curr: any) => {
-          if (!curr?.charge_id || curr?.charge_id == 163) return acc;
-          const chargeInfo = chargesMasterData?.find(
-            (c: any) => c.charge_id == curr?.charge_id
-          );
-          const igstRate = parseFloat(chargeInfo?.tax_breakup?.igst || "18") / 100;
-          return acc + (Number(curr?.inr_amount) || 0) * igstRate;
-        }, 0) || 0;
+      if (!curr?.charge_id || curr?.charge_id == 163) return acc;
+      const chargeInfo = chargesMasterData?.find(
+        (c: any) => c.charge_id == curr?.charge_id,
+      );
+      const igstRate = parseFloat(chargeInfo?.tax_breakup?.igst || "18") / 100;
+      return acc + (Number(curr?.inr_amount) || 0) * igstRate;
+    }, 0) || 0;
 
   const chargesModalTitle = (
     <div className="flex items-center justify-between w-full flex-wrap gap-3">
       <div className="flex items-center gap-3 flex-wrap">
-        <h1 className="font-bold text-2xl text-primary mr-2">Update Charges</h1>
-        <span className="bg-gray-100 text-gray-700 text-sm font-semibold px-3 py-1.5 rounded-md">
-          Booking No: {selectedBooking?.booking_no || "N/A"}
-        </span>
-        <span className="bg-gray-100 text-gray-700 text-sm font-semibold px-3 py-1.5 rounded-md">
-          AIRWAYBILL No: {selectedBooking?.airwaybilno || "N/A"}
-        </span>
-        <span className="bg-gray-100 text-gray-700 text-sm font-semibold px-3 py-1.5 rounded-md">
-          JOB No.: {selectedBooking?.job_id || "N/A"}
-        </span>
+        <h1 className="text-lg text-white mr-2">Update Charges</h1>
       </div>
       <X
-        className="cursor-pointer"
+        className="cursor-pointer cursor-pointer text-red-700"
         onClick={() => setChargesModalOpen(false)}
       />
     </div>
@@ -431,6 +446,72 @@ export default function CargoCommercialBookings() {
 
   const chargesModalDescription = (
     <div className="col-span-12">
+      <div className="grid grid-cols-12  gap-2">
+        <div className="mb-2 col-span-12 lg:col-span-4">
+          <div className="bg-[#f2f7ff] rounded-lg p-[7px] flex w-full ">
+            <figure className="w-[35px] flex items-center justify-center">
+              <FileText className="w-[35px]  text-[#3b7dd8] " />
+            </figure>
+            <aside className="md:border-l md:border-[#d8e7ff] md:pl-2 w-[80%] leading-[18px]">
+              <p className="text-[12px] uppercase text-[#757575] w-full">
+                {" "}
+                Booking No
+              </p>
+              <h4 className="font-medium text-[14px] text-[#383838] w-full flex justify-between items-center">
+                <span className="capitalize font-bold cursor-pointer">
+                  {selectedBooking?.booking_no || "N/A"}
+                </span>
+              </h4>
+            </aside>
+          </div>
+        </div>
+
+        <div className="mb-2 col-span-12 lg:col-span-4">
+          <div className="bg-[#eafffa] rounded-lg p-[7px] flex  w-full">
+            <figure className="w-[35px] flex items-center justify-center">
+              <Box className="w-[30px]  text-[#18a080]  " />
+            </figure>
+            <aside className="md:border-l md:border-[#d8e7ff] md:pl-2 w-[80%] leading-[18px]">
+              <p className="text-[12px] uppercase text-[#757575] w-full">
+                AIRWAYBILL No
+              </p>
+              <h4 className="font-medium text-[14px] text-[#383838] w-full flex justify-between items-center">
+                <span className="capitalize font-bold cursor-pointer">
+                  {selectedBooking?.airwaybilno || "N/A"}
+                </span>
+              </h4>
+            </aside>
+          </div>
+        </div>
+        <div className="mb-2 col-span-12 lg:col-span-4">
+          <div className="bg-[#faf5ff] rounded-lg p-[7px] flex  w-full ">
+            <figure className="w-[35px] flex items-center justify-center">
+              <Briefcase className="w-[30px]  text-[#9c51e7] " />
+            </figure>
+            <aside className="md:border-l md:border-[#d8e7ff] md:pl-2 w-[80%] leading-[18px]">
+              <p className="text-[12px] uppercase text-[#757575] w-full">
+                {" "}
+                JOB No
+              </p>
+              <h4 className="font-medium text-[14px] text-[#383838] w-full flex justify-between items-center">
+                <span className="capitalize font-bold cursor-pointer">
+                  {selectedBooking?.job_id || "N/A"}
+                </span>
+              </h4>
+            </aside>
+          </div>
+        </div>
+      </div>
+      {/* <span className="bg-gray-100 text-white text-sm font-semibold px-3 py-1.5 rounded-md">
+          Booking No: {selectedBooking?.booking_no || "N/A"}
+        </span>
+        <span className="bg-gray-100 text-white text-sm font-semibold px-3 py-1.5 rounded-md">
+          AIRWAYBILL No: {selectedBooking?.airwaybilno || "N/A"}
+        </span>
+        <span className="bg-gray-100 text-white text-sm font-semibold px-3 py-1.5 rounded-md">
+          JOB No.: {selectedBooking?.job_id || "N/A"}
+        </span> */}
+
       {chargesLoading ? (
         <IsLoading />
       ) : (
@@ -468,7 +549,7 @@ export default function CargoCommercialBookings() {
 
   const chargesModalFooter = (
     <div className="w-full">
-      <div className="grid grid-cols-3 gap-3 mb-3">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
         <div>
           <FormLabel>Sub-Total (₹):</FormLabel>
           <FormInput disabled value={formatIndianNumber(buyChargesTotal)} />
@@ -484,7 +565,9 @@ export default function CargoCommercialBookings() {
           <FormLabel>Total Amt (INR):</FormLabel>
           <FormInput
             disabled
-            value={formatIndianNumber(parseFloat((buyChargesTotal + buyGstTotal).toFixed(3)))}
+            value={formatIndianNumber(
+              parseFloat((buyChargesTotal + buyGstTotal).toFixed(3)),
+            )}
           />
         </div>
       </div>
@@ -516,78 +599,114 @@ export default function CargoCommercialBookings() {
     </div>
   );
 
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
+  }, []);
+
   return (
-    <div>
-      <div className="min-[600px]:flex justify-between mt-2 mb-1 p-2 border-b-2 rounded-md">
-        <div>
-          <h2 className="text-2xl font-bold text-primary">
-            Cargo Commercial Bookings
-          </h2>
-        </div>
-      </div>
-      <div className="bg-white w-full shadow-lg rounded-md p-4 mb-2 flex flex-wrap items-end gap-4">
-        <div className="flex-1 min-w-[200px]">
-          <FormLabel className="uppercase text-xs font-semibold">
-            Search By Booking / HAWB :
-          </FormLabel>
-          <FormInput
-            placeholder="Enter Booking / HAWB No."
-            value={hawbSearch}
-            onChange={(e: any) => {
-              setHawbSearch(e.target.value);
-              setPage(1);
-              setOffset(0);
-            }}
-          />
-        </div>
-        <div className="flex-1 min-w-[200px]">
-          <FormLabel className="uppercase text-xs font-semibold">
-            Search By Franchisee :
-          </FormLabel>
-          <CommonSearchableAll
-            apiEndpoint={"admin/franchisee-settings"}
-            placeholder={"Search Franchisee"}
-            selecteddata={selectedFranchisee}
-            setSelecteddata={setSelectedFranchisee}
-            fun1={fun1}
-            comingselectedname={"franchisee_name"}
-            comingselectedid={"franchisee_id"}
-            funtoempty={funtoempty}
-            key1={"key"}
-            zIndex={30}
-          />
-        </div>
-      </div>
-      <div className="bg-white w-full shadow-lg rounded-md overflow-x-scroll">
-        <CommonTable
-          columns={columns}
-          row={row}
-          loading={loading}
-          page={offset}
-          limit={20}
-        />
-        {!loading && data?.length !== 0 && (
-          <div>
-            <CommonPagination
-              totalpages={+count}
-              onPageChange={handlePagechange}
-              page={page}
-            />
+    <>
+      <div className="w-full mt-2 mb-4">
+        <div
+          className="mt-1 w-full bg-white rounded-[10px]  border border-white"
+          data-aos="fade-up"
+        >
+          <div className=" w-full py-2  px-3 border-b border-white commonGBackOffice  rounded-t-[10px]">
+            <div className="flex-wrap lg:flex-nowrap flex gap-2 items-center justify-between w-full commonGBackOfficeInner">
+              <div>
+                <div className="flex items-center gap-2" data-aos="fade-up">
+                  <i className=" w-[25px] h-[25px]  rounded-lg flex items-center justify-center bg-mustard">
+                    <Box className="w-[17px]  text-[#fff] " />
+                  </i>
+                  <h4 className="text-[16px] font-medium text-white">
+                    Cargo Commercial Bookings
+                  </h4>
+                </div>
+              </div>
+            </div>
           </div>
-        )}
-        {!loading && data?.length == 0 && <Nodatafound />}
+
+          <div className="w-full p-2 lg:p-3 border-b border-[#fffaef] bg-[#fffaef]">
+            <div className="w-full" data-aos="fade-up">
+              <div className="grid grid-cols-12  gap-2">
+                <div className="mb-2 col-span-12 lg:col-span-4">
+                  <div className="w-full]">
+                    <FormLabel className="uppercase text-xs font-semibold !mb-0">
+                      Search By Booking / HAWB :
+                    </FormLabel>
+                    <FormInput
+                      placeholder="Enter Booking / HAWB No."
+                      value={hawbSearch}
+                      onChange={(e: any) => {
+                        setHawbSearch(e.target.value);
+                        setPage(1);
+                        setOffset(0);
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="mb-2 col-span-12 lg:col-span-4">
+                  <div className="w-full]">
+                    <FormLabel className="uppercase text-xs font-semibold !mb-0">
+                      Search By Franchisee :
+                    </FormLabel>
+                    <CommonSearchableAll
+                      apiEndpoint={"admin/franchisee-settings"}
+                      placeholder={"Search Franchisee"}
+                      selecteddata={selectedFranchisee}
+                      setSelecteddata={setSelectedFranchisee}
+                      fun1={fun1}
+                      comingselectedname={"franchisee_name"}
+                      comingselectedid={"franchisee_id"}
+                      funtoempty={funtoempty}
+                      key1={"key"}
+                      zIndex={30}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-2  lg:p-6">
+            <div className="" data-aos="fade-up">
+              <div className=" overflow-x-scroll">
+                <CommonTable
+                  columns={columns}
+                  row={row}
+                  loading={loading}
+                  page={offset}
+                  limit={20}
+                />
+                {!loading && data?.length !== 0 && (
+                  <div>
+                    <CommonPagination
+                      totalpages={+count}
+                      onPageChange={handlePagechange}
+                      page={page}
+                    />
+                  </div>
+                )}
+                {!loading && data?.length == 0 && <Nodatafound />}
+              </div>
+              {chargesModalOpen && (
+                <CommonModal
+                  open={chargesModalOpen}
+                  setOpen={setChargesModalOpen}
+                  title={chargesModalTitle}
+                  description={chargesModalDescription}
+                  footer={chargesModalFooter}
+                  size="xxl"
+                  gridColumns={1}
+                />
+              )}
+            </div>
+          </div>
+        </div>
       </div>
-      {chargesModalOpen && (
-        <CommonModal
-          open={chargesModalOpen}
-          setOpen={setChargesModalOpen}
-          title={chargesModalTitle}
-          description={chargesModalDescription}
-          footer={chargesModalFooter}
-          size="xxl"
-          gridColumns={1}
-        />
-      )}
-    </div>
+    </>
   );
 }

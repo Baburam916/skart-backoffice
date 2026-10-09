@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
-export const CounterAnimator = ({ value }) => {
+export const CounterAnimator = ({ value, not_decimal = 0 }) => {
   const [count, setCount] = useState("0.00");
+  const fractionDigits = not_decimal === 1 ? 0 : 3;
   useEffect(() => {
     function animatedCounter() {
       let start = 0;
-      const end = value;
-      if (start === end) return end;
+      const end = Number(value) || 0;
+      if (start === end) {
+        setCount("0");
+        return;
+      }
       function updateCounter() {
         start += (end - start) / 10;
         if (start >= end) {
@@ -23,8 +27,8 @@ export const CounterAnimator = ({ value }) => {
   return (
     <div>
       {Number(count).toLocaleString("en-IN", {
-        minimumFractionDigits: 3,
-        maximumFractionDigits: 3,
+        minimumFractionDigits: fractionDigits,
+        maximumFractionDigits: fractionDigits,
       })}
     </div>
   );

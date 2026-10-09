@@ -3772,7 +3772,7 @@ export const IsDashboard = () => {
                     </figure>
 
                     <p className="pl-2 text-sm text-left flex">
-                      Approval Pending :{" "}
+                      dgd Approval Pending :{" "}
                       <b className="block">
                         {Number(topdata?.approval_pending) || 0}
                       </b>

@@ -8,7 +8,7 @@ import {
 import { useAlert } from "../../../ContextProvider/AlertContext";
 import { foreignFormat, formatDate } from "../../../utils";
 import { FormInput } from "../../../base-components/Form";
-import { Search } from "lucide-react";
+import { Home, Search } from "lucide-react";
 import { useDebounce } from "../../../components/Search";
 import CommonPagination from "../../../components/Pagination";
 import { ApprovalModal } from "./ApprovalModal";
@@ -16,6 +16,7 @@ import IsLoading from "../commoncomponents/isLoading/isLoading";
 import Nodatafound from "../commoncomponents/Nodatafound/Nodatafound";
 import { useLogin } from "../commoncomponents/LoginContextProvider/LoginContextProvider";
 import { useServiceSocket } from "../../../hooks/useServiceSocket";
+import { User } from "lucide-react";
 const interrors = {
   valid_till: "",
   remarks: "",
@@ -57,7 +58,7 @@ const SpotpriceApproval = ({ value, gettopdata }: any) => {
   const [pricingdata, setPricingData] = useState<any>([]);
   const { showAlert } = useAlert();
   const debouncedSearchTerm = useDebounce<string>(enquiryId.trim(), 500);
-  const [shipmentTypedata, setShipmentTypedata] = useState<any>([])
+  const [shipmentTypedata, setShipmentTypedata] = useState<any>([]);
   const { userdata, statusdata } = useLogin();
   const handlePagechange = (e: number) => {
     setPage(e);
@@ -143,8 +144,8 @@ const SpotpriceApproval = ({ value, gettopdata }: any) => {
       ...updatedInterrors,
       ...(pickDataforForm?.shipment_type == 8 && !pickDataforForm?.fair_id
         ? {
-          fair_id: "This Is Required",
-        }
+            fair_id: "This Is Required",
+          }
         : {}),
     });
     return updatedInterrors;
@@ -155,11 +156,16 @@ const SpotpriceApproval = ({ value, gettopdata }: any) => {
       getspotlistdata();
     }
   }, [page, debouncedSearchTerm, pricingdata.length, vendorData]);
-  useServiceSocket("booking", "pricing_list_refresh", () => {
-    getspotlistdata();
-  }, () => {
-    getspotlistdata();
-  });
+  useServiceSocket(
+    "booking",
+    "pricing_list_refresh",
+    () => {
+      getspotlistdata();
+    },
+    () => {
+      getspotlistdata();
+    },
+  );
   useEffect(() => {
     const interval = setInterval(() => {
       if (!openModal2) {
@@ -230,7 +236,8 @@ const SpotpriceApproval = ({ value, gettopdata }: any) => {
     try {
       setLoading(true);
       const response = await commonpostrequest(
-        `booking/get_spot_enquiry?limit=20&page=${page - 1}${debouncedSearchTerm ? `&key=${debouncedSearchTerm.trim()}` : ""
+        `booking/get_spot_enquiry?limit=20&page=${page - 1}${
+          debouncedSearchTerm ? `&key=${debouncedSearchTerm.trim()}` : ""
         }`,
         data,
       );
@@ -343,28 +350,28 @@ const SpotpriceApproval = ({ value, gettopdata }: any) => {
               ...data,
               ...(data?.shipment_type == 8
                 ? {
-                  fair_id: data?.fair_data?.fair_id,
-                  fair_venue: data?.fair_data?.fair_venue,
-                  fair_start_date: data?.fair_data?.fair_start_date,
-                  fair_end_date: data?.fair_data?.fair_end_date,
-                  // fair_data: datasingle?.fair_data,
-                  is_returnable: data?.is_returnable || 0,
-                  mode: data?.fair_data?.mode || "",
-                  ...(data?.fair_data?.mode_value
-                    ? { mode_value: data?.fair_data?.mode_value }
-                    : {}),
-                }
+                    fair_id: data?.fair_data?.fair_id,
+                    fair_venue: data?.fair_data?.fair_venue,
+                    fair_start_date: data?.fair_data?.fair_start_date,
+                    fair_end_date: data?.fair_data?.fair_end_date,
+                    // fair_data: datasingle?.fair_data,
+                    is_returnable: data?.is_returnable || 0,
+                    mode: data?.fair_data?.mode || "",
+                    ...(data?.fair_data?.mode_value
+                      ? { mode_value: data?.fair_data?.mode_value }
+                      : {}),
+                  }
                 : {}),
             };
 
             delete newdata["fair_data"];
             setPickDataforForm(newdata);
-          } else if (
-            (data?.shipment_type == "4" || data?.shipment_type == "5")
-          ) {
+          } else if (data?.shipment_type == "4" || data?.shipment_type == "5") {
             setPickDataforForm({
               ...data,
-              ...(data?.enquiry_from == 4 && data?.import_booking == 1 ? { fedex_account_type: "" } : {}),
+              ...(data?.enquiry_from == 4 && data?.import_booking == 1
+                ? { fedex_account_type: "" }
+                : {}),
               fedex_services: "",
             });
           } else {
@@ -374,7 +381,7 @@ const SpotpriceApproval = ({ value, gettopdata }: any) => {
           setErrors((pre: any) => ({
             ...pre,
             ...((data?.shipment_type == "4" || data?.shipment_type == "5") &&
-              data?.import_booking == "2"
+            data?.import_booking == "2"
               ? { import_booking_type: "" }
               : {}),
           }));
@@ -385,14 +392,22 @@ const SpotpriceApproval = ({ value, gettopdata }: any) => {
     );
     const bookingstatus = (
       <p
-        className={`${item?.booking_status == 15 ? (item?.is_checklist == 1 ? "text-success-400" : "text-red-400") : statusdata?.find(
-          (s: any) => s.status_code == item?.booking_status
-        )?.css_class}`}
+        className={`${
+          item?.booking_status == 15
+            ? item?.is_checklist == 1
+              ? "text-success-400"
+              : "text-red-400"
+            : statusdata?.find(
+                (s: any) => s.status_code == item?.booking_status,
+              )?.css_class
+        }`}
       >
-        {item?.booking_status == 15 ? (item?.is_checklist == 1 ? "CheckList Done" : "CheckList Pending") : statusdata?.find(
-          (s: any) => s.status_code == item?.booking_status
-        )?.status_name}
-
+        {item?.booking_status == 15
+          ? item?.is_checklist == 1
+            ? "CheckList Done"
+            : "CheckList Pending"
+          : statusdata?.find((s: any) => s.status_code == item?.booking_status)
+              ?.status_name}
       </p>
     );
     const forVendordata = (
@@ -426,9 +441,9 @@ const SpotpriceApproval = ({ value, gettopdata }: any) => {
       <p className="text-end">
         {Number(item.buy_price)
           ? Number(item.buy_price).toLocaleString("en-IN", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
           : null}
         {item.buy_price && item?.price_type == "1"
           ? "(a)"
@@ -455,10 +470,10 @@ const SpotpriceApproval = ({ value, gettopdata }: any) => {
         {item?.org_country_id == "97" && item?.dest_country_id == "97"
           ? item?.dest_city
           : countryData?.find(
-            (elem) => elem.country_id == item?.dest_country_id,
-          )?.country_name ||
-          item?.dest_city ||
-          "N.A."}
+              (elem) => elem.country_id == item?.dest_country_id,
+            )?.country_name ||
+            item?.dest_city ||
+            "N.A."}
       </p>
     );
     const overseasPrice = (
@@ -480,8 +495,7 @@ const SpotpriceApproval = ({ value, gettopdata }: any) => {
           (item2: any) =>
             item2?.booking_shipment_type_id == item?.shipment_type,
         )?.shipment_type || "-",
-      shipment_type_id:
-        item?.shipment_type || "-",
+      shipment_type_id: item?.shipment_type || "-",
       created_date: createddate,
       weight: weightdata,
       valid_till: validtill,
@@ -496,67 +510,82 @@ const SpotpriceApproval = ({ value, gettopdata }: any) => {
 
   return (
     <>
-      <div>
-        <div className="w-full max-w-8xl mx-auto mt-4 bg-white ">
-          <div className="flex items-center justify-between py-2 px-2">
-            <h2 className="text-sm font-medium sm:text-base">
-              PENDING SPOT ENQUIRIES
-            </h2>
-            <div className="relative w-full sm:w-auto">
-              <FormInput
-                id="vertical-form-1"
-                type="text"
-                className="border rounded-md px-3 py-2 w-full sm:w-56"
-                value={enquiryId}
-                onChange={(e) => {
-                  setEnquiryId(e.target.value.toUpperCase());
-                  setPage(1);
-                }}
-                placeholder="Enter Enquiry No."
-              />
-              <button className="absolute top-2.5 right-2.5 text-gray-400">
-                <Search />
-              </button>
+      <div className="w-full mt-2 mb-4">
+        <div className="mt-1 w-full bg-white rounded-[10px]  border border-white">
+          <div className=" w-full py-2  px-3 border-b border-white commonGBackOffice  rounded-t-[10px]">
+            <div className="flex-wrap lg:flex-nowrap flex gap-2 items-center justify-between w-full commonGBackOfficeInner">
+              <div>
+                <div className="flex items-center gap-2">
+                  <i className=" w-[25px] h-[25px]  rounded-lg flex items-center justify-center bg-mustard">
+                    <Home className="w-[17px]  text-[#fff] " />
+                  </i>
+                  <h4 className="text-[16px] font-medium text-white">
+                    PENDING SPOT ENQUIRIES
+                  </h4>
+                </div>
+              </div>
+
+              <div className="flex items-center">
+                <div className="relative w-full sm:w-auto">
+                  <FormInput
+                    id="vertical-form-1"
+                    type="text"
+                    className="border-none h-[30px] rounded-md px-3 py-2 w-full "
+                    value={enquiryId}
+                    onChange={(e) => {
+                      setEnquiryId(e.target.value.toUpperCase());
+                      setPage(1);
+                    }}
+                    placeholder="Enter Enquiry No."
+                  />
+                  <button className="absolute top-[2px] right-[7px] text-gray-400">
+                    <Search className=" w-[18px]" />
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-2 px-2 pb-2">
-            <span
-              className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold text-mustard"
-              style={{ backgroundColor: "#FDF6B2" }}
-            >
-              Fedex - GTI / MASTER
-            </span>
+
+          <div className="p-2  lg:p-6">
+            <div>
+              <div className="w-full mb-3">
+                <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold text-[#da9408] bg-[#fff2d8]">
+                  Fedex - GTI / MASTER
+                </span>
+              </div>
+
+              <div className="">
+                {loading ? (
+                  <IsLoading />
+                ) : getSpotList?.length > 0 && !loading ? (
+                  <>
+                    <Table
+                      heightTable="45vh"
+                      columns={
+                        value === "all"
+                          ? columns
+                          : columns.filter((_, index) => index !== 1)
+                      }
+                      row={row}
+                      margin="mt-0"
+                      currentPage={page}
+                      vendorData={vendorData}
+                    />
+                    <CommonPagination
+                      totalpages={totalpages}
+                      onPageChange={handlePagechange}
+                      page={page}
+                    />
+                  </>
+                ) : (
+                  <>
+                    {" "}
+                    <Nodatafound />
+                  </>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="">
-          {loading ? (
-            <IsLoading />
-          ) : getSpotList?.length > 0 && !loading ? (
-            <>
-              <Table
-                heightTable="45vh"
-                columns={
-                  value === "all"
-                    ? columns
-                    : columns.filter((_, index) => index !== 1)
-                }
-                row={row}
-                margin="mt-0"
-                currentPage={page}
-                vendorData={vendorData}
-              />
-              <CommonPagination
-                totalpages={totalpages}
-                onPageChange={handlePagechange}
-                page={page}
-              />
-            </>
-          ) : (
-            <>
-              {" "}
-              <Nodatafound />
-            </>
-          )}
         </div>
       </div>
 
@@ -584,8 +613,8 @@ const SpotpriceApproval = ({ value, gettopdata }: any) => {
           value={value}
           currencydata={currencydata}
           alltypedata={alltypedata}
-        // addedbuyingcharges={buyingcharges}
-        // addedsellingcharges={sellingcharges}
+          // addedbuyingcharges={buyingcharges}
+          // addedsellingcharges={sellingcharges}
         />
       ) : (
         ""

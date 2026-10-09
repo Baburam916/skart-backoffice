@@ -910,7 +910,7 @@ const SellBuyForm = (props: any) => {
 
   return (
     <>
-      <div className="box 2xl:p-5 xl:p-5  md:p-5 sm:p-2 p-2 mt-5 border border-gray-200 shadow-lg ">
+      <div className="w-full mt-4 ">
         {/* addedbuyingcharges?.length == 0 || */}
         {((toggle == 1 && !singlefranchiseedata?.is_overseas) || toggle == 2) &&
         !checkstatus(spotData?.booking_status) ? (
@@ -1080,7 +1080,7 @@ const SellBuyForm = (props: any) => {
             <div className="flex items-center gap-3">
               {!hideSelling ? (
                 <Button
-                  className={`p-2 mt-5 ${
+                  className={`p-2 mt-5 border-none ${
                     toggle == 1 ? "bg-mustard" : "bg-gray-400"
                   }  text-white`}
                   onClick={() => {
@@ -1100,7 +1100,7 @@ const SellBuyForm = (props: any) => {
                       setHasUpdated(true);
                     }
                   }}
-                  className={`p-2 mt-5   ml-2 ${
+                  className={`p-2 mt-5 border-none   ${
                     toggle == 2 ? "bg-mustard" : "bg-gray-400"
                   }  text-white`}
                 >

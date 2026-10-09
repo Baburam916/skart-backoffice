@@ -23,6 +23,10 @@ import {
 } from "../../../AllServices/services";
 import CommonSearchableAll from "../commoncomponents/CommonSearchableall/CommonSearchableall";
 import SearchableComp from "../commoncomponents/Commonsearchablebasedcom/commonsearchablecom";
+
+import AOS from "aos";
+import "aos/dist/aos.css";
+
 import {
   ArrowRight,
   Box,
@@ -530,6 +534,13 @@ const RateCalculator = ({ forwhat }) => {
     getData();
   }, []);
 
+  useEffect(() => {
+    AOS.init({
+      duration: 1000,
+      once: true,
+    });
+  }, []);
+
   return (
     <>
       {toggleUI ? (
@@ -540,9 +551,12 @@ const RateCalculator = ({ forwhat }) => {
           <Disclosure as="div" className=" mt-8 w-full">
             {({ open }) => (
               <>
-                <div className="w-full mt-2 mb-4">
+                <div className="w-full mt-2 mb-4" data-aos="fade-up">
                   <div className="mt-1 w-full bg-white rounded-[10px]  border border-white">
-                    <div className=" w-full py-2  px-3 border-b border-white commonGBackOffice  rounded-t-[10px]">
+                    <div
+                      className=" w-full py-2  px-3 border-b border-white commonGBackOffice  rounded-t-[10px]"
+                      data-aos="fade-up"
+                    >
                       <div className="flex-wrap lg:flex-nowrap flex gap-2 items-center justify-between w-full commonGBackOfficeInner">
                         <div>
                           <div className="flex items-center gap-2">
@@ -558,7 +572,7 @@ const RateCalculator = ({ forwhat }) => {
                     </div>
 
                     <div className="p-2  lg:p-3">
-                      <div className="bg-white rounded-lg">
+                      <div className="bg-white rounded-lg" data-aos="fade-up">
                         <Disclosure.Button
                           onClick={() => {
                             handleSetInitial();

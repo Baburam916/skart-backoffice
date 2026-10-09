@@ -17,7 +17,7 @@ import SellBuyForm from "../SpotEnquiry/SpotEnquiryModal/spotpriceChargeform";
 import { formatIndianNumber } from "../commoncomponents/CommonNumberConverter/CommonNumberconverter";
 
 import LoadingButtonCommon from "../commoncomponents/LoadingButtonCommon/LoadingButtonCommon";
-import { X } from "lucide-react";
+import { ClipboardList, CreditCard, FileText, X } from "lucide-react";
 
 import {
   checkallfiled,
@@ -26,6 +26,7 @@ import {
 
 import CommonSearchableAll from "../commoncomponents/CommonSearchableall/CommonSearchableall";
 import { formatDateDDMMYYYY } from "../SpotEnquiry/SpotPriceEnquiry2";
+import { MdTextFields } from "react-icons/md";
 
 const limitToThreeDecimals = (value: string): string => {
   const v = value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
@@ -234,7 +235,7 @@ export const ApprovalModal = (data: any) => {
   const { showAlert } = useAlert();
 
   useEffect(() => {
-    if(pickDataforForm?.import_booking == 1){
+    if (pickDataforForm?.import_booking == 1) {
       if (
         Number(pickDataforForm?.weight) >= 0.5 &&
         Number(pickDataforForm?.weight) <= 5.5
@@ -438,15 +439,21 @@ export const ApprovalModal = (data: any) => {
     return total;
   };
 
-  const computeChargesGST = (charges: any[], type: "sell" | "buy", zeroCondition: boolean): number => {
+  const computeChargesGST = (
+    charges: any[],
+    type: "sell" | "buy",
+    zeroCondition: boolean,
+  ): number => {
     if (zeroCondition) return 0;
     return (charges || []).reduce((total: number, item: any) => {
       const inr = parseFloat(String(item.inr_amount || "0"));
-      const isExempt = type === "sell" ? item.charge_id == 162 : item.charge_id == 163;
+      const isExempt =
+        type === "sell" ? item.charge_id == 162 : item.charge_id == 163;
       if (isExempt) return total;
-      const chargeInfo = type === "sell"
-        ? chargesList?.find((c: any) => c.ref_sell_id == item.charge_id)
-        : chargesList?.find((c: any) => c.charge_id == item.charge_id);
+      const chargeInfo =
+        type === "sell"
+          ? chargesList?.find((c: any) => c.ref_sell_id == item.charge_id)
+          : chargesList?.find((c: any) => c.charge_id == item.charge_id);
       const igstRate = parseFloat(chargeInfo?.tax_breakup?.igst || "18") / 100;
       return total + inr * igstRate;
     }, 0);
@@ -563,33 +570,37 @@ export const ApprovalModal = (data: any) => {
 
           // Process selling charges
 
-          const newdata = data?.filter((item2:any)=>item2?.charge_type==2)?.map((item) => ({
-            ...item,
-            // ex_rate: signlefdata?.exchange_rate || 1,
-            // currency: signlefdata?.currency || 24,
-            weight: item?.per_kg == 2 ? 1 : item.weight || 0,
-            sac_code: chargeMap.get(item.charge_id)?.hsn_code || "",
-          }));
+          const newdata = data
+            ?.filter((item2: any) => item2?.charge_type == 2)
+            ?.map((item) => ({
+              ...item,
+              // ex_rate: signlefdata?.exchange_rate || 1,
+              // currency: signlefdata?.currency || 24,
+              weight: item?.per_kg == 2 ? 1 : item.weight || 0,
+              sac_code: chargeMap.get(item.charge_id)?.hsn_code || "",
+            }));
 
           // Process buying charges
-          const buydata =  data?.filter((item2:any)=>item2?.charge_type==2)?.map((item) => {
-            const chargeItem = chargeMap.get(item.charge_id) || {};
-            return {
-              charge_id: chargeItem.charge_id || "",
-              weight: item?.per_kg == 2 ? 1 : item.weight || 0,
-              sac_code: chargeItem.hsn_code || "",
-              per_kg: item.per_kg || 0,
-              inr_amount: 0,
-              currency: item.currency || "24",
-              enquiry_id: pickDataforForm?.id,
-              rate: "",
-              sell_rate: item.rate || 0,
-              ex_rate: item?.ex_rate || "1",
-              pp_cc: "1",
-              party: "",
-              party_name: "",
-            };
-          });
+          const buydata = data
+            ?.filter((item2: any) => item2?.charge_type == 2)
+            ?.map((item) => {
+              const chargeItem = chargeMap.get(item.charge_id) || {};
+              return {
+                charge_id: chargeItem.charge_id || "",
+                weight: item?.per_kg == 2 ? 1 : item.weight || 0,
+                sac_code: chargeItem.hsn_code || "",
+                per_kg: item.per_kg || 0,
+                inr_amount: 0,
+                currency: item.currency || "24",
+                enquiry_id: pickDataforForm?.id,
+                rate: "",
+                sell_rate: item.rate || 0,
+                ex_rate: item?.ex_rate || "1",
+                pp_cc: "1",
+                party: "",
+                party_name: "",
+              };
+            });
 
           // Update state
           setSellingCharges(newdata);
@@ -686,8 +697,18 @@ export const ApprovalModal = (data: any) => {
           setaddedtotalSell(gettotal(newsellingcharges, "inr_amount  (Rs.)"));
           setAddedBuyingCharges(newbuyingcharges);
           setAddedsellingCharges(newsellingcharges);
-          setAddedRawSellCharges(selling.map((item: any) => ({ charge_id: item.charge_id, inr_amount: item.inr_amount })));
-          setAddedRawBuyCharges(buying.map((item: any) => ({ charge_id: item.charge_id, inr_amount: item.inr_amount })));
+          setAddedRawSellCharges(
+            selling.map((item: any) => ({
+              charge_id: item.charge_id,
+              inr_amount: item.inr_amount,
+            })),
+          );
+          setAddedRawBuyCharges(
+            buying.map((item: any) => ({
+              charge_id: item.charge_id,
+              inr_amount: item.inr_amount,
+            })),
+          );
           if (buying?.length > 0) {
             setExchangedata(buildExchangeData(buying, currencydata));
             buyExchangeInitialized.current = true;
@@ -750,8 +771,22 @@ export const ApprovalModal = (data: any) => {
           setaddedtotalSell(gettotal(newsellingcharges, "inr_amount  (Rs.)"));
           setAddedBuyingCharges(newbuyingcharges);
           setAddedsellingCharges(newsellingcharges);
-          setAddedRawSellCharges(resdata.filter((item: any) => item?.charge_type == 2).map((item: any) => ({ charge_id: item.charge_id, inr_amount: item.inr_amount })));
-          setAddedRawBuyCharges(resdata.filter((item: any) => item?.charge_type == 1).map((item: any) => ({ charge_id: item.charge_id, inr_amount: item.inr_amount })));
+          setAddedRawSellCharges(
+            resdata
+              .filter((item: any) => item?.charge_type == 2)
+              .map((item: any) => ({
+                charge_id: item.charge_id,
+                inr_amount: item.inr_amount,
+              })),
+          );
+          setAddedRawBuyCharges(
+            resdata
+              .filter((item: any) => item?.charge_type == 1)
+              .map((item: any) => ({
+                charge_id: item.charge_id,
+                inr_amount: item.inr_amount,
+              })),
+          );
           const rawBuyCharges = resdata?.filter(
             (item: any) => item?.charge_type == 1,
           );
@@ -1305,9 +1340,12 @@ export const ApprovalModal = (data: any) => {
             <FormLabel>
               GST{" "}
               {(signlefdata?.gst_status == 4 && toggle == 2) ||
-              (toggle == 1 && (signlefdata?.is_overseas || pickDataforForm?.import_booking == 3))
+              (toggle == 1 &&
+                (signlefdata?.is_overseas ||
+                  pickDataforForm?.import_booking == 3))
                 ? "(0%)"
-                : ""}{" "}:{" "}
+                : ""}{" "}
+              :{" "}
             </FormLabel>
             <FormInput
               disabled
@@ -1354,10 +1392,11 @@ export const ApprovalModal = (data: any) => {
               <FormInput
                 disabled
                 className="text-right"
-                value={`${currencydata?.find(
-                  (item: any) => item?.id == signlefdata?.currency,
-                )?.symbol || ""
-                  }${formatIndianNumber(parseFloat((Number(totalSell) / Number(signlefdata?.exchange_rate || 1)).toFixed(3)))}`}
+                value={`${
+                  currencydata?.find(
+                    (item: any) => item?.id == signlefdata?.currency,
+                  )?.symbol || ""
+                }${formatIndianNumber(parseFloat((Number(totalSell) / Number(signlefdata?.exchange_rate || 1)).toFixed(3)))}`}
               />
             </div>
           ) : (
@@ -1440,33 +1479,11 @@ export const ApprovalModal = (data: any) => {
   );
 
   const ModalTitle2 = (
-    <div className="min-[611px]:flex justify-between w-full">
-      <h2 className="mr-auto text-base font-medium">UPDATE ENQUIRY</h2>
-      {dataloading ? (
-        <LoadingButtonCommon />
-      ) : (
-        <div className="flex justify-between w-[80%] m-auto">
-          <div>
-            <h2 className="text-base font-medium">
-              ACL.: ₹{formatIndianNumber(signlefdata?.acl || 0)}
-            </h2>
-          </div>
-          <div>
-            {" "}
-            <h2 className="text-base font-medium">
-              Wallet.: ₹{formatIndianNumber(signlefdata?.wallet || 0)}
-            </h2>
-          </div>
-          <div>
-            {" "}
-            <h2 className="text-base font-medium">
-              Enquiry No.: {data?.pickDataforForm?.booking_no}
-            </h2>
-          </div>
-        </div>
-      )}
-      <div className="max-[503px]:mt-2">
-        <X onClick={handleCancel} />
+    <div className="flex justify-between w-full">
+      <h2 className=" text-base font-medium text-white">UPDATE ENQUIRY</h2>
+
+      <div className="">
+        <X onClick={handleCancel} className="cursor-pointer text-red-700" />
       </div>
     </div>
   );
@@ -1482,13 +1499,76 @@ export const ApprovalModal = (data: any) => {
   //  console.log("check 123")
   const ModalDescription2 = (
     <>
+      {dataloading ? (
+        <LoadingButtonCommon />
+      ) : (
+        <>
+          <div className="grid grid-cols-12 gap-2 lg:gap-4 mb-4">
+            <div className="col-span-12  lg:col-span-4">
+              <div className="bg-[#f2f7ff] rounded-lg p-[7px] flex w-full ">
+                <figure className="w-[35px] flex items-center justify-center">
+                  <ClipboardList className="w-[35px]  text-[#3b7dd8] " />
+                </figure>
+                <aside className="md:border-l md:border-[#d8e7ff] md:pl-2 w-[80%] leading-[18px]">
+                  <p className="text-[12px] uppercase text-[#757575] w-full">
+                    ACL
+                  </p>
+                  <h4 className="font-medium text-[14px] text-[#383838] w-full flex justify-between items-center">
+                    <span className="capitalize font-bold cursor-pointer">
+                      {" "}
+                      ₹{formatIndianNumber(signlefdata?.acl || 0)}
+                    </span>
+                  </h4>
+                </aside>
+              </div>
+            </div>
+            <div className="col-span-12  lg:col-span-4">
+              <div className="bg-[#eafffa] rounded-lg p-[7px] flex  w-full ">
+                <figure className="w-[35px] flex items-center justify-center">
+                  <CreditCard className="w-[30px]  text-[#18a080]  " />
+                </figure>
+                <aside className="md:border-l md:border-[#d8e7ff] md:pl-2 w-[80%] leading-[18px]">
+                  <p className="text-[12px] uppercase text-[#757575] w-full">
+                    Wallet
+                  </p>
+                  <h4 className="font-medium text-[14px] text-[#383838] w-full flex justify-between items-center">
+                    <span className="capitalize font-bold cursor-pointer">
+                      ₹{formatIndianNumber(signlefdata?.wallet || 0)}
+                    </span>
+                  </h4>
+                </aside>
+              </div>
+            </div>
+
+            <div className="col-span-12  lg:col-span-4">
+              <div className="bg-[#faf5ff] rounded-lg p-[7px] flex  w-full ">
+                <figure className="w-[35px] flex items-center justify-center">
+                  <FileText className="w-[30px]  text-[#9c51e7] " />
+                </figure>
+                <aside className="md:border-l md:border-[#d8e7ff] md:pl-2 w-[80%] leading-[18px]">
+                  <p className="text-[12px] uppercase text-[#757575] w-full">
+                    {" "}
+                    Enquiry No
+                  </p>
+                  <h4 className="font-medium text-[14px] text-[#383838] w-full flex justify-between items-center">
+                    <span className="capitalize font-bold cursor-pointer">
+                      {data?.pickDataforForm?.booking_no}
+                    </span>
+                  </h4>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
       <div
         ref={scrollRef}
         className="col-span-12 overflow-auto h-[56vh]"
         tabIndex={-1}
       >
-        <div className="sm:flex sm:justify-between gap-4 ">
-          <div className="sm:mx-auto px-2 bg-white rounded-lg shadow-lg sm:w-1/2 ">
+        <div className="block lg:flex sm:justify-between gap-4 ">
+          <div className="px-2 bg-white rounded-lg shadow-lg w-full lg:w-1/2 ">
             <div className="flex">
               <h1 className="font-bold text-lg">Serviceability</h1>
             </div>
@@ -1610,7 +1690,7 @@ export const ApprovalModal = (data: any) => {
               <FormInput disabled value={pickDataforForm.dest_city} />
             </div>
           </div>
-          <div className="sm:mx-auto px-2 bg-white rounded-lg shadow-lg sm:w-1/2 ">
+          <div className=" px-2 bg-white rounded-lg shadow-lg w-full lg:w-1/2 ">
             <h1 className="font-bold text-lg"></h1>
             <hr />
             <div className=" mb-2 mt-2">
@@ -2251,7 +2331,9 @@ export const ApprovalModal = (data: any) => {
                       className={`mt-1 w-full p-2 border rounded ${
                         weight_from ? "border border-red-400" : ""
                       }`}
-                      value={limitToThreeDecimals(String(pickDataforForm?.weight_from ?? ""))}
+                      value={limitToThreeDecimals(
+                        String(pickDataforForm?.weight_from ?? ""),
+                      )}
                       onBlur={(e: any) => {
                         const value = e.target.value;
                         handleerrors("weight_from");
@@ -2277,7 +2359,13 @@ export const ApprovalModal = (data: any) => {
                       onKeyDown={(e: any) => {
                         const val = e.target.value;
                         const dot = val.indexOf(".");
-                        if (dot !== -1 && /^[0-9]$/.test(e.key) && e.target.selectionStart === e.target.selectionEnd && e.target.selectionStart > dot && val.length - dot - 1 >= 3) {
+                        if (
+                          dot !== -1 &&
+                          /^[0-9]$/.test(e.key) &&
+                          e.target.selectionStart === e.target.selectionEnd &&
+                          e.target.selectionStart > dot &&
+                          val.length - dot - 1 >= 3
+                        ) {
                           e.preventDefault();
                         }
                       }}
@@ -2295,7 +2383,9 @@ export const ApprovalModal = (data: any) => {
                         weight_to ? "border border-red-400" : ""
                       }
                       `}
-                      value={limitToThreeDecimals(String(pickDataforForm?.weight_to ?? ""))}
+                      value={limitToThreeDecimals(
+                        String(pickDataforForm?.weight_to ?? ""),
+                      )}
                       onBlur={(e: any) => {
                         const value = e.target.value;
                         handleerrors("weight_to");
@@ -2324,7 +2414,13 @@ export const ApprovalModal = (data: any) => {
                       onKeyDown={(e: any) => {
                         const val = e.target.value;
                         const dot = val.indexOf(".");
-                        if (dot !== -1 && /^[0-9]$/.test(e.key) && e.target.selectionStart === e.target.selectionEnd && e.target.selectionStart > dot && val.length - dot - 1 >= 3) {
+                        if (
+                          dot !== -1 &&
+                          /^[0-9]$/.test(e.key) &&
+                          e.target.selectionStart === e.target.selectionEnd &&
+                          e.target.selectionStart > dot &&
+                          val.length - dot - 1 >= 3
+                        ) {
                           e.preventDefault();
                         }
                       }}
@@ -2511,9 +2607,9 @@ export const ApprovalModal = (data: any) => {
             ) : null}
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4 mt-4">
+        <div className="grid grid-cols-12  gap-4 mt-4">
           {" "}
-          <div className="mb-2 ">
+          <div className="mb-2 col-span-12 lg:col-span-6">
             <FormLabel>IS Remarks</FormLabel>
             <FormTextarea
               name="address"
@@ -2529,7 +2625,7 @@ export const ApprovalModal = (data: any) => {
               // }
             ></FormTextarea>
           </div>
-          <div className="mb-2">
+          <div className="mb-2 col-span-12 lg:col-span-6">
             <FormLabel>
               Remarks <span className="text-red-400">*</span>
             </FormLabel>
